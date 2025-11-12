@@ -1,5 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
+import 'package:meshal_doctor_booking_app/features/auth/presentation/screens/auth_change_password_screen.dart';
+import 'package:meshal_doctor_booking_app/features/auth/presentation/screens/auth_change_password_success_screen.dart';
 import 'package:meshal_doctor_booking_app/features/auth/presentation/screens/auth_forget_password_screen.dart';
 import 'package:meshal_doctor_booking_app/features/auth/presentation/screens/auth_otp_screen.dart';
 import 'package:meshal_doctor_booking_app/features/auth/presentation/screens/auth_screen.dart';
@@ -9,6 +11,7 @@ import 'package:meshal_doctor_booking_app/features/education/presentation/screen
 import 'package:meshal_doctor_booking_app/features/education/presentation/screens/education_articles_screen.dart';
 import 'package:meshal_doctor_booking_app/features/education/presentation/screens/education_sub_topics_screen.dart';
 import 'package:meshal_doctor_booking_app/features/localization/presentation/screens/localization_screen.dart';
+import 'package:meshal_doctor_booking_app/features/personal_details/presentation/screens/personal_details_screen.dart';
 import 'package:meshal_doctor_booking_app/features/splash/presentation/screens/splash_screen.dart';
 
 GoRouter appRouter = GoRouter(
@@ -60,6 +63,24 @@ GoRouter appRouter = GoRouter(
       },
     ),
 
+    // Auth Change Password Screen
+    GoRoute(
+      path: '/authChangePassword',
+      name: AppRouterConstants.authChangePassword,
+      builder: (context, state) {
+        return AuthChangePasswordScreen();
+      },
+    ),
+
+    // Auth Change Password Success Screen
+    GoRoute(
+      path: '/authChangePasswordSuccess',
+      name: AppRouterConstants.authChangePasswordSuccess,
+      builder: (context, state) {
+        return AuthChangePasswordSuccessScreen();
+      },
+    ),
+
     // Bottom Nav
     GoRoute(
       path: '/bottomNav',
@@ -102,6 +123,15 @@ GoRouter appRouter = GoRouter(
       name: AppRouterConstants.chat,
       builder: (context, state) {
         return ChatScreen();
+      },
+    ),
+
+    // Personal Details Screen
+    GoRoute(
+      path: '/personalDetails',
+      name: AppRouterConstants.personalDetails,
+      builder: (context, state) {
+        return PersonalDetailsScreen();
       },
     ),
   ],

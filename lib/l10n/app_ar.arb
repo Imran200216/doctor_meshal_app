@@ -49,9 +49,27 @@
   "logout": "تسجيل الخروج",
   "topics": "المواضيع",
   "articles": "المقالات",
-  "subTopics": "الموضوعات الفرعية"
-
-
-
+  "subTopics": "الموضوعات الفرعية",
+  "changePasswordSubTitle": "يرجى إدخال كلمة المرور الجديدة أدناه وتأكيدها لتحديث بيانات اعتماد حسابك.",
+  "passwordChangeSuccessTitle": "تم تحديث كلمة المرور بنجاح",
+  "passwordChangeSuccessSubTitle": "تم تحديث كلمة المرور الخاصة بك بنجاح. يمكنك الآن استخدام كلمة المرور الجديدة لتسجيل الدخول بأمان.",
+  "backToLogin": "العودة إلى تسجيل الدخول",
+  "logoutConfirmation": "تأكيد تسجيل الخروج",
+  "logoutConfirmationDescription": "هل أنت متأكد أنك تريد تسجيل الخروج من حسابك؟",
+  "cancel": "إلغاء",
+  "gender": "الجنس",
+  "male": "ذكر",
+  "female": "أنثى",
+  "other": "آخر",
+  "selectGender": "اختر الجنس",
+  "selectBloodGroup": "اختر فصيلة الدم",
+  "bloodGroup": "فصيلة الدم",
+  "dateOfBirth": "تاريخ الميلاد",
+  "selectDate": "اختر تاريخ ميلادك",
+  "height": "الطول",
+  "enterHeight": "أدخل الطول بالسنتيمتر",
+  "weight": "الوزن",
+  "enterWeight": "أدخل الوزن بالكيلوغرام",
+  "addPersonalDetails": "أضف التفاصيل الشخصية"
 
 }

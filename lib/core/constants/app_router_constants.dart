@@ -14,6 +14,12 @@ class AppRouterConstants {
   // Auth OTP
   static const String authOTP = "authOTP";
 
+  // Auth Change Password
+  static const String authChangePassword = "authChangePassword";
+
+  // Auth Change Password Success
+  static const String authChangePasswordSuccess = "authChangePasswordSuccess";
+
   // Bottom Nav
   static const String bottomNav = "bottomNav";
 
@@ -28,4 +34,7 @@ class AppRouterConstants {
 
   // Chat
   static const String chat = "chat";
+
+  // Personal Details
+  static const String personalDetails = "personalDetails";
 }

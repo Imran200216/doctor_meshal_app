@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
-import 'package:meshal_doctor_booking_app/features/localization/cubit/localization_cubit.dart';
+import 'package:meshal_doctor_booking_app/core/utils/url_launcher_helper.dart';
 import 'package:meshal_doctor_booking_app/features/profile/presentation/widgets/profile_details_container.dart';
 import 'package:meshal_doctor_booking_app/features/profile/presentation/widgets/profile_list_tile.dart';
+import 'package:meshal_doctor_booking_app/features/profile/presentation/widgets/profile_log_out_bottom_sheet.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -95,7 +95,12 @@ class ProfileScreen extends StatelessWidget {
                       ProfileListTile(
                         prefixIcon: Icons.notes_outlined,
                         title: appLoc.personDetails,
-                        onTap: () {},
+                        onTap: () {
+                          // Personal Details Screen
+                          GoRouter.of(
+                            context,
+                          ).pushNamed(AppRouterConstants.personalDetails);
+                        },
                       ),
 
                       ProfileListTile(
@@ -145,13 +150,21 @@ class ProfileScreen extends StatelessWidget {
                       ProfileListTile(
                         prefixIcon: Icons.app_registration,
                         title: appLoc.termsAndConditions,
-                        onTap: () {},
+                        onTap: () {
+                          UrlLauncherHelper.launchUrlLink(
+                            'https://flutter.dev',
+                          );
+                        },
                       ),
 
                       ProfileListTile(
                         prefixIcon: Icons.privacy_tip_outlined,
                         title: appLoc.privacyPolicy,
-                        onTap: () {},
+                        onTap: () {
+                          UrlLauncherHelper.launchUrlLink(
+                            'https://flutter.dev',
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -170,13 +183,24 @@ class ProfileScreen extends StatelessWidget {
                         prefixIcon: Icons.logout,
                         title: appLoc.logout,
                         onTap: () {
-                          // Localization
-                          GoRouter.of(
-                            context,
-                          ).goNamed(AppRouterConstants.localization);
+                          showModalBottomSheet(
+                            context: context,
 
-                         // Change to Default English
-                         context.read<LocalizationCubit>().selectLanguage("en");
+                            builder: (context) {
+                              return ProfileLogOutBottomSheet(
+                                onCancelTap: () {
+                                  // Close Bottom Sheet
+                                  GoRouter.of(context).pop();
+                                },
+                                onSubmitTap: () {
+                                  // // Localization
+                                  GoRouter.of(
+                                    context,
+                                  ).goNamed(AppRouterConstants.localization);
+                                },
+                              );
+                            },
+                          );
                         },
                       ),
                     ],

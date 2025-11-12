@@ -400,6 +400,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sub Topics'**
   String get subTopics;
+
+  /// No description provided for @changePasswordSubTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your new password below and confirm it to update your account credentials.'**
+  String get changePasswordSubTitle;
+
+  /// No description provided for @passwordChangeSuccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Password Updated Successfully'**
+  String get passwordChangeSuccessTitle;
+
+  /// No description provided for @passwordChangeSuccessSubTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your password has been updated successfully. You can now use your new password to sign in securely.'**
+  String get passwordChangeSuccessSubTitle;
+
+  /// No description provided for @backToLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Back To Login'**
+  String get backToLogin;
+
+  /// No description provided for @logoutConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout Confirmation'**
+  String get logoutConfirmation;
+
+  /// No description provided for @logoutConfirmationDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to log out of your account?'**
+  String get logoutConfirmationDescription;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @gender.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get gender;
+
+  /// No description provided for @male.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get male;
+
+  /// No description provided for @female.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get female;
+
+  /// No description provided for @other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get other;
+
+  /// No description provided for @selectGender.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Gender'**
+  String get selectGender;
+
+  /// No description provided for @selectBloodGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Blood Group'**
+  String get selectBloodGroup;
+
+  /// No description provided for @bloodGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Blood Group'**
+  String get bloodGroup;
+
+  /// No description provided for @dateOfBirth.
+  ///
+  /// In en, this message translates to:
+  /// **'Date Of Birth'**
+  String get dateOfBirth;
+
+  /// No description provided for @selectDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your date of birth'**
+  String get selectDate;
+
+  /// No description provided for @height.
+  ///
+  /// In en, this message translates to:
+  /// **'Height'**
+  String get height;
+
+  /// No description provided for @enterHeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter height in cm'**
+  String get enterHeight;
+
+  /// No description provided for @weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get weight;
+
+  /// No description provided for @enterWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter weight in kg'**
+  String get enterWeight;
+
+  /// No description provided for @addPersonalDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Person Details'**
+  String get addPersonalDetails;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

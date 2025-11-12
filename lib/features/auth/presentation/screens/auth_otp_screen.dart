@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
+import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
 import 'package:meshal_doctor_booking_app/features/auth/presentation/widgets/auth_app_bar.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
@@ -82,6 +83,8 @@ class AuthOtpScreen extends StatelessWidget {
         },
       ),
       body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        physics: const BouncingScrollPhysics(),
         child: Padding(
           padding: EdgeInsets.symmetric(
             horizontal: isMobile
@@ -147,6 +150,9 @@ class AuthOtpScreen extends StatelessWidget {
                 hapticFeedbackType: HapticFeedbackType.lightImpact,
                 autofocus: true,
                 keyboardType: TextInputType.number,
+                onSubmitted: (value) {
+
+                },
               ),
 
               const SizedBox(height: 20),
@@ -172,18 +178,26 @@ class AuthOtpScreen extends StatelessWidget {
                   ),
 
                   // Didn't receive the code
-                  KText(
-                    text: appLoc.tapToResend,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.visible,
-                    maxLines: 3,
-                    fontSize: isMobile
-                        ? 16
-                        : isTablet
-                        ? 18
-                        : 20,
-                    fontWeight: FontWeight.w700,
-                    color: AppColorConstants.primaryColor,
+                  GestureDetector(
+                    onTap: () {
+                      // Auth Change Password Screen
+                      GoRouter.of(context).pushReplacementNamed(
+                        AppRouterConstants.authChangePassword,
+                      );
+                    },
+                    child: KText(
+                      text: appLoc.tapToResend,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.visible,
+                      maxLines: 3,
+                      fontSize: isMobile
+                          ? 16
+                          : isTablet
+                          ? 18
+                          : 20,
+                      fontWeight: FontWeight.w700,
+                      color: AppColorConstants.primaryColor,
+                    ),
                   ),
                 ],
               ),

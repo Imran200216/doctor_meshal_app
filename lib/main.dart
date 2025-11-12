@@ -30,10 +30,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-
       // App Bloc Providers
       providers: appBlocProviders,
-
 
       child: BlocBuilder<LocalizationCubit, LocalizationState>(
         builder: (context, state) {

@@ -88,13 +88,12 @@ class KAppBar extends StatelessWidget implements PreferredSizeWidget {
             color: AppColorConstants.secondaryColor,
           ),
         ),
-        toolbarHeight: description != null
-            ? 90
-            : kToolbarHeight,
+        toolbarHeight: description != null ? 90 : kToolbarHeight,
       ),
     );
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 20);
+  Size get preferredSize =>
+      Size.fromHeight(description != null ? 90 : kToolbarHeight);
 }

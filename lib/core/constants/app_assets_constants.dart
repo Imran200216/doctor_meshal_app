@@ -31,4 +31,7 @@ class AppAssetsConstants {
   static const String chatBot = "assets/icons/svg/chat-bot.svg";
 
   static const String subTopics = "assets/icons/svg/sub-topics.svg";
+
+  static const String forgetPasswordChangeSuccess =
+      "assets/icons/svg/forget-password-change-success.svg";
 }

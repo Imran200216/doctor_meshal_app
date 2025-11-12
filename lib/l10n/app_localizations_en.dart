@@ -160,4 +160,67 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get subTopics => 'Sub Topics';
+
+  @override
+  String get changePasswordSubTitle => 'Please enter your new password below and confirm it to update your account credentials.';
+
+  @override
+  String get passwordChangeSuccessTitle => 'Password Updated Successfully';
+
+  @override
+  String get passwordChangeSuccessSubTitle => 'Your password has been updated successfully. You can now use your new password to sign in securely.';
+
+  @override
+  String get backToLogin => 'Back To Login';
+
+  @override
+  String get logoutConfirmation => 'Logout Confirmation';
+
+  @override
+  String get logoutConfirmationDescription => 'Are you sure you want to log out of your account?';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get gender => 'Gender';
+
+  @override
+  String get male => 'Male';
+
+  @override
+  String get female => 'Female';
+
+  @override
+  String get other => 'Other';
+
+  @override
+  String get selectGender => 'Select Gender';
+
+  @override
+  String get selectBloodGroup => 'Select Blood Group';
+
+  @override
+  String get bloodGroup => 'Blood Group';
+
+  @override
+  String get dateOfBirth => 'Date Of Birth';
+
+  @override
+  String get selectDate => 'Select your date of birth';
+
+  @override
+  String get height => 'Height';
+
+  @override
+  String get enterHeight => 'Enter height in cm';
+
+  @override
+  String get weight => 'Weight';
+
+  @override
+  String get enterWeight => 'Enter weight in kg';
+
+  @override
+  String get addPersonalDetails => 'Add Person Details';
 }

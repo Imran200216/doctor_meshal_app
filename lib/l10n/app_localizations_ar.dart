@@ -160,4 +160,67 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get subTopics => 'الموضوعات الفرعية';
+
+  @override
+  String get changePasswordSubTitle => 'يرجى إدخال كلمة المرور الجديدة أدناه وتأكيدها لتحديث بيانات اعتماد حسابك.';
+
+  @override
+  String get passwordChangeSuccessTitle => 'تم تحديث كلمة المرور بنجاح';
+
+  @override
+  String get passwordChangeSuccessSubTitle => 'تم تحديث كلمة المرور الخاصة بك بنجاح. يمكنك الآن استخدام كلمة المرور الجديدة لتسجيل الدخول بأمان.';
+
+  @override
+  String get backToLogin => 'العودة إلى تسجيل الدخول';
+
+  @override
+  String get logoutConfirmation => 'تأكيد تسجيل الخروج';
+
+  @override
+  String get logoutConfirmationDescription => 'هل أنت متأكد أنك تريد تسجيل الخروج من حسابك؟';
+
+  @override
+  String get cancel => 'إلغاء';
+
+  @override
+  String get gender => 'الجنس';
+
+  @override
+  String get male => 'ذكر';
+
+  @override
+  String get female => 'أنثى';
+
+  @override
+  String get other => 'آخر';
+
+  @override
+  String get selectGender => 'اختر الجنس';
+
+  @override
+  String get selectBloodGroup => 'اختر فصيلة الدم';
+
+  @override
+  String get bloodGroup => 'فصيلة الدم';
+
+  @override
+  String get dateOfBirth => 'تاريخ الميلاد';
+
+  @override
+  String get selectDate => 'اختر تاريخ ميلادك';
+
+  @override
+  String get height => 'الطول';
+
+  @override
+  String get enterHeight => 'أدخل الطول بالسنتيمتر';
+
+  @override
+  String get weight => 'الوزن';
+
+  @override
+  String get enterWeight => 'أدخل الوزن بالكيلوغرام';
+
+  @override
+  String get addPersonalDetails => 'أضف التفاصيل الشخصية';
 }
