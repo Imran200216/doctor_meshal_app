@@ -1,0 +1,76 @@
+name: meshal_doctor_booking_app
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # go router
+  go_router: ^17.0.0
+
+  # bloc
+  bloc: ^9.1.0
+  flutter_bloc: ^9.1.1
+  equatable: ^2.0.7
+
+  # get it
+  get_it: ^9.0.5
+
+  # flutter svg
+  flutter_svg: ^2.2.2
+
+  # graphql flutter
+  graphql_flutter: ^5.2.1
+
+  # logger
+  logger: ^2.6.2
+
+  # flutter localization
+  flutter_localization: ^0.3.3
+
+  # intl phone field
+  intl_phone_field: ^3.2.0
+
+  # pinput
+  pinput: ^5.0.2
+
+  # cached network image
+  cached_network_image: ^3.4.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  generate: true
+  uses-material-design: true
+
+  assets:
+    - assets/fonts/
+    - assets/images/png/
+    - assets/icons/svg/
+
+  fonts:
+    - family: OpenSans
+      fonts:
+        - asset: assets/fonts/OpenSans-Light.ttf
+          weight: 300
+        - asset: assets/fonts/OpenSans-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/OpenSans-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/OpenSans-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/OpenSans-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/OpenSans-ExtraBold.ttf
+          weight: 800
+
