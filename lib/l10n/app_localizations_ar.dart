@@ -223,4 +223,52 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get addPersonalDetails => 'أضف التفاصيل الشخصية';
+
+  @override
+  String get enterOldPassword => 'أدخل كلمة المرور القديمة';
+
+  @override
+  String get oldPassword => 'كلمة المرور القديمة';
+
+  @override
+  String get enterNewPassword => 'أدخل كلمة المرور الجديدة';
+
+  @override
+  String get newPassword => 'كلمة المرور الجديدة';
+
+  @override
+  String get periOperative => 'ما قبل وأثناء العملية الجراحية';
+
+  @override
+  String get postOperative => 'ما بعد العملية الجراحية';
+
+  @override
+  String get status => 'الحالة';
+
+  @override
+  String get startForm => 'ابدأ النموذج';
+
+  @override
+  String get openSurvey => 'افتح الاستبيان';
+
+  @override
+  String get operativeForms => 'نماذج العمليات الجراحية';
+
+  @override
+  String get doctorName => 'د. مشعل الهدهود';
+
+  @override
+  String get meetOurExpert => 'تعرف على خبيرنا الدولي';
+
+  @override
+  String get designation => 'د. مشعل الهدهود، MBBCh، SB-Orth، MBA، MPH استشاري جراحة العظام.';
+
+  @override
+  String get designationDescription => 'جراحة الصدمات العظمية، وجراحة القدم والكاحل الترميمية، وأبحاث جراحة العظام، ماجستير إدارة الأعمال، ماجستير الصحة العامة.';
+
+  @override
+  String get continueWord => 'يكمل';
+
+  @override
+  String get noItemsFound => 'لم يتم العثور على عناصر';
 }

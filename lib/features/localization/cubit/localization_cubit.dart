@@ -13,4 +13,10 @@ class LocalizationCubit extends Cubit<LocalizationState> {
 
     emit(LocalizationSelected(selectedLanguage: language));
   }
+
+  void clearLanguage() {
+    selectedLanguage = null;
+
+    emit(LocalizationInitial());
+  }
 }

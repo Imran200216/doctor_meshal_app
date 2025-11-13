@@ -526,6 +526,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add Person Details'**
   String get addPersonalDetails;
+
+  /// No description provided for @enterOldPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your old password'**
+  String get enterOldPassword;
+
+  /// No description provided for @oldPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Old Password'**
+  String get oldPassword;
+
+  /// No description provided for @enterNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your new password'**
+  String get enterNewPassword;
+
+  /// No description provided for @newPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New Password'**
+  String get newPassword;
+
+  /// No description provided for @periOperative.
+  ///
+  /// In en, this message translates to:
+  /// **'Peri-Operative'**
+  String get periOperative;
+
+  /// No description provided for @postOperative.
+  ///
+  /// In en, this message translates to:
+  /// **'Post-Operative'**
+  String get postOperative;
+
+  /// No description provided for @status.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get status;
+
+  /// No description provided for @startForm.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Form'**
+  String get startForm;
+
+  /// No description provided for @openSurvey.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Survey'**
+  String get openSurvey;
+
+  /// No description provided for @operativeForms.
+  ///
+  /// In en, this message translates to:
+  /// **'Operative Forms'**
+  String get operativeForms;
+
+  /// No description provided for @doctorName.
+  ///
+  /// In en, this message translates to:
+  /// **'Dr. Meshal AlHadhoud'**
+  String get doctorName;
+
+  /// No description provided for @meetOurExpert.
+  ///
+  /// In en, this message translates to:
+  /// **'Meet Our International Expert'**
+  String get meetOurExpert;
+
+  /// No description provided for @designation.
+  ///
+  /// In en, this message translates to:
+  /// **'Dr. Meshal Alhadhoud, MBBCh, SB-Orth, MBA, MPH Orthopaedic Consultant.'**
+  String get designation;
+
+  /// No description provided for @designationDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Orthopedic Trauma Surgery, Reconstructive Foot & Ankle Surgery and Orthopedic Surgery Research Master of Business Administration, Master of Public Health.'**
+  String get designationDescription;
+
+  /// No description provided for @continueWord.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueWord;
+
+  /// No description provided for @noItemsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No Items Found'**
+  String get noItemsFound;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

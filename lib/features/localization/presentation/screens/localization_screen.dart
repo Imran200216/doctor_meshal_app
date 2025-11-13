@@ -96,43 +96,52 @@ class LocalizationScreen extends StatelessWidget {
                       "Navigating to AuthLoginScreen after selecting ${state.selectedLanguage}",
                     );
 
-                    // Auth Screen
-                    GoRouter.of(context).pushReplacementNamed(AppRouterConstants.auth);
+                    // Doctor Intro Screen
+                    GoRouter.of(
+                      context,
+                    ).pushReplacementNamed(AppRouterConstants.doctorIntro);
                   }
                 },
                 builder: (context, state) {
                   final cubit = context.read<LocalizationCubit>();
                   final selectedLang = cubit.selectedLanguage;
 
-                  return Column(
-                    spacing: 20,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // ✅ English
-                      LocalizationCheckBoxListTile(
-                        checkBoxTitle: "English",
-                        isChecked: selectedLang == "en",
-                        onChanged: (bool? value) {
-                          cubit.selectLanguage("en");
-                          AppLoggerHelper.logInfo(
-                            "Selected language: English ✅",
-                          );
-                        },
-                      ),
+                  return Padding(
+                    padding: isTablet
+                        ? EdgeInsets.symmetric(horizontal: 100)
+                        : isMobile
+                        ? EdgeInsets.symmetric()
+                        : EdgeInsets.symmetric(),
+                    child: Column(
+                      spacing: 20,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // ✅ English
+                        LocalizationCheckBoxListTile(
+                          checkBoxTitle: "English",
+                          isChecked: selectedLang == "en",
+                          onChanged: (bool? value) {
+                            cubit.selectLanguage("en");
+                            AppLoggerHelper.logInfo(
+                              "Selected language: English ✅",
+                            );
+                          },
+                        ),
 
-                      // ✅ Arabic
-                      LocalizationCheckBoxListTile(
-                        checkBoxTitle: "Arabic",
-                        isChecked: selectedLang == "ar",
-                        onChanged: (bool? value) {
-                          cubit.selectLanguage("ar");
-                          AppLoggerHelper.logInfo(
-                            "Selected language: Arabic ✅",
-                          );
-                        },
-                      ),
-                    ],
+                        // ✅ Arabic
+                        LocalizationCheckBoxListTile(
+                          checkBoxTitle: "Arabic",
+                          isChecked: selectedLang == "ar",
+                          onChanged: (bool? value) {
+                            cubit.selectLanguage("ar");
+                            AppLoggerHelper.logInfo(
+                              "Selected language: Arabic ✅",
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   );
                 },
               ),

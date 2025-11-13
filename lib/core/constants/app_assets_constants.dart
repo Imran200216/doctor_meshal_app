@@ -2,6 +2,9 @@ class AppAssetsConstants {
   // Png
   static const String splashLogo = "assets/images/png/splash-logo.png";
 
+  // Jpeg
+  static const String doctorIntro = "assets/images/jpeg/intro-doctor.jpeg";
+
   // Svg
   static const String localization = "assets/icons/svg/localization.svg";
 
@@ -34,4 +37,18 @@ class AppAssetsConstants {
 
   static const String forgetPasswordChangeSuccess =
       "assets/icons/svg/forget-password-change-success.svg";
+
+  static const String periOperativeFilled =
+      "assets/icons/svg/peri-operative-filled.svg";
+
+  static const String periOperativeOutlined =
+      "assets/icons/svg/peri-operative-outlined.svg";
+
+  static const String status = "assets/icons/svg/status.svg";
+
+  static const String empty = "assets/icons/svg/empty.svg";
+
+
+
+
 }

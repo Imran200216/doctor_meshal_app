@@ -5,6 +5,9 @@ class AppRouterConstants {
   // Localization
   static const String localization = "localization";
 
+  // Doctor Intro
+  static const String doctorIntro = "doctorIntro";
+
   // Auth Login
   static const String auth = "auth";
 
@@ -37,4 +40,16 @@ class AppRouterConstants {
 
   // Personal Details
   static const String personalDetails = "personalDetails";
+
+  // Change Password
+  static const String changePassword = "changePassword";
+
+  // Per OP
+  static const String preOP = "preOP";
+
+  // Post OP
+  static const String postOP = "postOP";
+
+  // Status
+  static const String status = "status";
 }

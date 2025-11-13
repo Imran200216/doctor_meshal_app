@@ -223,4 +223,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addPersonalDetails => 'Add Person Details';
+
+  @override
+  String get enterOldPassword => 'Enter your old password';
+
+  @override
+  String get oldPassword => 'Old Password';
+
+  @override
+  String get enterNewPassword => 'Enter your new password';
+
+  @override
+  String get newPassword => 'New Password';
+
+  @override
+  String get periOperative => 'Peri-Operative';
+
+  @override
+  String get postOperative => 'Post-Operative';
+
+  @override
+  String get status => 'Status';
+
+  @override
+  String get startForm => 'Start Form';
+
+  @override
+  String get openSurvey => 'Open Survey';
+
+  @override
+  String get operativeForms => 'Operative Forms';
+
+  @override
+  String get doctorName => 'Dr. Meshal AlHadhoud';
+
+  @override
+  String get meetOurExpert => 'Meet Our International Expert';
+
+  @override
+  String get designation => 'Dr. Meshal Alhadhoud, MBBCh, SB-Orth, MBA, MPH Orthopaedic Consultant.';
+
+  @override
+  String get designationDescription => 'Orthopedic Trauma Surgery, Reconstructive Foot & Ankle Surgery and Orthopedic Surgery Research Master of Business Administration, Master of Public Health.';
+
+  @override
+  String get continueWord => 'Continue';
+
+  @override
+  String get noItemsFound => 'No Items Found';
 }

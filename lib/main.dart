@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/router/app_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +12,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Hive Initialization
+  await Hive.initFlutter();
 
   // Service Locator
   setUpServiceLocators();

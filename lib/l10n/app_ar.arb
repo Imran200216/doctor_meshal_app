@@ -70,6 +70,25 @@
   "enterHeight": "أدخل الطول بالسنتيمتر",
   "weight": "الوزن",
   "enterWeight": "أدخل الوزن بالكيلوغرام",
-  "addPersonalDetails": "أضف التفاصيل الشخصية"
+  "addPersonalDetails": "أضف التفاصيل الشخصية",
+  "enterOldPassword": "أدخل كلمة المرور القديمة",
+  "oldPassword": "كلمة المرور القديمة",
+  "enterNewPassword": "أدخل كلمة المرور الجديدة",
+  "newPassword": "كلمة المرور الجديدة",
+  "periOperative": "ما قبل وأثناء العملية الجراحية",
+  "postOperative": "ما بعد العملية الجراحية",
+  "status": "الحالة",
+  "startForm": "ابدأ النموذج",
+  "openSurvey": "افتح الاستبيان",
+  "operativeForms": "نماذج العمليات الجراحية",
+  "doctorName": "د. مشعل الهدهود",
+  "meetOurExpert": "تعرف على خبيرنا الدولي",
+  "designation": "د. مشعل الهدهود، MBBCh، SB-Orth، MBA، MPH استشاري جراحة العظام.",
+  "designationDescription": "جراحة الصدمات العظمية، وجراحة القدم والكاحل الترميمية، وأبحاث جراحة العظام، ماجستير إدارة الأعمال، ماجستير الصحة العامة.",
+  "continueWord" : "يكمل",
+  "noItemsFound": "لم يتم العثور على عناصر"
+
+
+
 
 }

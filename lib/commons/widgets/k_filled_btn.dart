@@ -1,8 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
-
+import 'dart:io' show Platform;
 
 class KFilledBtn extends StatelessWidget {
   final String btnTitle;
@@ -36,12 +36,12 @@ class KFilledBtn extends StatelessWidget {
         onTap: isLoading
             ? null
             : () {
-          HapticFeedback.heavyImpact();
-          onTap();
-        },
+                HapticFeedback.heavyImpact();
+                onTap();
+              },
         child: Container(
-          height: btnHeight, // 👈 now respects prop
-          width: btnWidth, // 👈 now respects prop
+          height: btnHeight,
+          width: btnWidth,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(borderRadius),
             color: btnBgColor,
@@ -49,23 +49,24 @@ class KFilledBtn extends StatelessWidget {
           child: Center(
             child: isLoading
                 ? SizedBox(
-              height: btnHeight * 0.6,
-              width: btnHeight * 0.6,
-              child: CircularProgressIndicator.adaptive(
-                backgroundColor: btnBgColor,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  AppColorConstants.secondaryColor,
-                ),
-                strokeWidth: 2,
-              ),
-            )
+                    height: btnHeight * 0.6,
+                    width: btnHeight * 0.6,
+                    child: Platform.isIOS
+                        ? const CupertinoActivityIndicator()
+                        : CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              btnTitleColor,
+                            ),
+                            strokeWidth: 2,
+                          ),
+                  )
                 : KText(
-              text: btnTitle,
-              fontSize: fontSize,
-              color: btnTitleColor,
-              fontWeight: FontWeight.w600,
-              textAlign: TextAlign.center,
-            ),
+                    text: btnTitle,
+                    fontSize: fontSize,
+                    color: btnTitleColor,
+                    fontWeight: FontWeight.w600,
+                    textAlign: TextAlign.center,
+                  ),
           ),
         ),
       ),

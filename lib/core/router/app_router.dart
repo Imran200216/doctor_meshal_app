@@ -1,16 +1,21 @@
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
-import 'package:meshal_doctor_booking_app/features/auth/presentation/screens/auth_change_password_screen.dart';
-import 'package:meshal_doctor_booking_app/features/auth/presentation/screens/auth_change_password_success_screen.dart';
-import 'package:meshal_doctor_booking_app/features/auth/presentation/screens/auth_forget_password_screen.dart';
-import 'package:meshal_doctor_booking_app/features/auth/presentation/screens/auth_otp_screen.dart';
-import 'package:meshal_doctor_booking_app/features/auth/presentation/screens/auth_screen.dart';
+import 'package:meshal_doctor_booking_app/features/auth/view/auth_change_password_screen.dart';
+import 'package:meshal_doctor_booking_app/features/auth/view/auth_change_password_success_screen.dart';
+import 'package:meshal_doctor_booking_app/features/auth/view/auth_forget_password_screen.dart';
+import 'package:meshal_doctor_booking_app/features/auth/view/auth_otp_screen.dart';
+import 'package:meshal_doctor_booking_app/features/auth/view/auth_screen.dart';
 import 'package:meshal_doctor_booking_app/features/bottom_nav/presentation/screens/bottom_nav.dart';
+import 'package:meshal_doctor_booking_app/features/change_password/view/change_password_screen.dart';
 import 'package:meshal_doctor_booking_app/features/chat/presentation/screens/chat_screen.dart';
-import 'package:meshal_doctor_booking_app/features/education/presentation/screens/education_article_view_screen.dart';
-import 'package:meshal_doctor_booking_app/features/education/presentation/screens/education_articles_screen.dart';
-import 'package:meshal_doctor_booking_app/features/education/presentation/screens/education_sub_topics_screen.dart';
+import 'package:meshal_doctor_booking_app/features/education/view/education_article_view_screen.dart';
+import 'package:meshal_doctor_booking_app/features/education/view/education_articles_screen.dart';
+import 'package:meshal_doctor_booking_app/features/education/view/education_sub_topics_screen.dart';
+import 'package:meshal_doctor_booking_app/features/intro/presentation/screens/doctor_intro_screen.dart';
 import 'package:meshal_doctor_booking_app/features/localization/presentation/screens/localization_screen.dart';
+import 'package:meshal_doctor_booking_app/features/peri_operative/presentation/screens/post_op_screen.dart';
+import 'package:meshal_doctor_booking_app/features/peri_operative/presentation/screens/pre_op_screen.dart';
+import 'package:meshal_doctor_booking_app/features/peri_operative/presentation/screens/status_screen.dart';
 import 'package:meshal_doctor_booking_app/features/personal_details/presentation/screens/personal_details_screen.dart';
 import 'package:meshal_doctor_booking_app/features/splash/presentation/screens/splash_screen.dart';
 
@@ -33,6 +38,15 @@ GoRouter appRouter = GoRouter(
       name: AppRouterConstants.localization,
       builder: (context, state) {
         return LocalizationScreen();
+      },
+    ),
+
+    // Doctor Intro Screen
+    GoRoute(
+      path: '/doctorIntro',
+      name: AppRouterConstants.doctorIntro,
+      builder: (context, state) {
+        return DoctorIntroScreen();
       },
     ),
 
@@ -95,9 +109,12 @@ GoRouter appRouter = GoRouter(
       path: '/educationSubTopics',
       name: AppRouterConstants.educationSubTopics,
       builder: (context, state) {
-        return EducationSubTopicsScreen();
+        // Get the passed id from extra
+        final educationId = state.extra as String? ?? '';
+        return EducationSubTopicsScreen(educationId: educationId);
       },
     ),
+
 
     // Education Articles Screen
     GoRoute(
@@ -132,6 +149,42 @@ GoRouter appRouter = GoRouter(
       name: AppRouterConstants.personalDetails,
       builder: (context, state) {
         return PersonalDetailsScreen();
+      },
+    ),
+
+    // Change Password Screen
+    GoRoute(
+      path: '/changePassword',
+      name: AppRouterConstants.changePassword,
+      builder: (context, state) {
+        return ChangePasswordScreen();
+      },
+    ),
+
+    // Pre Op Screen
+    GoRoute(
+      path: '/preOP',
+      name: AppRouterConstants.preOP,
+      builder: (context, state) {
+        return PreOpScreen();
+      },
+    ),
+
+    // Post Op Screen
+    GoRoute(
+      path: '/postOP',
+      name: AppRouterConstants.postOP,
+      builder: (context, state) {
+        return PostOpScreen();
+      },
+    ),
+
+    // Status Screen
+    GoRoute(
+      path: '/status',
+      name: AppRouterConstants.status,
+      builder: (context, state) {
+        return StatusScreen();
       },
     ),
   ],

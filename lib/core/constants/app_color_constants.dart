@@ -15,4 +15,7 @@ class AppColorConstants {
 
   // Error Border Color
   static const Color errorBorderColor = Colors.red;
+
+  // Intro Bg Color
+  static const Color introBgColor = Color(0xFF1E2D66);
 }

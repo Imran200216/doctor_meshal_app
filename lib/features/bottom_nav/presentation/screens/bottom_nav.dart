@@ -4,10 +4,10 @@ import 'package:meshal_doctor_booking_app/core/constants/app_assets_constants.da
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
 import 'package:meshal_doctor_booking_app/features/bottom_nav/presentation/cubit/bottom_nav_cubit.dart';
-import 'package:meshal_doctor_booking_app/features/education/presentation/screens/education_screen.dart';
+import 'package:meshal_doctor_booking_app/features/education/view/education_screen.dart';
 import 'package:meshal_doctor_booking_app/features/home/presentation/screens/home_screen.dart';
+import 'package:meshal_doctor_booking_app/features/peri_operative/presentation/screens/peri_operative_screen.dart';
 import 'package:meshal_doctor_booking_app/features/profile/presentation/screens/profile_screen.dart';
-import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BottomNav extends StatefulWidget {
@@ -23,7 +23,7 @@ class _BottomNavState extends State<BottomNav> {
     // Screens
     final List<Widget> screens = [
       const HomeScreen(),
-      // const Center(child: Text('Appointments Screen')),
+      const PeriOperativeScreen(),
       const EducationScreen(),
       const ProfileScreen(),
     ];
@@ -31,9 +31,6 @@ class _BottomNavState extends State<BottomNav> {
     // Responsive
     final isTablet = Responsive.isTablet(context);
     final isMobile = Responsive.isMobile(context);
-
-    // App Localization
-    final appLoc = AppLocalizations.of(context)!;
 
     return BlocBuilder<BottomNavCubit, BottomNavState>(
       builder: (context, state) {
@@ -54,27 +51,8 @@ class _BottomNavState extends State<BottomNav> {
               type: BottomNavigationBarType.fixed,
               selectedItemColor: AppColorConstants.primaryColor,
               unselectedItemColor: AppColorConstants.subTitleColor,
-              selectedFontSize: isMobile
-                  ? 14
-                  : isTablet
-                  ? 16
-                  : 18,
-              unselectedFontSize: isMobile
-                  ? 14
-                  : isTablet
-                  ? 16
-                  : 18,
-              unselectedLabelStyle: TextStyle(
-                fontFamily: "OpenSans",
-                fontWeight: FontWeight.w600,
-                color: AppColorConstants.subTitleColor,
-              ),
-              selectedLabelStyle: TextStyle(
-                fontFamily: "OpenSans",
-                fontWeight: FontWeight.w700,
-                color: AppColorConstants.primaryColor,
-              ),
-              showUnselectedLabels: true,
+              showSelectedLabels: false,
+              showUnselectedLabels: false,
               onTap: (index) {
                 context.read<BottomNavCubit>().selectBottomNav(index);
               },
@@ -84,68 +62,74 @@ class _BottomNavState extends State<BottomNav> {
                   activeIcon: SvgPicture.asset(
                     AppAssetsConstants.homeFilled,
                     height: isMobile
-                        ? 18
+                        ? 28
                         : isTablet
-                        ? 20
-                        : 22,
+                        ? 30
+                        : 32,
                     fit: BoxFit.cover,
+                    color: AppColorConstants.primaryColor,
                   ),
                   icon: SvgPicture.asset(
                     AppAssetsConstants.homeOutlined,
                     height: isMobile
-                        ? 18
+                        ? 28
                         : isTablet
-                        ? 20
-                        : 22,
+                        ? 30
+                        : 32,
                     fit: BoxFit.cover,
+                    color: AppColorConstants.subTitleColor,
                   ),
-                  label: appLoc.home,
+                  label: '',
                 ),
 
-                // Appointments
-                // BottomNavigationBarItem(
-                //   activeIcon: SvgPicture.asset(
-                //     AppAssetsConstants.appointmentsFilled,
-                //     height: isMobile
-                //         ? 18
-                //         : isTablet
-                //         ? 20
-                //         : 22,
-                //     fit: BoxFit.cover,
-                //   ),
-                //   icon: SvgPicture.asset(
-                //     AppAssetsConstants.appointmentsOutlined,
-                //     height: isMobile
-                //         ? 18
-                //         : isTablet
-                //         ? 20
-                //         : 22,
-                //     fit: BoxFit.cover,
-                //   ),
-                //   label: appLoc.appointments,
-                // ),
+                // Peri Operative
+                BottomNavigationBarItem(
+                  activeIcon: SvgPicture.asset(
+                    AppAssetsConstants.periOperativeFilled,
+                    height: isMobile
+                        ? 28
+                        : isTablet
+                        ? 30
+                        : 32,
+                    fit: BoxFit.cover,
+                    color: AppColorConstants.primaryColor,
+                  ),
+                  icon: SvgPicture.asset(
+                    AppAssetsConstants.periOperativeOutlined,
+                    color: AppColorConstants.subTitleColor,
+                    height: isMobile
+                        ? 28
+                        : isTablet
+                        ? 30
+                        : 32,
+                    fit: BoxFit.cover,
+                  ),
+                  label: '',
+                ),
 
                 // Education
                 BottomNavigationBarItem(
                   activeIcon: SvgPicture.asset(
                     AppAssetsConstants.educationFilled,
                     height: isMobile
-                        ? 18
+                        ? 28
                         : isTablet
-                        ? 20
-                        : 22,
+                        ? 30
+                        : 32,
                     fit: BoxFit.cover,
+                    color: AppColorConstants.primaryColor,
                   ),
                   icon: SvgPicture.asset(
                     AppAssetsConstants.educationOutlined,
                     height: isMobile
-                        ? 18
+                        ? 28
                         : isTablet
-                        ? 20
-                        : 22,
+                        ? 30
+                        : 32,
                     fit: BoxFit.cover,
+                    color: AppColorConstants.subTitleColor,
                   ),
-                  label: appLoc.education,
+                  label: '',
                 ),
 
                 // Profile
@@ -153,22 +137,24 @@ class _BottomNavState extends State<BottomNav> {
                   activeIcon: SvgPicture.asset(
                     AppAssetsConstants.profileFilled,
                     height: isMobile
-                        ? 14
+                        ? 28
                         : isTablet
-                        ? 16
-                        : 18,
+                        ? 30
+                        : 32,
                     fit: BoxFit.cover,
+                    color: AppColorConstants.primaryColor,
                   ),
                   icon: SvgPicture.asset(
                     AppAssetsConstants.profileOutlined,
                     height: isMobile
-                        ? 14
+                        ? 28
                         : isTablet
-                        ? 16
-                        : 18,
+                        ? 30
+                        : 32,
                     fit: BoxFit.cover,
+                    color: AppColorConstants.subTitleColor,
                   ),
-                  label: appLoc.profile,
+                  label: '',
                 ),
               ],
             ),

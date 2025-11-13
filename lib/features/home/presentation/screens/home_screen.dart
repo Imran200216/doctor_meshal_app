@@ -31,33 +31,7 @@ class HomeScreen extends StatelessWidget {
         },
         child: Icon(Icons.chat, color: AppColorConstants.secondaryColor),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: isMobile
-                ? 20
-                : isTablet
-                ? 30
-                : 40,
-            vertical: isMobile
-                ? 20
-                : isTablet
-                ? 30
-                : 40,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              TextButton(onPressed: () {
-
-                // GoRouter.of(context).pushNamed(AppRouterConstants.);
-
-              }, child: Text("Operative forms")),
-            ],
-          ),
-        ),
-      ),
+      body: Center(child: Text("home")),
     );
   }
 }

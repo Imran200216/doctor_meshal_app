@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
 import 'package:meshal_doctor_booking_app/core/utils/url_launcher_helper.dart';
+import 'package:meshal_doctor_booking_app/features/auth/view_model/bloc/user_auth/user_auth_bloc.dart';
+import 'package:meshal_doctor_booking_app/features/localization/cubit/localization_cubit.dart';
 import 'package:meshal_doctor_booking_app/features/profile/presentation/widgets/profile_details_container.dart';
 import 'package:meshal_doctor_booking_app/features/profile/presentation/widgets/profile_list_tile.dart';
+import 'package:meshal_doctor_booking_app/features/profile/presentation/widgets/profile_localization_bottom_sheet.dart';
 import 'package:meshal_doctor_booking_app/features/profile/presentation/widgets/profile_log_out_bottom_sheet.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     // Responsive
@@ -21,6 +30,10 @@ class ProfileScreen extends StatelessWidget {
 
     // App Localization
     final appLoc = AppLocalizations.of(context)!;
+
+    // Person Placeholder Image
+    const String personPlaceholder =
+        "https://i.pinimg.com/736x/e1/e1/af/e1e1af3435004e297bc6067d2448f8e5.jpg";
 
     return Scaffold(
       backgroundColor: AppColorConstants.secondaryColor,
@@ -62,11 +75,22 @@ class ProfileScreen extends StatelessWidget {
                 ),
 
                 // Profile
-                ProfileDetailsContainer(
-                  profileImageUrl:
-                      "https://plus.unsplash.com/premium_photo-1672239496290-5061cfee7ebb?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687",
-                  name: "John Doe",
-                  email: "johndoe@gmail.com",
+                BlocBuilder<UserAuthBloc, UserAuthState>(
+                  builder: (context, state) {
+                    if (state is GetUserAuthSuccess) {
+                      final user = state.user;
+
+                      return ProfileDetailsContainer(
+                        profileImageUrl: user.profileImage.isNotEmpty
+                            ? user.profileImage
+                            : personPlaceholder,
+                        name: "${user.firstName} ${user.lastName}",
+                        email: user.email,
+                      );
+                    }
+
+                    return SizedBox.shrink();
+                  },
                 ),
 
                 // General
@@ -112,13 +136,25 @@ class ProfileScreen extends StatelessWidget {
                       ProfileListTile(
                         prefixIcon: Icons.language_outlined,
                         title: appLoc.language,
-                        onTap: () {},
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (context) {
+                              return ProfileLocalizationBottomSheet();
+                            },
+                          );
+                        },
                       ),
 
                       ProfileListTile(
                         prefixIcon: Icons.password,
                         title: appLoc.changePassword,
-                        onTap: () {},
+                        onTap: () {
+                          // Change Password Screen
+                          GoRouter.of(
+                            context,
+                          ).pushNamed(AppRouterConstants.changePassword);
+                        },
                       ),
                     ],
                   ),
@@ -185,7 +221,6 @@ class ProfileScreen extends StatelessWidget {
                         onTap: () {
                           showModalBottomSheet(
                             context: context,
-
                             builder: (context) {
                               return ProfileLogOutBottomSheet(
                                 onCancelTap: () {
@@ -197,6 +232,11 @@ class ProfileScreen extends StatelessWidget {
                                   GoRouter.of(
                                     context,
                                   ).goNamed(AppRouterConstants.localization);
+
+                                  // Clear Language
+                                  context
+                                      .read<LocalizationCubit>()
+                                      .clearLanguage();
                                 },
                               );
                             },
