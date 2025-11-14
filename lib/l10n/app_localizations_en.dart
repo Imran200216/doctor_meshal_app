@@ -271,4 +271,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noItemsFound => 'No Items Found';
+
+  @override
+  String get passwordChangeSuccessful => 'Password Changed Successfully';
+
+  @override
+  String get loginSuccess => 'Login Successful';
 }

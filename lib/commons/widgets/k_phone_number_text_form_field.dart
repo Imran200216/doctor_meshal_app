@@ -8,6 +8,7 @@ import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 class KPhoneNumberTextFormField extends StatelessWidget {
   final String? labelText;
   final String hintText;
+  final TextEditingController? controller;
   final String? Function(String?)? validator;
   final Function(String)? onChanged;
   final Function(String)? onCountryChanged;
@@ -20,7 +21,7 @@ class KPhoneNumberTextFormField extends StatelessWidget {
     this.validator,
     this.onChanged,
     this.onCountryChanged,
-    this.locale,
+    this.locale, this.controller,
   });
 
   @override
@@ -52,6 +53,10 @@ class KPhoneNumberTextFormField extends StatelessWidget {
 
         /// 🔹 Phone Field
         IntlPhoneField(
+          controller: controller,
+          style: TextStyle(
+              fontWeight: FontWeight.w600
+          ),
           searchText: appLoc.searchCountry,
           languageCode: locale?.languageCode ?? 'en',
           initialCountryCode: 'IN',

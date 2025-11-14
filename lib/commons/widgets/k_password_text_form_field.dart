@@ -51,6 +51,9 @@ class _KPasswordTextFormFieldState extends State<KPasswordTextFormField> {
 
         /// 🔹 Password Field
         TextFormField(
+          style: TextStyle(
+              fontWeight: FontWeight.w600
+          ),
           controller: widget.controller,
           validator: widget.validator,
           obscureText: _obscureText,

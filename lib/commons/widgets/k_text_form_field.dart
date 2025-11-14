@@ -4,6 +4,7 @@ import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dar
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
 
 class KTextFormField extends StatelessWidget {
+  final bool readOnly;
   final String? labelText;
   final TextEditingController controller;
   final String hintText;
@@ -22,7 +23,7 @@ class KTextFormField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.autofillHints,
     this.labelText,
-    this.maxLines,
+    this.maxLines, this.readOnly = false,
   });
 
   @override
@@ -50,12 +51,16 @@ class KTextFormField extends StatelessWidget {
 
         /// 🔹 Text Field
         TextFormField(
+          readOnly: readOnly,
           controller: controller,
           validator: validator,
           obscureText: obscureText,
           keyboardType: keyboardType,
           autofillHints: autofillHints,
           maxLines: maxLines ?? 1,
+          style: TextStyle(
+            fontWeight: FontWeight.w600
+          ),
           decoration: InputDecoration(
             filled: true,
             fillColor: AppColorConstants.secondaryColor.withOpacity(0.1),

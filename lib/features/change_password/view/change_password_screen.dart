@@ -4,11 +4,13 @@ import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_app_bar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_filled_btn.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_password_text_form_field.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/k_snack_bar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
 import 'package:meshal_doctor_booking_app/core/service/hive_service.dart';
 import 'package:meshal_doctor_booking_app/core/utils/app_logger_helper.dart';
+import 'package:meshal_doctor_booking_app/core/utils/app_validator.dart';
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
 import 'package:meshal_doctor_booking_app/features/change_password/view_model/bloc/change_password/change_password_bloc.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
@@ -25,17 +27,23 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // Controllers
-  final TextEditingController oldPasswordController = TextEditingController();
-  final TextEditingController newPasswordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
+  final TextEditingController _oldPasswordController = TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
       TextEditingController();
 
   @override
   void dispose() {
-    oldPasswordController.dispose();
-    newPasswordController.dispose();
-    confirmPasswordController.dispose();
+    _oldPasswordController.dispose();
+    _newPasswordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  void clearController() {
+    _oldPasswordController.clear();
+    _newPasswordController.clear();
+    _confirmPasswordController.clear();
   }
 
   @override
@@ -97,27 +105,33 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
                 // Old Password Text Form Field
                 KPasswordTextFormField(
-                  controller: oldPasswordController,
+                  controller: _oldPasswordController,
                   hintText: appLoc.enterOldPassword,
                   labelText: appLoc.oldPassword,
+                  validator: (value) => AppValidators.password(value),
                 ),
 
                 const SizedBox(height: 20),
 
                 // New Password Text Form Field
                 KPasswordTextFormField(
-                  controller: newPasswordController,
+                  controller: _newPasswordController,
                   hintText: appLoc.enterNewPassword,
                   labelText: appLoc.newPassword,
+                  validator: (value) => AppValidators.password(value),
                 ),
 
                 const SizedBox(height: 20),
 
                 // Confirm Password Text Form Field
                 KPasswordTextFormField(
-                  controller: confirmPasswordController,
+                  controller: _confirmPasswordController,
                   hintText: appLoc.enterConfirmPassword,
                   labelText: appLoc.confirmPassword,
+                  validator: (value) => AppValidators.confirmPassword(
+                    value,
+                    _newPasswordController.text,
+                  ),
                 ),
 
                 const SizedBox(height: 50),
@@ -126,14 +140,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 BlocConsumer<ChangePasswordBloc, ChangePasswordState>(
                   listener: (context, state) {
                     if (state is ChangePasswordSuccess) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text("Password Changed Successfully"),
-                        ),
+                      // Success Snack Bar
+                      KSnackBar.success(
+                        context,
+                        appLoc.passwordChangeSuccessful,
                       );
 
                       // Go Back
                       GoRouter.of(context).pop();
+                    } else if (state is ChangePasswordFailure) {
+                      // Failure Snack Bar
+                      KSnackBar.error(context, state.message);
                     }
                   },
                   builder: (context, state) {
@@ -156,12 +173,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           "The Change Password user Id: $storedUserId",
                         );
 
+                        // Change Password Functionality
                         context.read<ChangePasswordBloc>().add(
                           ChangePasswordUserEvent(
                             storedUserId!,
-                            oldPasswordController.text.trim(),
-                            newPasswordController.text.trim(),
-                            confirmPasswordController.text.trim(),
+                            _oldPasswordController.text.trim(),
+                            _newPasswordController.text.trim(),
+                            _confirmPasswordController.text.trim(),
                           ),
                         );
                       },

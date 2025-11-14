@@ -1,8 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
-import 'dart:io' show Platform;
 
 class KFilledBtn extends StatelessWidget {
   final String btnTitle;
@@ -51,14 +49,11 @@ class KFilledBtn extends StatelessWidget {
                 ? SizedBox(
                     height: btnHeight * 0.6,
                     width: btnHeight * 0.6,
-                    child: Platform.isIOS
-                        ? const CupertinoActivityIndicator()
-                        : CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              btnTitleColor,
-                            ),
-                            strokeWidth: 2,
-                          ),
+                    child: CircularProgressIndicator.adaptive(
+                      backgroundColor: btnBgColor,
+                      valueColor: AlwaysStoppedAnimation<Color>(btnTitleColor),
+                      strokeWidth: 2,
+                    ),
                   )
                 : KText(
                     text: btnTitle,

@@ -130,7 +130,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ProfileListTile(
                         prefixIcon: Icons.edit_outlined,
                         title: appLoc.editProfile,
-                        onTap: () {},
+                        onTap: () {
+                          // Edit Personal Details Screen
+                          GoRouter.of(
+                            context,
+                          ).pushNamed(AppRouterConstants.editPersonalDetails);
+                        },
                       ),
 
                       ProfileListTile(

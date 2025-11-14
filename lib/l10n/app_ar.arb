@@ -85,10 +85,8 @@
   "meetOurExpert": "تعرف على خبيرنا الدولي",
   "designation": "د. مشعل الهدهود، MBBCh، SB-Orth، MBA، MPH استشاري جراحة العظام.",
   "designationDescription": "جراحة الصدمات العظمية، وجراحة القدم والكاحل الترميمية، وأبحاث جراحة العظام، ماجستير إدارة الأعمال، ماجستير الصحة العامة.",
-  "continueWord" : "يكمل",
-  "noItemsFound": "لم يتم العثور على عناصر"
-
-
-
-
+  "continueWord": "يكمل",
+  "noItemsFound": "لم يتم العثور على عناصر",
+  "passwordChangeSuccessful": "تم تغيير كلمة المرور بنجاح",
+  "loginSuccess" : "تم تسجيل الدخول بنجاح"
 }

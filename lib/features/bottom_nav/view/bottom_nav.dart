@@ -3,10 +3,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_assets_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
-import 'package:meshal_doctor_booking_app/features/bottom_nav/presentation/cubit/bottom_nav_cubit.dart';
+import 'package:meshal_doctor_booking_app/features/bottom_nav/view_model/cubit/bottom_nav_cubit.dart';
 import 'package:meshal_doctor_booking_app/features/education/view/education_screen.dart';
 import 'package:meshal_doctor_booking_app/features/home/presentation/screens/home_screen.dart';
-import 'package:meshal_doctor_booking_app/features/peri_operative/presentation/screens/peri_operative_screen.dart';
+import 'package:meshal_doctor_booking_app/features/peri_operative/view/peri_operative_screen.dart';
 import 'package:meshal_doctor_booking_app/features/profile/presentation/screens/profile_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

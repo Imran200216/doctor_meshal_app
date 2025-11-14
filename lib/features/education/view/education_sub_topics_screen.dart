@@ -25,6 +25,7 @@ class EducationSubTopicsScreen extends StatefulWidget {
 }
 
 class _EducationSubTopicsScreenState extends State<EducationSubTopicsScreen> {
+  // User Id
   String? userId;
 
   @override
@@ -189,7 +190,12 @@ class _EducationSubTopicsScreenState extends State<EducationSubTopicsScreen> {
                     itemBuilder: (context, index) {
                       final subTopic = subTopics[index];
                       return EducationSubTopicsCard(
-                        onTap: () {},
+                        onTap: () {
+                          GoRouter.of(context).pushNamed(
+                            AppRouterConstants.educationArticles,
+                            extra: subTopic.id,
+                          );
+                        },
                         imageUrl: subTopic.image,
                         title: subTopic.subTitleName,
                         noOfArticles: subTopic.educationArticleCounts

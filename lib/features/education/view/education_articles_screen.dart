@@ -1,49 +1,111 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_app_bar.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/k_no_items_found.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
+import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
+import 'package:meshal_doctor_booking_app/core/service/hive_service.dart';
+import 'package:meshal_doctor_booking_app/core/utils/app_logger_helper.dart';
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
+import 'package:meshal_doctor_booking_app/features/education/view_model/education_articles/education_articles_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/education/widgets/education_article_card.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
-class EducationArticlesScreen extends StatelessWidget {
-  const EducationArticlesScreen({super.key});
+class EducationArticlesScreen extends StatefulWidget {
+  final String educationArticleId;
+
+  const EducationArticlesScreen({super.key, required this.educationArticleId});
+
+  @override
+  State<EducationArticlesScreen> createState() =>
+      _EducationArticlesScreenState();
+}
+
+class _EducationArticlesScreenState extends State<EducationArticlesScreen> {
+  // User Id
+  String? userId;
+
+  @override
+  void initState() {
+    _fetchEducationArticles();
+    super.initState();
+  }
+
+  // Fetch Education Articles
+  Future<void> _fetchEducationArticles() async {
+    try {
+      await HiveService.openBox(AppDBConstants.userBox);
+
+      final storedUserId = await HiveService.getData<String>(
+        boxName: AppDBConstants.userBox,
+        key: AppDBConstants.userId,
+      );
+
+      if (storedUserId != null) {
+        userId = storedUserId;
+
+        AppLoggerHelper.logInfo("User ID fetched: $userId");
+        AppLoggerHelper.logInfo(
+          "Education Article ID: ${widget.educationArticleId}",
+        );
+
+        context.read<EducationArticlesBloc>().add(
+          GetEducationArticlesEvent(
+            id: widget.educationArticleId,
+            userId: userId!,
+          ),
+        );
+      } else {
+        AppLoggerHelper.logError("No User ID found in Hive!");
+      }
+    } catch (e) {
+      AppLoggerHelper.logError("Error fetching User ID: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Responsive
     final isTablet = Responsive.isTablet(context);
     final isMobile = Responsive.isMobile(context);
 
-    return Scaffold(
-      backgroundColor: AppColorConstants.secondaryColor,
-      appBar: KAppBar(
-        title: "ALC Injuries",
-        description: "Knee Conditioned Injure",
-        onBack: () {
-          // Back
-          GoRouter.of(context).pop();
-        },
-        backgroundColor: AppColorConstants.primaryColor,
-      ),
+    return BlocBuilder<EducationArticlesBloc, EducationArticlesState>(
+      builder: (context, state) {
+        String appBarTitle = "ALC Injuries";
 
-      body: isTablet
+        if (state is EducationArticlesSuccess && state.topics.isNotEmpty) {
+          appBarTitle = state.topics.first.subTitleName;
+        }
+
+        return Scaffold(
+          backgroundColor: AppColorConstants.secondaryColor,
+          appBar: KAppBar(
+            title: appBarTitle,
+            onBack: () => GoRouter.of(context).pop(),
+            backgroundColor: AppColorConstants.primaryColor,
+          ),
+
+          body: _buildBody(state, isMobile, isTablet),
+        );
+      },
+    );
+  }
+
+  // -------------------------
+  // BODY UI BUILDER
+  // -------------------------
+  Widget _buildBody(
+    EducationArticlesState state,
+    bool isMobile,
+    bool isTablet,
+  ) {
+    if (state is EducationArticlesLoading) {
+      return isTablet
           ? GridView.builder(
               shrinkWrap: true,
-              scrollDirection: Axis.vertical,
               physics: const BouncingScrollPhysics(),
-              padding: EdgeInsets.symmetric(
-                horizontal: isMobile
-                    ? 20
-                    : isTablet
-                    ? 30
-                    : 40,
-                vertical: isMobile
-                    ? 20
-                    : isTablet
-                    ? 30
-                    : 40,
-              ),
+              padding: _padding(isMobile, isTablet),
               itemCount: 40,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
@@ -52,51 +114,111 @@ class EducationArticlesScreen extends StatelessWidget {
                 childAspectRatio: 5,
               ),
               itemBuilder: (context, index) {
-                return EducationArticleCard(
-                  onTap: () {
-                    // Education Article View Screen
-                    GoRouter.of(
-                      context,
-                    ).pushNamed(AppRouterConstants.educationArticlesView);
-                  },
-                  educationArticleName:
-                      "Understanding ACL Tears: Causes and Symptoms",
+                return Skeletonizer(
+                  enabled: true,
+                  effect: ShimmerEffect(),
+                  child: EducationArticleCard(
+                    onTap: () {},
+                    educationArticleName: "",
+                  ),
                 );
               },
             )
-          : isMobile
-          ? ListView.separated(
+          : ListView.separated(
               shrinkWrap: true,
-              scrollDirection: Axis.vertical,
               physics: const BouncingScrollPhysics(),
-              padding: EdgeInsets.symmetric(
-                horizontal: isMobile
-                    ? 20
-                    : isTablet
-                    ? 30
-                    : 40,
-                vertical: isMobile
-                    ? 20
-                    : isTablet
-                    ? 30
-                    : 40,
-              ),
+              padding: _padding(isMobile, isTablet),
               itemCount: 40,
-              separatorBuilder: (context, index) => const SizedBox(height: 18),
+              separatorBuilder: (_, __) => const SizedBox(height: 18),
               itemBuilder: (context, index) {
+                return Skeletonizer(
+                  enabled: true,
+                  effect: ShimmerEffect(),
+                  child: EducationArticleCard(
+                    onTap: () {},
+                    educationArticleName: "",
+                  ),
+                );
+              },
+            );
+    }
+
+    if (state is EducationArticlesSuccess) {
+      final educationArticles = state.topics;
+
+      if (educationArticles.isEmpty) {
+        return KNoItemsFound();
+      }
+
+      return isTablet
+          ? GridView.builder(
+              shrinkWrap: true,
+              physics: const BouncingScrollPhysics(),
+              padding: _padding(isMobile, isTablet),
+              itemCount: educationArticles.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 18,
+                mainAxisSpacing: 18,
+                childAspectRatio: 5,
+              ),
+              itemBuilder: (context, index) {
+                final topic = educationArticles[index];
                 return EducationArticleCard(
                   onTap: () {
-                    // Education Article View Screen
-                    GoRouter.of(
-                      context,
-                    ).pushNamed(AppRouterConstants.educationArticlesView);
+                    // Articles View
+                    GoRouter.of(context).pushNamed(
+                      AppRouterConstants.educationArticlesView,
+                      extra: topic.educationArticles.first.id,
+                    );
                   },
                   educationArticleName:
-                      "Understanding ACL Tears: Causes and Symptoms",
+                      topic.educationArticles.first.articleName,
                 );
               },
             )
-          : const SizedBox.shrink(),
+          : ListView.separated(
+              shrinkWrap: true,
+              physics: const BouncingScrollPhysics(),
+              padding: _padding(isMobile, isTablet),
+              itemCount: educationArticles.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 18),
+              itemBuilder: (context, index) {
+                final topic = educationArticles[index];
+                return EducationArticleCard(
+                  onTap: () {
+                    // Articles View
+                    GoRouter.of(context).pushNamed(
+                      AppRouterConstants.educationArticlesView,
+                      extra: topic.educationArticles.first.id,
+                    );
+                  },
+                  educationArticleName:
+                      topic.educationArticles.first.articleName,
+                );
+              },
+            );
+    }
+
+    if (state is EducationArticlesFailure) {
+      return Center(child: Text(state.message));
+    }
+
+    return const SizedBox.shrink();
+  }
+
+  EdgeInsets _padding(bool isMobile, bool isTablet) {
+    return EdgeInsets.symmetric(
+      horizontal: isMobile
+          ? 20
+          : isTablet
+          ? 30
+          : 40,
+      vertical: isMobile
+          ? 20
+          : isTablet
+          ? 30
+          : 40,
     );
   }
 }

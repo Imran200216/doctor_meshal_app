@@ -48,6 +48,11 @@ class KDropDownTextFormField<T> extends StatelessWidget {
           const SizedBox(height: 10),
         ],
         DropdownButtonFormField2<T>(
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: AppColorConstants.titleColor,
+            fontFamily: "OpenSans",
+          ),
           isExpanded: isExpanded,
           value: value,
           items: items,

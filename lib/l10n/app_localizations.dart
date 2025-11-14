@@ -622,6 +622,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No Items Found'**
   String get noItemsFound;
+
+  /// No description provided for @passwordChangeSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Password Changed Successfully'**
+  String get passwordChangeSuccessful;
+
+  /// No description provided for @loginSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Login Successful'**
+  String get loginSuccess;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

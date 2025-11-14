@@ -4,12 +4,14 @@ import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_filled_btn.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_password_text_form_field.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_phone_number_text_form_field.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/k_snack_bar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text_form_field.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
 import 'package:meshal_doctor_booking_app/core/service/hive_service.dart';
 import 'package:meshal_doctor_booking_app/core/utils/app_logger_helper.dart';
+import 'package:meshal_doctor_booking_app/core/utils/app_validator.dart';
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
 import 'package:meshal_doctor_booking_app/features/auth/view_model/bloc/email_auth/email_auth_bloc.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
@@ -29,24 +31,34 @@ class _AuthRegisterState extends State<AuthRegister> {
   String selectedPhoneCode = '+91';
   String phoneNumber = '';
 
-  // Controller
-  final TextEditingController authFirstNameRegisterController =
+  // Controllers
+  final TextEditingController _authFirstNameRegisterController =
       TextEditingController();
-  final TextEditingController authLastNameRegisterController =
+  final TextEditingController _authLastNameRegisterController =
       TextEditingController();
-  final TextEditingController authEmailRegisterController =
+  final TextEditingController _authEmailRegisterController =
       TextEditingController();
-  final TextEditingController authPasswordRegisterController =
+  final TextEditingController _authPasswordRegisterController =
       TextEditingController();
 
   @override
   void dispose() {
-    authFirstNameRegisterController.dispose();
-    authLastNameRegisterController.dispose();
-    authEmailRegisterController.dispose();
-    authPasswordRegisterController.dispose();
+    _authFirstNameRegisterController.dispose();
+    _authLastNameRegisterController.dispose();
+    _authEmailRegisterController.dispose();
+    _authPasswordRegisterController.dispose();
 
     super.dispose();
+  }
+
+  // Clear All Controllers
+  void clearAllController() {
+    _authFirstNameRegisterController.clear();
+    _authLastNameRegisterController.clear();
+    _authEmailRegisterController.clear();
+    _authPasswordRegisterController.clear();
+    phoneNumber = '';
+    selectedPhoneCode = '+91';
   }
 
   @override
@@ -68,7 +80,7 @@ class _AuthRegisterState extends State<AuthRegister> {
         children: [
           // First Name Text Form Field
           KTextFormField(
-            controller: authFirstNameRegisterController,
+            controller: _authFirstNameRegisterController,
             hintText: appLoc.enterFirstName,
             labelText: appLoc.firstName,
             autofillHints: [
@@ -76,11 +88,12 @@ class _AuthRegisterState extends State<AuthRegister> {
               AutofillHints.namePrefix,
               AutofillHints.nameSuffix,
             ],
+            validator: (value) => AppValidators.lastName(value),
           ),
 
           // Last Name Text Form Field
           KTextFormField(
-            controller: authLastNameRegisterController,
+            controller: _authLastNameRegisterController,
             hintText: appLoc.enterLastName,
             labelText: appLoc.lastName,
             autofillHints: [
@@ -88,20 +101,23 @@ class _AuthRegisterState extends State<AuthRegister> {
               AutofillHints.namePrefix,
               AutofillHints.nameSuffix,
             ],
+            validator: (value) => AppValidators.lastName(value),
           ),
 
           // Email Text Form Field
           KTextFormField(
-            controller: authEmailRegisterController,
+            controller: _authEmailRegisterController,
             hintText: appLoc.enterEmail,
             labelText: appLoc.email,
             autofillHints: [AutofillHints.email],
+            validator: (value) => AppValidators.email(value),
           ),
 
           // Phone Number Text Form Field
           KPhoneNumberTextFormField(
             hintText: appLoc.enterPhoneNumber,
             labelText: appLoc.phoneNumber,
+            validator: (value) => AppValidators.phoneNumber(value),
             locale: locale,
             onChanged: (value) {
               phoneNumber = value;
@@ -113,9 +129,10 @@ class _AuthRegisterState extends State<AuthRegister> {
 
           // Password Text Form Field
           KPasswordTextFormField(
-            controller: authPasswordRegisterController,
+            controller: _authPasswordRegisterController,
             hintText: appLoc.enterPassword,
             labelText: appLoc.password,
+            validator: (value) => AppValidators.password(value),
           ),
 
           const SizedBox(height: 30),
@@ -153,13 +170,11 @@ class _AuthRegisterState extends State<AuthRegister> {
                   context,
                 ).pushReplacementNamed(AppRouterConstants.bottomNav);
 
+                // Success Snack bar
+                KSnackBar.success(context, "Registration Success");
+
                 // Clear Controllers
-                authFirstNameRegisterController.clear();
-                authLastNameRegisterController.clear();
-                authEmailRegisterController.clear();
-                authPasswordRegisterController.clear();
-                phoneNumber = '';
-                selectedPhoneCode = '+91';
+                clearAllController();
               }
             },
             builder: (context, state) {
@@ -173,10 +188,10 @@ class _AuthRegisterState extends State<AuthRegister> {
                     // Email Auth Register Event
                     context.read<EmailAuthBloc>().add(
                       EmailAuthRegisterEvent(
-                        firstName: authFirstNameRegisterController.text.trim(),
-                        lastName: authLastNameRegisterController.text.trim(),
-                        email: authEmailRegisterController.text.trim(),
-                        password: authPasswordRegisterController.text.trim(),
+                        firstName: _authFirstNameRegisterController.text.trim(),
+                        lastName: _authLastNameRegisterController.text.trim(),
+                        email: _authEmailRegisterController.text.trim(),
+                        password: _authPasswordRegisterController.text.trim(),
                         phoneCode: selectedPhoneCode,
                         phoneNumber: phoneNumber.trim(),
                       ),

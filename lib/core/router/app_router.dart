@@ -5,18 +5,21 @@ import 'package:meshal_doctor_booking_app/features/auth/view/auth_change_passwor
 import 'package:meshal_doctor_booking_app/features/auth/view/auth_forget_password_screen.dart';
 import 'package:meshal_doctor_booking_app/features/auth/view/auth_otp_screen.dart';
 import 'package:meshal_doctor_booking_app/features/auth/view/auth_screen.dart';
-import 'package:meshal_doctor_booking_app/features/bottom_nav/presentation/screens/bottom_nav.dart';
+import 'package:meshal_doctor_booking_app/features/bottom_nav/view/bottom_nav.dart';
 import 'package:meshal_doctor_booking_app/features/change_password/view/change_password_screen.dart';
 import 'package:meshal_doctor_booking_app/features/chat/presentation/screens/chat_screen.dart';
+import 'package:meshal_doctor_booking_app/features/edit_personal_details/view/edit_personal_details_screen.dart';
 import 'package:meshal_doctor_booking_app/features/education/view/education_article_view_screen.dart';
 import 'package:meshal_doctor_booking_app/features/education/view/education_articles_screen.dart';
 import 'package:meshal_doctor_booking_app/features/education/view/education_sub_topics_screen.dart';
 import 'package:meshal_doctor_booking_app/features/intro/presentation/screens/doctor_intro_screen.dart';
 import 'package:meshal_doctor_booking_app/features/localization/presentation/screens/localization_screen.dart';
-import 'package:meshal_doctor_booking_app/features/peri_operative/presentation/screens/post_op_screen.dart';
-import 'package:meshal_doctor_booking_app/features/peri_operative/presentation/screens/pre_op_screen.dart';
-import 'package:meshal_doctor_booking_app/features/peri_operative/presentation/screens/status_screen.dart';
-import 'package:meshal_doctor_booking_app/features/personal_details/presentation/screens/personal_details_screen.dart';
+import 'package:meshal_doctor_booking_app/features/peri_operative/view/post_op_screen.dart';
+import 'package:meshal_doctor_booking_app/features/peri_operative/view/pre_op_screen.dart';
+import 'package:meshal_doctor_booking_app/features/peri_operative/view/status_screen.dart';
+import 'package:meshal_doctor_booking_app/features/peri_operative/view/survey_form_result_screen.dart';
+import 'package:meshal_doctor_booking_app/features/peri_operative/view/survey_form_screen.dart';
+import 'package:meshal_doctor_booking_app/features/personal_details/view/personal_details_screen.dart';
 import 'package:meshal_doctor_booking_app/features/splash/presentation/screens/splash_screen.dart';
 
 GoRouter appRouter = GoRouter(
@@ -115,13 +118,14 @@ GoRouter appRouter = GoRouter(
       },
     ),
 
-
     // Education Articles Screen
     GoRoute(
       path: '/educationArticles',
       name: AppRouterConstants.educationArticles,
       builder: (context, state) {
-        return EducationArticlesScreen();
+        // Get the passed id from extra
+        final educationArticleId = state.extra as String? ?? '';
+        return EducationArticlesScreen(educationArticleId: educationArticleId);
       },
     ),
 
@@ -130,7 +134,11 @@ GoRouter appRouter = GoRouter(
       path: '/educationArticlesView',
       name: AppRouterConstants.educationArticlesView,
       builder: (context, state) {
-        return EducationArticleViewScreen();
+        // Get the passed id from extra
+        final educationFullArticleId = state.extra as String? ?? '';
+        return EducationArticleViewScreen(
+          educationFullArticleId: educationFullArticleId,
+        );
       },
     ),
 
@@ -185,6 +193,33 @@ GoRouter appRouter = GoRouter(
       name: AppRouterConstants.status,
       builder: (context, state) {
         return StatusScreen();
+      },
+    ),
+
+    // Edit Profile Screen
+    GoRoute(
+      path: '/editPersonalDetails',
+      name: AppRouterConstants.editPersonalDetails,
+      builder: (context, state) {
+        return EditPersonalDetailsScreen();
+      },
+    ),
+
+    // Survey Form Screen
+    GoRoute(
+      path: '/surveyForm',
+      name: AppRouterConstants.surveyForm,
+      builder: (context, state) {
+        return SurveyFormScreen();
+      },
+    ),
+
+    // Survey Form Result Screen
+    GoRoute(
+      path: '/surveyFormResult',
+      name: AppRouterConstants.surveyFormResult,
+      builder: (context, state) {
+        return SurveyFormResultScreen();
       },
     ),
   ],

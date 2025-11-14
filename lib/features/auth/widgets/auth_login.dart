@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_filled_btn.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_password_text_form_field.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/k_snack_bar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text_form_field.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_assets_constants.dart';
@@ -13,6 +14,7 @@ import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
 import 'package:meshal_doctor_booking_app/core/service/hive_service.dart';
 import 'package:meshal_doctor_booking_app/core/utils/app_logger_helper.dart';
+import 'package:meshal_doctor_booking_app/core/utils/app_validator.dart';
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
 import 'package:meshal_doctor_booking_app/features/auth/view_model/bloc/email_auth/email_auth_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/auth/view_model/bloc/user_auth/user_auth_bloc.dart';
@@ -31,16 +33,22 @@ class _AuthLoginState extends State<AuthLogin> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // Controller
-  final TextEditingController authEmailLoginController =
+  final TextEditingController _authEmailLoginController =
       TextEditingController();
-  final TextEditingController authPasswordLoginController =
+  final TextEditingController _authPasswordLoginController =
       TextEditingController();
 
   @override
   void dispose() {
-    authEmailLoginController.dispose();
-    authPasswordLoginController.dispose();
+    _authEmailLoginController.dispose();
+    _authPasswordLoginController.dispose();
     super.dispose();
+  }
+
+  // Controllers
+  void clearControllers() {
+    _authEmailLoginController.clear();
+    _authPasswordLoginController.clear();
   }
 
   @override
@@ -61,17 +69,19 @@ class _AuthLoginState extends State<AuthLogin> {
         children: [
           // Email Text Form Field
           KTextFormField(
-            controller: authEmailLoginController,
+            controller: _authEmailLoginController,
             hintText: appLoc.enterEmail,
             labelText: appLoc.email,
             autofillHints: [AutofillHints.email],
+            validator: (value) => AppValidators.email(value),
           ),
 
           // Password Text Form Field
           KPasswordTextFormField(
-            controller: authPasswordLoginController,
+            controller: _authPasswordLoginController,
             hintText: appLoc.enterPassword,
             labelText: appLoc.password,
+            validator: (value) => AppValidators.password(value),
           ),
 
           // Forget Password Text Btn
@@ -139,14 +149,13 @@ class _AuthLoginState extends State<AuthLogin> {
                   context,
                 ).pushReplacementNamed(AppRouterConstants.bottomNav);
 
+                KSnackBar.success(context, appLoc.loginSuccess);
+
                 // Clear Controllers
-                authEmailLoginController.clear();
-                authPasswordLoginController.clear();
+                clearControllers();
               } else if (state is EmailAuthError) {
                 // Show error
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text(state.message)));
+                KSnackBar.error(context, state.message);
               }
             },
             builder: (context, state) {
@@ -160,8 +169,8 @@ class _AuthLoginState extends State<AuthLogin> {
                     // Email Auth Login Event
                     context.read<EmailAuthBloc>().add(
                       EmailAuthLoginEvent(
-                        email: authEmailLoginController.text.trim(),
-                        password: authPasswordLoginController.text.trim(),
+                        email: _authEmailLoginController.text.trim(),
+                        password: _authPasswordLoginController.text.trim(),
                       ),
                     );
                   }

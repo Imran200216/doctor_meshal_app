@@ -52,4 +52,14 @@ class AppRouterConstants {
 
   // Status
   static const String status = "status";
+
+  // Edit Profile
+  static const String editPersonalDetails = "editPersonalDetails";
+
+  // Survey Form
+  static const String surveyForm = "surveyForm";
+
+  // Survey Form Result
+  static const String surveyFormResult = "surveyFormResult";
+
 }

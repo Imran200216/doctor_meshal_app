@@ -9,11 +9,13 @@ import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 class OperativeFormSurveyCard extends StatelessWidget {
   final String title;
   final VoidCallback onSurveyTap;
+  final bool isFormEnabled;
 
   const OperativeFormSurveyCard({
     super.key,
     required this.title,
     required this.onSurveyTap,
+    this.isFormEnabled = false,
   });
 
   @override
@@ -86,48 +88,69 @@ class OperativeFormSurveyCard extends StatelessWidget {
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   color: AppColorConstants.secondaryColor,
-                  child: Column(
-                    spacing: 8,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
+                  child: Row(
+                    spacing: 30,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // Title
-                      KText(
-                        text: title,
-                        textAlign: TextAlign.start,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        fontSize: isMobile
-                            ? 18
-                            : isTablet
-                            ? 20
-                            : 22,
-                        fontWeight: FontWeight.w700,
-                        color: AppColorConstants.titleColor,
-                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            // Title
+                            KText(
+                              text: title,
+                              textAlign: TextAlign.start,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              fontSize: isMobile
+                                  ? 18
+                                  : isTablet
+                                  ? 20
+                                  : 22,
+                              fontWeight: FontWeight.w700,
+                              color: AppColorConstants.titleColor,
+                            ),
 
-                      // Open Survey
-                      GestureDetector(
-                        onTap: () {
-                          HapticFeedback.heavyImpact();
+                            const SizedBox(height: 8),
 
-                          onSurveyTap();
-                        },
-                        child: KText(
-                          text: appLoc.openSurvey,
-                          textAlign: TextAlign.start,
-                          textDecoration: TextDecoration.underline,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          fontSize: isMobile
-                              ? 14
-                              : isTablet
-                              ? 16
-                              : 18,
-                          fontWeight: FontWeight.w600,
-                          color: AppColorConstants.titleColor,
+                            // Open Survey
+                            GestureDetector(
+                              onTap: () {
+                                HapticFeedback.heavyImpact();
+                                onSurveyTap();
+                              },
+                              child: KText(
+                                text: appLoc.openSurvey,
+                                textAlign: TextAlign.start,
+                                textDecoration: TextDecoration.underline,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                fontSize: isMobile
+                                    ? 14
+                                    : isTablet
+                                    ? 16
+                                    : 18,
+                                fontWeight: FontWeight.w600,
+                                color: AppColorConstants.titleColor,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
+
+                      isFormEnabled
+                          ? Icon(
+                              Icons.lock,
+                              size: isMobile
+                                  ? 30
+                                  : isTablet
+                                  ? 40
+                                  : 50,
+                              color: AppColorConstants.primaryColor,
+                            )
+                          : SizedBox.shrink(),
                     ],
                   ),
                 ),

@@ -271,4 +271,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noItemsFound => 'لم يتم العثور على عناصر';
+
+  @override
+  String get passwordChangeSuccessful => 'تم تغيير كلمة المرور بنجاح';
+
+  @override
+  String get loginSuccess => 'تم تسجيل الدخول بنجاح';
 }

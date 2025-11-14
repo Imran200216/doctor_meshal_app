@@ -85,9 +85,8 @@
   "meetOurExpert": "Meet Our International Expert",
   "designation": "Dr. Meshal Alhadhoud, MBBCh, SB-Orth, MBA, MPH Orthopaedic Consultant.",
   "designationDescription": "Orthopedic Trauma Surgery, Reconstructive Foot & Ankle Surgery and Orthopedic Surgery Research Master of Business Administration, Master of Public Health.",
-  "continueWord" : "Continue",
-  "noItemsFound" : "No Items Found"
-
-
-
+  "continueWord": "Continue",
+  "noItemsFound": "No Items Found",
+  "passwordChangeSuccessful": "Password Changed Successfully",
+  "loginSuccess" : "Login Successful"
 }

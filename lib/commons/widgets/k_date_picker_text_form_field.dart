@@ -76,6 +76,9 @@ class KDatePickerTextFormField extends StatelessWidget {
 
         /// 📅 Date Picker Text Form Field
         TextFormField(
+          style: TextStyle(
+              fontWeight: FontWeight.w600
+          ),
           controller: controller,
           validator: validator,
           readOnly: readOnly,

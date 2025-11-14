@@ -47,8 +47,4 @@ class AppAssetsConstants {
   static const String status = "assets/icons/svg/status.svg";
 
   static const String empty = "assets/icons/svg/empty.svg";
-
-
-
-
 }

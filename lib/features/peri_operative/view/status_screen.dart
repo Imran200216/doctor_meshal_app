@@ -3,11 +3,11 @@ import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_app_bar.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
-import 'package:meshal_doctor_booking_app/features/peri_operative/presentation/widgets/operative_form_survey_card.dart';
+import 'package:meshal_doctor_booking_app/features/peri_operative/widgets/operative_form_survey_card.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 
-class PostOpScreen extends StatelessWidget {
-  const PostOpScreen({super.key});
+class StatusScreen extends StatelessWidget {
+  const StatusScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class PostOpScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColorConstants.secondaryColor,
       appBar: KAppBar(
-        title: appLoc.postOperative,
+        title: appLoc.status,
         onBack: () {
           // Back
           GoRouter.of(context).pop();

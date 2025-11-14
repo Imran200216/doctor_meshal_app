@@ -5,7 +5,7 @@ import 'package:meshal_doctor_booking_app/core/constants/app_assets_constants.da
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
-import 'package:meshal_doctor_booking_app/features/peri_operative/presentation/widgets/operative_form_card.dart';
+import 'package:meshal_doctor_booking_app/features/peri_operative/widgets/operative_form_card.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 
 class PeriOperativeScreen extends StatelessWidget {
@@ -32,11 +32,11 @@ class PeriOperativeScreen extends StatelessWidget {
         'title': appLoc.postOperative,
         'route': AppRouterConstants.postOP,
       },
-      {
-        'icon': AppAssetsConstants.status,
-        'title': appLoc.status,
-        'route': AppRouterConstants.status,
-      },
+      // {
+      //   'icon': AppAssetsConstants.status,
+      //   'title': appLoc.status,
+      //   'route': AppRouterConstants.status,
+      // },
     ];
 
     return Scaffold(

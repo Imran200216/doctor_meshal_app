@@ -60,6 +60,9 @@ dependencies:
   # skeletonizer:
   skeletonizer: ^2.1.0+1
 
+  # delightful_toast:
+  delightful_toast: ^1.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
