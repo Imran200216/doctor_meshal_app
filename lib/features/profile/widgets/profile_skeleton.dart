@@ -11,46 +11,49 @@ class ProfileSkeleton extends StatelessWidget {
     final isTablet = Responsive.isTablet(context);
     final isMobile = Responsive.isMobile(context);
 
-    return SingleChildScrollView(
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: isMobile
-              ? 20
-              : isTablet
-              ? 30
-              : 40,
-          vertical: isMobile
-              ? 20
-              : isTablet
-              ? 30
-              : 40,
-        ),
-        child: Column(
-          spacing: 20,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            // My Account
-            KSkeletonRectangle(width: 100, height: 30),
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: isMobile
+                ? 20
+                : isTablet
+                ? 30
+                : 40,
+            vertical: isMobile
+                ? 20
+                : isTablet
+                ? 30
+                : 40,
+          ),
+          child: Column(
+            spacing: 20,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              // My Account
+              KSkeletonRectangle(width: 100, height: 30),
 
-            // My Account Container
-            KSkeletonRectangle(width: double.infinity, height: 130),
+              // My Account Container
+              KSkeletonRectangle(width: double.infinity, height: 130),
 
-            // General
-            KSkeletonRectangle(width: 100, height: 30),
+              // General
+              KSkeletonRectangle(width: 100, height: 30),
 
-            // My Account Container
-            KSkeletonRectangle(width: double.infinity, height: 200),
+              // My Account Container
+              KSkeletonRectangle(width: double.infinity, height: 200),
 
-            // Support
-            KSkeletonRectangle(width: 100, height: 30),
+              // Support
+              KSkeletonRectangle(width: 100, height: 30),
 
-            // Support Container
-            KSkeletonRectangle(width: double.infinity, height: 160),
+              // Support Container
+              KSkeletonRectangle(width: double.infinity, height: 160),
 
-            // Logout Container
-            KSkeletonRectangle(width: double.infinity, height: 70),
-          ],
+              // Logout Container
+              KSkeletonRectangle(width: double.infinity, height: 70),
+            ],
+          ),
         ),
       ),
     );
