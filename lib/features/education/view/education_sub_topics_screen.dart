@@ -81,170 +81,174 @@ class _EducationSubTopicsScreenState extends State<EducationSubTopicsScreen> {
         backgroundColor: AppColorConstants.primaryColor,
       ),
       backgroundColor: AppColorConstants.secondaryColor,
-      body: BlocBuilder<EducationSubTitleBloc, EducationSubTitleState>(
-        builder: (context, state) {
-          // Loading skeleton
-          if (state is EducationSubTitleLoading) {
-            return isTablet
-                ? GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: isMobile
-                          ? 20
-                          : isTablet
-                          ? 30
-                          : 40,
-                      vertical: isMobile
-                          ? 20
-                          : isTablet
-                          ? 30
-                          : 40,
-                    ),
-                    itemCount: 6,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 18,
-                          mainAxisSpacing: 18,
-                          childAspectRatio: 1.6,
-                        ),
-                    itemBuilder: (context, index) {
-                      return Skeletonizer(
-                        enabled: true,
-                        child: EducationSubTopicsCard(
-                          onTap: () {},
-                          imageUrl: "",
-                          title: "",
-                          noOfArticles: "",
-                        ),
-                      );
-                    },
-                  )
-                : ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: isMobile
-                          ? 20
-                          : isTablet
-                          ? 30
-                          : 40,
-                      vertical: isMobile
-                          ? 20
-                          : isTablet
-                          ? 30
-                          : 40,
-                    ),
-                    itemCount: 6,
-                    separatorBuilder: (_, __) => const SizedBox(height: 18),
-                    itemBuilder: (context, index) {
-                      return Skeletonizer(
-                        enabled: true,
-                        child: EducationSubTopicsCard(
-                          onTap: () {},
-                          imageUrl: "",
-                          title: "",
-                          noOfArticles: "",
-                        ),
-                      );
-                    },
-                  );
-          }
-
-          // Success state with data
-          if (state is EducationSubTitleSuccess) {
-            final subTopics = state.subtitles;
-
-            // Debug log using AppLoggerHelper
-            AppLoggerHelper.logInfo("Fetched SubTopics: ${subTopics.length}");
-
-            if (subTopics.isEmpty) {
-              return KNoItemsFound();
+      body: RefreshIndicator(
+        color: AppColorConstants.secondaryColor,
+        backgroundColor: AppColorConstants.primaryColor,
+        onRefresh: () async {
+          // Trigger Education Sub Title Bloc to fetch data
+          _fetchEducationSubTopics();
+        },
+        child: BlocBuilder<EducationSubTitleBloc, EducationSubTitleState>(
+          builder: (context, state) {
+            // Loading skeleton
+            if (state is EducationSubTitleLoading) {
+              return isTablet
+                  ? GridView.builder(
+                      shrinkWrap: true,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isMobile
+                            ? 20
+                            : isTablet
+                            ? 30
+                            : 40,
+                        vertical: isMobile
+                            ? 20
+                            : isTablet
+                            ? 30
+                            : 40,
+                      ),
+                      itemCount: 6,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 18,
+                            mainAxisSpacing: 18,
+                            childAspectRatio: 1.6,
+                          ),
+                      itemBuilder: (context, index) {
+                        return Skeletonizer(
+                          enabled: true,
+                          child: EducationSubTopicsCard(
+                            onTap: () {},
+                            imageUrl: "",
+                            title: "",
+                            noOfArticles: "",
+                          ),
+                        );
+                      },
+                    )
+                  : ListView.separated(
+                      shrinkWrap: true,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isMobile
+                            ? 20
+                            : isTablet
+                            ? 30
+                            : 40,
+                        vertical: isMobile
+                            ? 20
+                            : isTablet
+                            ? 30
+                            : 40,
+                      ),
+                      itemCount: 6,
+                      separatorBuilder: (_, __) => const SizedBox(height: 18),
+                      itemBuilder: (context, index) {
+                        return Skeletonizer(
+                          enabled: true,
+                          child: EducationSubTopicsCard(
+                            onTap: () {},
+                            imageUrl: "",
+                            title: "",
+                            noOfArticles: "",
+                          ),
+                        );
+                      },
+                    );
             }
 
-            return isTablet
-                ? GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: isMobile
-                          ? 20
-                          : isTablet
-                          ? 30
-                          : 40,
-                      vertical: isMobile
-                          ? 20
-                          : isTablet
-                          ? 30
-                          : 40,
-                    ),
-                    itemCount: subTopics.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 18,
-                          mainAxisSpacing: 18,
-                          childAspectRatio: 1.6,
-                        ),
-                    itemBuilder: (context, index) {
-                      final subTopic = subTopics[index];
-                      return EducationSubTopicsCard(
-                        onTap: () {
-                          GoRouter.of(context).pushNamed(
-                            AppRouterConstants.educationArticles,
-                            extra: subTopic.id,
-                          );
-                        },
-                        imageUrl: subTopic.image,
-                        title: subTopic.subTitleName,
-                        noOfArticles: subTopic.educationArticleCounts
-                            .toString(),
-                      );
-                    },
-                  )
-                : ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: isMobile
-                          ? 20
-                          : isTablet
-                          ? 30
-                          : 40,
-                      vertical: isMobile
-                          ? 20
-                          : isTablet
-                          ? 30
-                          : 40,
-                    ),
-                    itemCount: subTopics.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 18),
-                    itemBuilder: (context, index) {
-                      final subTopic = subTopics[index];
-                      return EducationSubTopicsCard(
-                        onTap: () {
-                          GoRouter.of(context).pushNamed(
-                            AppRouterConstants.educationArticles,
-                            extra: subTopic.id,
-                          );
-                        },
-                        imageUrl: subTopic.image,
-                        title: subTopic.subTitleName,
-                        noOfArticles: subTopic.educationArticleCounts
-                            .toString(),
-                      );
-                    },
-                  );
-          }
+            // Success state with data
+            if (state is EducationSubTitleSuccess) {
+              final subTopics = state.subtitles;
 
-          // Failure state
-          if (state is EducationSubTitleFailure) {
-            return Center(child: Text(state.message));
-          }
+              // Debug log using AppLoggerHelper
+              AppLoggerHelper.logInfo("Fetched SubTopics: ${subTopics.length}");
 
-          return const SizedBox.shrink();
-        },
+              if (subTopics.isEmpty) {
+                return KNoItemsFound();
+              }
+
+              return isTablet
+                  ? GridView.builder(
+                      shrinkWrap: true,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isMobile
+                            ? 20
+                            : isTablet
+                            ? 30
+                            : 40,
+                        vertical: isMobile
+                            ? 20
+                            : isTablet
+                            ? 30
+                            : 40,
+                      ),
+                      itemCount: subTopics.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 18,
+                            mainAxisSpacing: 18,
+                            childAspectRatio: 1.6,
+                          ),
+                      itemBuilder: (context, index) {
+                        final subTopic = subTopics[index];
+                        return EducationSubTopicsCard(
+                          onTap: () {
+                            GoRouter.of(context).pushNamed(
+                              AppRouterConstants.educationArticles,
+                              extra: subTopic.id,
+                            );
+                          },
+                          imageUrl: subTopic.image,
+                          title: subTopic.subTitleName,
+                          noOfArticles: subTopic.educationArticleCounts
+                              .toString(),
+                        );
+                      },
+                    )
+                  : ListView.separated(
+                      shrinkWrap: true,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isMobile
+                            ? 20
+                            : isTablet
+                            ? 30
+                            : 40,
+                        vertical: isMobile
+                            ? 20
+                            : isTablet
+                            ? 30
+                            : 40,
+                      ),
+                      itemCount: subTopics.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 18),
+                      itemBuilder: (context, index) {
+                        final subTopic = subTopics[index];
+                        return EducationSubTopicsCard(
+                          onTap: () {
+                            GoRouter.of(context).pushNamed(
+                              AppRouterConstants.educationArticles,
+                              extra: subTopic.id,
+                            );
+                          },
+                          imageUrl: subTopic.image,
+                          title: subTopic.subTitleName,
+                          noOfArticles: subTopic.educationArticleCounts
+                              .toString(),
+                        );
+                      },
+                    );
+            }
+
+            // Failure state
+            if (state is EducationSubTitleFailure) {
+              return Center(child: Text(state.message));
+            }
+
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     );
   }

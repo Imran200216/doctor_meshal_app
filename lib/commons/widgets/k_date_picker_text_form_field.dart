@@ -13,6 +13,7 @@ class KDatePickerTextFormField extends StatelessWidget {
   final DateTime? firstDate;
   final DateTime? lastDate;
   final bool readOnly;
+  final Iterable<String>? autofillHints;
 
   const KDatePickerTextFormField({
     super.key,
@@ -23,7 +24,7 @@ class KDatePickerTextFormField extends StatelessWidget {
     this.initialDate,
     this.firstDate,
     this.lastDate,
-    this.readOnly = true,
+    this.readOnly = true, this.autofillHints,
   });
 
   Future<void> _selectDate(BuildContext context) async {
@@ -76,6 +77,7 @@ class KDatePickerTextFormField extends StatelessWidget {
 
         /// 📅 Date Picker Text Form Field
         TextFormField(
+          autofillHints: autofillHints,
           style: TextStyle(
               fontWeight: FontWeight.w600
           ),

@@ -277,4 +277,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginSuccess => 'Login Successful';
+
+  @override
+  String get registerDate => 'Register Date';
+
+  @override
+  String get enterBloodGroup => 'Enter your blood group';
+
+  @override
+  String get enterGender => 'Enter gender';
+
+  @override
+  String get civilId => 'Civil Id';
+
+  @override
+  String get enterCivilId => 'Enter Civil Id';
+
+  @override
+  String get internetConnection => 'No Internet Connection';
+
+  @override
+  String get back => 'Back';
+
+  @override
+  String get alertSurveyFormTitle => 'Are you sure you want to exit?';
+
+  @override
+  String get alertSurveyFormDescription => 'Your form progress will be lost if you leave this page. Do you want to continue?';
 }

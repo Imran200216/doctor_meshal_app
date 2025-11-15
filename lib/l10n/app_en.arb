@@ -88,5 +88,14 @@
   "continueWord": "Continue",
   "noItemsFound": "No Items Found",
   "passwordChangeSuccessful": "Password Changed Successfully",
-  "loginSuccess" : "Login Successful"
+  "loginSuccess": "Login Successful",
+  "registerDate": "Register Date",
+  "enterBloodGroup": "Enter your blood group",
+  "enterGender": "Enter gender",
+  "civilId": "Civil Id",
+  "enterCivilId": "Enter Civil Id",
+  "internetConnection": "No Internet Connection",
+  "back": "Back",
+  "alertSurveyFormTitle": "Are you sure you want to exit?",
+  "alertSurveyFormDescription": "Your form progress will be lost if you leave this page. Do you want to continue?"
 }

@@ -88,5 +88,15 @@
   "continueWord": "يكمل",
   "noItemsFound": "لم يتم العثور على عناصر",
   "passwordChangeSuccessful": "تم تغيير كلمة المرور بنجاح",
-  "loginSuccess" : "تم تسجيل الدخول بنجاح"
+  "loginSuccess": "تم تسجيل الدخول بنجاح",
+  "registerDate": "تاريخ التسجيل",
+  "enterBloodGroup": "أدخل فصيلة دمك",
+  "enterGender": "أدخل الجنس",
+  "civilId": "الرقم المدني",
+  "enterCivilId": "أدخل الرقم المدني",
+  "internetConnection": "لا يوجد اتصال بالإنترنت",
+  "back": "رجوع",
+  "alertSurveyFormTitle": "هل أنت متأكد أنك تريد الخروج؟",
+  "alertSurveyFormDescription": "سيتم فقدان تقدمك في النموذج إذا غادرت هذه الصفحة. هل ترغب في المتابعة؟"
+
 }

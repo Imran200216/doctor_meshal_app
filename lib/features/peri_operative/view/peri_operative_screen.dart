@@ -32,11 +32,11 @@ class PeriOperativeScreen extends StatelessWidget {
         'title': appLoc.postOperative,
         'route': AppRouterConstants.postOP,
       },
-      // {
-      //   'icon': AppAssetsConstants.status,
-      //   'title': appLoc.status,
-      //   'route': AppRouterConstants.status,
-      // },
+      {
+        'icon': AppAssetsConstants.status,
+        'title': appLoc.status,
+        'route': AppRouterConstants.status,
+      },
     ];
 
     return Scaffold(

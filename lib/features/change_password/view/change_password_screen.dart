@@ -6,6 +6,7 @@ import 'package:meshal_doctor_booking_app/commons/widgets/k_filled_btn.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_password_text_form_field.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_snack_bar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
+import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
 import 'package:meshal_doctor_booking_app/core/service/hive_service.dart';
@@ -140,17 +141,25 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 BlocConsumer<ChangePasswordBloc, ChangePasswordState>(
                   listener: (context, state) {
                     if (state is ChangePasswordSuccess) {
-                      // Success Snack Bar
                       KSnackBar.success(
                         context,
                         appLoc.passwordChangeSuccessful,
                       );
 
-                      // Go Back
-                      GoRouter.of(context).pop();
-                    } else if (state is ChangePasswordFailure) {
-                      // Failure Snack Bar
-                      KSnackBar.error(context, state.message);
+                      // Clear Controller
+                      clearController();
+
+                      // Delay pop so snackbar is visible
+                      Future.delayed(const Duration(milliseconds: 400), () {
+                        GoRouter.of(context).pop();
+                      });
+                    }
+
+                    if (state is ChangePasswordFailure) {
+                      //  Microtask ensures proper snackbar display
+                      Future.microtask(() {
+                        KSnackBar.error(context, state.message);
+                      });
                     }
                   },
                   builder: (context, state) {
@@ -160,7 +169,19 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       btnBgColor: AppColorConstants.primaryColor,
                       btnTitleColor: AppColorConstants.secondaryColor,
                       onTap: () async {
-                        // Open the Hive box if not already opened
+                        // INTERNET CONNECTIVITY CHECK
+                        final connectivityState = context
+                            .read<ConnectivityBloc>()
+                            .state;
+
+                        if (connectivityState is ConnectivityFailure) {
+                          Future.microtask(() {
+                            KSnackBar.error(context, "No Internet Connection");
+                          });
+                          return;
+                        }
+
+                        // Open the Hive box
                         await HiveService.openBox(AppDBConstants.userBox);
 
                         // Read userId from Hive
@@ -173,7 +194,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           "The Change Password user Id: $storedUserId",
                         );
 
-                        // Change Password Functionality
+                        //  Change Password Event
                         context.read<ChangePasswordBloc>().add(
                           ChangePasswordUserEvent(
                             storedUserId!,

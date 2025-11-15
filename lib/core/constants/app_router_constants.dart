@@ -59,7 +59,6 @@ class AppRouterConstants {
   // Survey Form
   static const String surveyForm = "surveyForm";
 
-  // Survey Form Result
-  static const String surveyFormResult = "surveyFormResult";
+
 
 }

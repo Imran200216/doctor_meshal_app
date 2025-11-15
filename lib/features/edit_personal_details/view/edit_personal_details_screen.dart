@@ -5,8 +5,10 @@ import 'package:meshal_doctor_booking_app/commons/widgets/k_app_bar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_date_picker_text_form_field.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_drop_down_text_form_field.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_filled_btn.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/k_skeleton_text_form_field.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_snack_bar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text_form_field.dart';
+import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
 import 'package:meshal_doctor_booking_app/core/service/hive_service.dart';
@@ -100,7 +102,37 @@ class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
       body: BlocBuilder<UserAuthBloc, UserAuthState>(
         builder: (context, state) {
           if (state is GetUserAuthLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return ListView.separated(
+              padding: EdgeInsets.only(
+                left: isMobile
+                    ? 20
+                    : isTablet
+                    ? 30
+                    : 40,
+                right: isMobile
+                    ? 20
+                    : isTablet
+                    ? 30
+                    : 40,
+                top: isMobile
+                    ? 20
+                    : isTablet
+                    ? 30
+                    : 40,
+                bottom: isMobile
+                    ? 20
+                    : isTablet
+                    ? 30
+                    : 40,
+              ),
+              itemCount: 30,
+              separatorBuilder: (context, index) {
+                return const SizedBox(height: 20);
+              },
+              itemBuilder: (context, index) {
+                return KSkeletonTextFormField();
+              },
+            );
           }
 
           if (state is GetUserAuthSuccess) {
@@ -138,6 +170,7 @@ class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
           }
 
           return SingleChildScrollView(
+            scrollDirection: Axis.vertical,
             child: Padding(
               padding: EdgeInsets.only(
                 left: isMobile
@@ -171,6 +204,12 @@ class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
                     controller: firstNameController,
                     hintText: appLoc.enterFirstName,
                     labelText: appLoc.firstName,
+                    autofillHints: [
+                      AutofillHints.givenName,
+                      AutofillHints.name,
+                      AutofillHints.familyName,
+                      AutofillHints.middleName,
+                    ],
                   ),
 
                   // Last Name
@@ -178,6 +217,12 @@ class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
                     controller: lastNameController,
                     hintText: appLoc.enterLastName,
                     labelText: appLoc.lastName,
+                    autofillHints: [
+                      AutofillHints.givenName,
+                      AutofillHints.name,
+                      AutofillHints.familyName,
+                      AutofillHints.middleName,
+                    ],
                   ),
 
                   // Date of Birth
@@ -185,9 +230,7 @@ class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
                     controller: dobController,
                     labelText: appLoc.dateOfBirth,
                     hintText: appLoc.selectDate,
-                    validator: (value) => (value == null || value.isEmpty)
-                        ? "Please select a date"
-                        : null,
+                    autofillHints: [AutofillHints.birthday],
                   ),
 
                   // Gender Drop Down Text Form Field
@@ -256,25 +299,30 @@ class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
 
                   const SizedBox(height: 40),
 
+                  // Edit Personal Details Btn
                   BlocConsumer<
                     UpdateUserProfileDetailsBloc,
                     UpdateUserProfileDetailsState
                   >(
                     listener: (context, state) {
                       if (state is UpdateUserProfileDetailsSuccess) {
-                        // Show success toast
+                        // Success Snackbar
                         KSnackBar.success(
                           context,
                           "Updated Profile Successfully",
                         );
 
-                        // Go Back
-                        GoRouter.of(context).pop();
+                        // Delay pop so snackbar can show
+                        Future.delayed(const Duration(milliseconds: 400), () {
+                          GoRouter.of(context).pop();
+                        });
                       }
 
                       if (state is UpdateUserProfileDetailsFailure) {
-                        // Show error toast
-                        KSnackBar.error(context, "Update Profile Failed");
+                        // Ensure Snackbar always appears
+                        Future.microtask(() {
+                          KSnackBar.error(context, "Update Profile Failed");
+                        });
                       }
                     },
                     builder: (context, state) {
@@ -284,7 +332,22 @@ class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
                         btnBgColor: AppColorConstants.primaryColor,
                         btnTitleColor: AppColorConstants.secondaryColor,
                         onTap: () {
-                          // Update User Profile Details Form Event
+                          // INTERNET CONNECTIVITY CHECK
+                          final connectivityState = context
+                              .read<ConnectivityBloc>()
+                              .state;
+
+                          if (connectivityState is ConnectivityFailure) {
+                            Future.microtask(() {
+                              KSnackBar.error(
+                                context,
+                                appLoc.internetConnection,
+                              );
+                            });
+                            return;
+                          }
+
+                          // Update Profile Event
                           context.read<UpdateUserProfileDetailsBloc>().add(
                             UpdateUserProfileDetailsFormEvent(
                               model: UpdateUserProfileDetailsModel(

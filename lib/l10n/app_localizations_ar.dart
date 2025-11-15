@@ -277,4 +277,31 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get loginSuccess => 'تم تسجيل الدخول بنجاح';
+
+  @override
+  String get registerDate => 'تاريخ التسجيل';
+
+  @override
+  String get enterBloodGroup => 'أدخل فصيلة دمك';
+
+  @override
+  String get enterGender => 'أدخل الجنس';
+
+  @override
+  String get civilId => 'الرقم المدني';
+
+  @override
+  String get enterCivilId => 'أدخل الرقم المدني';
+
+  @override
+  String get internetConnection => 'لا يوجد اتصال بالإنترنت';
+
+  @override
+  String get back => 'رجوع';
+
+  @override
+  String get alertSurveyFormTitle => 'هل أنت متأكد أنك تريد الخروج؟';
+
+  @override
+  String get alertSurveyFormDescription => 'سيتم فقدان تقدمك في النموذج إذا غادرت هذه الصفحة. هل ترغب في المتابعة؟';
 }

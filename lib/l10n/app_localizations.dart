@@ -634,6 +634,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Login Successful'**
   String get loginSuccess;
+
+  /// No description provided for @registerDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Register Date'**
+  String get registerDate;
+
+  /// No description provided for @enterBloodGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your blood group'**
+  String get enterBloodGroup;
+
+  /// No description provided for @enterGender.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter gender'**
+  String get enterGender;
+
+  /// No description provided for @civilId.
+  ///
+  /// In en, this message translates to:
+  /// **'Civil Id'**
+  String get civilId;
+
+  /// No description provided for @enterCivilId.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Civil Id'**
+  String get enterCivilId;
+
+  /// No description provided for @internetConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'No Internet Connection'**
+  String get internetConnection;
+
+  /// No description provided for @back.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get back;
+
+  /// No description provided for @alertSurveyFormTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to exit?'**
+  String get alertSurveyFormTitle;
+
+  /// No description provided for @alertSurveyFormDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Your form progress will be lost if you leave this page. Do you want to continue?'**
+  String get alertSurveyFormDescription;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -8,6 +8,7 @@ import 'package:meshal_doctor_booking_app/commons/widgets/k_password_text_form_f
 import 'package:meshal_doctor_booking_app/commons/widgets/k_snack_bar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text_form_field.dart';
+import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_assets_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
@@ -115,47 +116,47 @@ class _AuthLoginState extends State<AuthLogin> {
           BlocConsumer<EmailAuthBloc, EmailAuthState>(
             listener: (context, state) async {
               if (state is EmailAuthSuccess) {
-                // Get User Auth Event Functionality
+                // Get User Aut Event Functionality
                 context.read<UserAuthBloc>().add(
                   GetUserAuthEvent(id: state.id, token: state.token),
                 );
 
                 try {
-                  // Open box
                   await HiveService.openBox(AppDBConstants.userBox);
 
-                  // Save User ID
                   await HiveService.saveData(
                     boxName: AppDBConstants.userBox,
                     key: AppDBConstants.userId,
                     value: state.id,
                   );
 
-                  // Read it back properly
                   final userId = await HiveService.getData<String>(
                     boxName: AppDBConstants.userBox,
                     key: AppDBConstants.userId,
                   );
 
-                  AppLoggerHelper.logInfo(
-                    "User ID stored successfully in Hive: $userId",
-                  );
+                  AppLoggerHelper.logInfo("User ID stored in Hive: $userId");
                 } catch (e) {
-                  AppLoggerHelper.logError("Error storing User ID in Hive: $e");
+                  AppLoggerHelper.logError("Hive Error: $e");
                 }
 
-                // Navigate to Bottom Nav
-                GoRouter.of(
-                  context,
-                ).pushReplacementNamed(AppRouterConstants.bottomNav);
-
+                // Show success BEFORE navigation
                 KSnackBar.success(context, appLoc.loginSuccess);
 
-                // Clear Controllers
+                // Delay navigation so snackbar shows properly
+                Future.delayed(const Duration(milliseconds: 400), () {
+                  GoRouter.of(
+                    context,
+                  ).pushReplacementNamed(AppRouterConstants.bottomNav);
+                });
+
                 clearControllers();
-              } else if (state is EmailAuthError) {
-                // Show error
-                KSnackBar.error(context, state.message);
+              }
+
+              if (state is EmailAuthError) {
+                Future.microtask(() {
+                  KSnackBar.error(context, state.message);
+                });
               }
             },
             builder: (context, state) {
@@ -166,7 +167,22 @@ class _AuthLoginState extends State<AuthLogin> {
                 btnTitleColor: AppColorConstants.secondaryColor,
                 onTap: () async {
                   if (_formKey.currentState!.validate()) {
-                    // Email Auth Login Event
+                    // INTERNET CHECK
+                    final connectivityState = context
+                        .read<ConnectivityBloc>()
+                        .state;
+
+                    if (connectivityState is ConnectivityFailure) {
+                      Future.microtask(() {
+                        KSnackBar.error(
+                          context,
+                          appLoc.internetConnection,
+                        );
+                      });
+                      return;
+                    }
+
+                    // Proceed with Login
                     context.read<EmailAuthBloc>().add(
                       EmailAuthLoginEvent(
                         email: _authEmailLoginController.text.trim(),
@@ -227,7 +243,7 @@ class _AuthLoginState extends State<AuthLogin> {
 
           const SizedBox(height: 20),
 
-          //
+          // Google
           SocialBtn(
             btnTitle: appLoc.continueWithGoogle,
             borderColor: AppColorConstants.subTitleColor.withOpacity(0.2),

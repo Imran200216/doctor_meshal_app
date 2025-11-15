@@ -17,10 +17,9 @@ import 'package:meshal_doctor_booking_app/features/localization/presentation/scr
 import 'package:meshal_doctor_booking_app/features/peri_operative/view/post_op_screen.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/view/pre_op_screen.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/view/status_screen.dart';
-import 'package:meshal_doctor_booking_app/features/peri_operative/view/survey_form_result_screen.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/view/survey_form_screen.dart';
 import 'package:meshal_doctor_booking_app/features/personal_details/view/personal_details_screen.dart';
-import 'package:meshal_doctor_booking_app/features/splash/presentation/screens/splash_screen.dart';
+import 'package:meshal_doctor_booking_app/features/splash/view/splash_screen.dart';
 
 GoRouter appRouter = GoRouter(
   initialLocation: "/splash",
@@ -210,17 +209,12 @@ GoRouter appRouter = GoRouter(
       path: '/surveyForm',
       name: AppRouterConstants.surveyForm,
       builder: (context, state) {
-        return SurveyFormScreen();
+        // Get the passed id from extra
+        final operativeId = state.extra as String? ?? '';
+        return SurveyFormScreen(operativeId: operativeId,);
       },
     ),
 
-    // Survey Form Result Screen
-    GoRoute(
-      path: '/surveyFormResult',
-      name: AppRouterConstants.surveyFormResult,
-      builder: (context, state) {
-        return SurveyFormResultScreen();
-      },
-    ),
+
   ],
 );

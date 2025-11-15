@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_app_bar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_no_items_found.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/k_skeleton_rectangle.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
@@ -51,6 +52,7 @@ class _EducationArticlesScreenState extends State<EducationArticlesScreen> {
           "Education Article ID: ${widget.educationArticleId}",
         );
 
+        // Get Education Article
         context.read<EducationArticlesBloc>().add(
           GetEducationArticlesEvent(
             id: widget.educationArticleId,
@@ -86,7 +88,16 @@ class _EducationArticlesScreenState extends State<EducationArticlesScreen> {
             backgroundColor: AppColorConstants.primaryColor,
           ),
 
-          body: _buildBody(state, isMobile, isTablet),
+          body: RefreshIndicator(
+            color: AppColorConstants.secondaryColor,
+            backgroundColor: AppColorConstants.primaryColor,
+            onRefresh: () async {
+              // Get Education Article
+              _fetchEducationArticles();
+            },
+
+            child: _buildBody(state, isMobile, isTablet),
+          ),
         );
       },
     );
@@ -104,7 +115,6 @@ class _EducationArticlesScreenState extends State<EducationArticlesScreen> {
       return isTablet
           ? GridView.builder(
               shrinkWrap: true,
-              physics: const BouncingScrollPhysics(),
               padding: _padding(isMobile, isTablet),
               itemCount: 40,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -114,37 +124,26 @@ class _EducationArticlesScreenState extends State<EducationArticlesScreen> {
                 childAspectRatio: 5,
               ),
               itemBuilder: (context, index) {
-                return Skeletonizer(
-                  enabled: true,
-                  effect: ShimmerEffect(),
-                  child: EducationArticleCard(
-                    onTap: () {},
-                    educationArticleName: "",
-                  ),
-                );
+                return KSkeletonRectangle(width: 200, height: 80);
               },
             )
           : ListView.separated(
               shrinkWrap: true,
-              physics: const BouncingScrollPhysics(),
               padding: _padding(isMobile, isTablet),
               itemCount: 40,
               separatorBuilder: (_, __) => const SizedBox(height: 18),
               itemBuilder: (context, index) {
-                return Skeletonizer(
-                  enabled: true,
-                  effect: ShimmerEffect(),
-                  child: EducationArticleCard(
-                    onTap: () {},
-                    educationArticleName: "",
-                  ),
-                );
+                return KSkeletonRectangle(width: double.maxFinite, height: 80);
               },
             );
     }
 
     if (state is EducationArticlesSuccess) {
       final educationArticles = state.topics;
+
+      final allArticles = educationArticles
+          .expand((topic) => topic.educationArticles)
+          .toList();
 
       if (educationArticles.isEmpty) {
         return KNoItemsFound();
@@ -153,9 +152,8 @@ class _EducationArticlesScreenState extends State<EducationArticlesScreen> {
       return isTablet
           ? GridView.builder(
               shrinkWrap: true,
-              physics: const BouncingScrollPhysics(),
               padding: _padding(isMobile, isTablet),
-              itemCount: educationArticles.length,
+              itemCount: allArticles.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 18,
@@ -163,38 +161,33 @@ class _EducationArticlesScreenState extends State<EducationArticlesScreen> {
                 childAspectRatio: 5,
               ),
               itemBuilder: (context, index) {
-                final topic = educationArticles[index];
+                final article = allArticles[index];
                 return EducationArticleCard(
                   onTap: () {
-                    // Articles View
                     GoRouter.of(context).pushNamed(
                       AppRouterConstants.educationArticlesView,
-                      extra: topic.educationArticles.first.id,
+                      extra: article.id,
                     );
                   },
-                  educationArticleName:
-                      topic.educationArticles.first.articleName,
+                  educationArticleName: article.articleName,
                 );
               },
             )
           : ListView.separated(
               shrinkWrap: true,
-              physics: const BouncingScrollPhysics(),
               padding: _padding(isMobile, isTablet),
-              itemCount: educationArticles.length,
+              itemCount: allArticles.length,
               separatorBuilder: (_, __) => const SizedBox(height: 18),
               itemBuilder: (context, index) {
-                final topic = educationArticles[index];
+                final article = allArticles[index];
                 return EducationArticleCard(
                   onTap: () {
-                    // Articles View
                     GoRouter.of(context).pushNamed(
                       AppRouterConstants.educationArticlesView,
-                      extra: topic.educationArticles.first.id,
+                      extra: article.id,
                     );
                   },
-                  educationArticleName:
-                      topic.educationArticles.first.articleName,
+                  educationArticleName: article.articleName,
                 );
               },
             );

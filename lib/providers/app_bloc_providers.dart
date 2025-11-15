@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
 import 'package:meshal_doctor_booking_app/di/service_locator.dart';
 import 'package:meshal_doctor_booking_app/features/auth/view_model/bloc/email_auth/email_auth_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/auth/view_model/bloc/user_auth/user_auth_bloc.dart';
@@ -12,7 +13,10 @@ import 'package:meshal_doctor_booking_app/features/education/view_model/educatio
 import 'package:meshal_doctor_booking_app/features/education/view_model/education_sub_title/education_sub_title_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/localization/cubit/localization_cubit.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/view_model/bloc/operative_form/operative_form_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/peri_operative/view_model/cubit/operative_selected_chip_cubit.dart';
+import 'package:meshal_doctor_booking_app/features/peri_operative/view_model/bloc/status/status_form_bloc.dart';
+import 'package:meshal_doctor_booking_app/features/peri_operative/view_model/bloc/survey_operative_form/survey_operative_form_bloc.dart';
+import 'package:meshal_doctor_booking_app/features/peri_operative/view_model/cubit/operation_selected_chip/operative_selected_chip_cubit.dart';
+import 'package:meshal_doctor_booking_app/features/peri_operative/view_model/cubit/survey_form/survey_form_selection_cubit.dart';
 
 List<BlocProvider> appBlocProviders = [
   // Localization Cubit
@@ -71,4 +75,22 @@ List<BlocProvider> appBlocProviders = [
   BlocProvider<OperativeFormBloc>(
     create: (context) => getIt<OperativeFormBloc>(),
   ),
+
+  // Connectivity Bloc
+  BlocProvider<ConnectivityBloc>(
+    create: (context) => getIt<ConnectivityBloc>(),
+  ),
+
+  // Survey Form Bloc
+  BlocProvider<SurveyFormSelectionCubit>(
+    create: (context) => getIt<SurveyFormSelectionCubit>(),
+  ),
+
+  // Survey Operative Form Bloc
+  BlocProvider<SurveyOperativeFormBloc>(
+    create: (context) => getIt<SurveyOperativeFormBloc>(),
+  ),
+
+  // Status Form Bloc
+  BlocProvider<StatusFormBloc>(create: (context) => getIt<StatusFormBloc>()),
 ];

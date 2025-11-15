@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:meshal_doctor_booking_app/core/bloc/core_injection.dart';
 import 'package:meshal_doctor_booking_app/features/auth/auth_injection.dart';
 import 'package:meshal_doctor_booking_app/features/bottom_nav/bottom_nav_injection.dart';
 import 'package:meshal_doctor_booking_app/features/change_password/change_password_injection.dart';
@@ -10,6 +11,9 @@ import 'package:meshal_doctor_booking_app/features/peri_operative/peri_operative
 final GetIt getIt = GetIt.instance;
 
 void setUpServiceLocators() {
+  // Core Injection
+  initCoreInjection();
+
   // Localization Injection
   initLocalizationInjection();
 

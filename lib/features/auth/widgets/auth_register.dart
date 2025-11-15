@@ -6,6 +6,7 @@ import 'package:meshal_doctor_booking_app/commons/widgets/k_password_text_form_f
 import 'package:meshal_doctor_booking_app/commons/widgets/k_phone_number_text_form_field.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_snack_bar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text_form_field.dart';
+import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
@@ -165,16 +166,22 @@ class _AuthRegisterState extends State<AuthRegister> {
                   AppLoggerHelper.logError("Error storing User ID in Hive: $e");
                 }
 
-                // Navigate to Bottom Nav
-                GoRouter.of(
-                  context,
-                ).pushReplacementNamed(AppRouterConstants.bottomNav);
-
-                // Success Snack bar
+                // Show success FIRST
                 KSnackBar.success(context, "Registration Success");
 
-                // Clear Controllers
+                Future.delayed(const Duration(milliseconds: 400), () {
+                  GoRouter.of(
+                    context,
+                  ).pushReplacementNamed(AppRouterConstants.bottomNav);
+                });
+
                 clearAllController();
+              }
+
+              if (state is EmailAuthError) {
+                Future.microtask(() {
+                  KSnackBar.error(context, state.message);
+                });
               }
             },
             builder: (context, state) {
@@ -185,7 +192,22 @@ class _AuthRegisterState extends State<AuthRegister> {
                 btnTitleColor: AppColorConstants.secondaryColor,
                 onTap: () {
                   if (_formKey.currentState!.validate()) {
-                    // Email Auth Register Event
+                    // INTERNET CONNECTIVITY CHECK
+                    final connectivityState = context
+                        .read<ConnectivityBloc>()
+                        .state;
+
+                    if (connectivityState is ConnectivityFailure) {
+                      Future.microtask(() {
+                        KSnackBar.error(
+                          context,
+                          appLoc.internetConnection,
+                        );
+                      });
+                      return;
+                    }
+
+                    // Proceed with Register Event
                     context.read<EmailAuthBloc>().add(
                       EmailAuthRegisterEvent(
                         firstName: _authFirstNameRegisterController.text.trim(),

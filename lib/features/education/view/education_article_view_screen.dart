@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_app_bar.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/k_skeleton_paragraph.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
@@ -89,23 +90,22 @@ class _EducationArticleViewScreenState
         backgroundColor: AppColorConstants.primaryColor,
       ),
 
-      body:
-          BlocBuilder<
-            EducationFullViewArticleBloc,
-            EducationFullViewArticleState
-          >(
-            builder: (context, state) {
-              if (state is EducationFullViewArticleLoading) {
-                return CircularProgressIndicator.adaptive();
-              }
+      body: RefreshIndicator(
+        color: AppColorConstants.secondaryColor,
+        backgroundColor: AppColorConstants.primaryColor,
+        onRefresh: () async {
+          // Get Education Article View
+          _fetchEducationArticlesView();
+        },
 
-              if (state is EducationFullViewArticleSuccess) {
-                final educationFullViewArticle = state.article;
-
-                return SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  physics: const BouncingScrollPhysics(),
-                  child: Padding(
+        child:
+            BlocBuilder<
+              EducationFullViewArticleBloc,
+              EducationFullViewArticleState
+            >(
+              builder: (context, state) {
+                if (state is EducationFullViewArticleLoading) {
+                  return Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: isMobile
                           ? 20
@@ -118,8 +118,31 @@ class _EducationArticleViewScreenState
                           ? 30
                           : 40,
                     ),
-                    child: Directionality(
-                      textDirection: TextDirection.ltr,
+                    child: SingleChildScrollView(
+                      child: KSkeletonParagraph(lines: 30, spacing: 20),
+                    ),
+                  );
+                }
+
+                if (state is EducationFullViewArticleSuccess) {
+                  final educationFullViewArticle = state.article;
+
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    physics: const BouncingScrollPhysics(),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isMobile
+                            ? 20
+                            : isTablet
+                            ? 30
+                            : 40,
+                        vertical: isMobile
+                            ? 20
+                            : isTablet
+                            ? 30
+                            : 40,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -227,17 +250,17 @@ class _EducationArticleViewScreenState
                         ],
                       ),
                     ),
-                  ),
-                );
-              }
+                  );
+                }
 
-              if (state is EducationFullViewArticleError) {
-                return Center(child: Text(state.message));
-              }
+                if (state is EducationFullViewArticleError) {
+                  return Center(child: Text(state.message));
+                }
 
-              return const SizedBox.shrink();
-            },
-          ),
+                return const SizedBox.shrink();
+              },
+            ),
+      ),
     );
   }
 }

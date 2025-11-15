@@ -1,13 +1,57 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_app_bar.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/k_no_items_found.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
+import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
+import 'package:meshal_doctor_booking_app/core/service/hive_service.dart';
+import 'package:meshal_doctor_booking_app/core/utils/app_logger_helper.dart';
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
-import 'package:meshal_doctor_booking_app/features/peri_operative/widgets/operative_form_survey_card.dart';
+import 'package:meshal_doctor_booking_app/features/peri_operative/view_model/bloc/status/status_form_bloc.dart';
+import 'package:meshal_doctor_booking_app/features/peri_operative/widgets/status_form_card.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
-class StatusScreen extends StatelessWidget {
+class StatusScreen extends StatefulWidget {
   const StatusScreen({super.key});
+
+  @override
+  State<StatusScreen> createState() => _StatusScreenState();
+}
+
+class _StatusScreenState extends State<StatusScreen> {
+  String? userId;
+
+  @override
+  void initState() {
+    _fetchStatusForm();
+    super.initState();
+  }
+
+  // Fetch Status Datas
+  Future<void> _fetchStatusForm() async {
+    try {
+      await HiveService.openBox(AppDBConstants.userBox);
+
+      final storedUserId = await HiveService.getData<String>(
+        boxName: AppDBConstants.userBox,
+        key: AppDBConstants.userId,
+      );
+
+      if (storedUserId != null) {
+        userId = storedUserId;
+
+        AppLoggerHelper.logInfo("User ID fetched: $userId");
+
+        context.read<StatusFormBloc>().add(GetStatusFormEvent(userId: userId!));
+      } else {
+        AppLoggerHelper.logError("No User ID found in Hive!");
+      }
+    } catch (e) {
+      AppLoggerHelper.logError("Error fetching User ID: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,66 +71,155 @@ class StatusScreen extends StatelessWidget {
           GoRouter.of(context).pop();
         },
       ),
-      body: isTablet
-          ? GridView.builder(
-              shrinkWrap: true,
-              scrollDirection: Axis.vertical,
-              physics: const BouncingScrollPhysics(),
-              padding: EdgeInsets.symmetric(
-                horizontal: isMobile
-                    ? 20
-                    : isTablet
-                    ? 30
-                    : 40,
-                vertical: isMobile
-                    ? 20
-                    : isTablet
-                    ? 30
-                    : 40,
-              ),
-              itemCount: 40,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 18,
-                mainAxisSpacing: 18,
-                childAspectRatio: 1.8,
-              ),
-              itemBuilder: (context, index) {
-                return OperativeFormSurveyCard(
-                  title: "Book Foot Scale AOFAS",
-                  onSurveyTap: () {},
-                );
-              },
-            )
-          : isMobile
-          ? ListView.separated(
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              physics: const BouncingScrollPhysics(),
-              padding: EdgeInsets.symmetric(
-                horizontal: isMobile
-                    ? 20
-                    : isTablet
-                    ? 30
-                    : 40,
-                vertical: isMobile
-                    ? 20
-                    : isTablet
-                    ? 30
-                    : 40,
-              ),
-              itemBuilder: (context, index) {
-                return OperativeFormSurveyCard(
-                  title: "Book Foot Scale AOFAS",
-                  onSurveyTap: () {},
-                );
-              },
-              separatorBuilder: (context, index) {
-                return const SizedBox(height: 20);
-              },
-              itemCount: 40,
-            )
-          : SizedBox.shrink(),
+      body: RefreshIndicator(
+        color: AppColorConstants.secondaryColor,
+        backgroundColor: AppColorConstants.primaryColor,
+        onRefresh: () async {
+          // Fetch Status Datas
+          _fetchStatusForm();
+        },
+        child: BlocBuilder<StatusFormBloc, StatusFormState>(
+          builder: (context, state) {
+            if (state is StatusFormLoading) {
+              return isTablet
+                  ? GridView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.vertical,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isMobile
+                            ? 20
+                            : isTablet
+                            ? 30
+                            : 40,
+                        vertical: isMobile
+                            ? 20
+                            : isTablet
+                            ? 30
+                            : 40,
+                      ),
+                      itemCount: 40,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 18,
+                            mainAxisSpacing: 18,
+                            childAspectRatio: 1.8,
+                          ),
+                      itemBuilder: (context, index) {
+                        return Skeletonizer(
+                          effect: ShimmerEffect(),
+                          enabled: true,
+                          child: StatusCard(formTitle: "", formStatus: ""),
+                        );
+                      },
+                    )
+                  : ListView.separated(
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isMobile
+                            ? 20
+                            : isTablet
+                            ? 30
+                            : 40,
+                        vertical: isMobile
+                            ? 20
+                            : isTablet
+                            ? 30
+                            : 40,
+                      ),
+                      itemBuilder: (context, index) {
+                        return Skeletonizer(
+                          effect: ShimmerEffect(),
+                          enabled: true,
+                          child: StatusCard(formTitle: "", formStatus: ""),
+                        );
+                      },
+                      separatorBuilder: (context, index) {
+                        return const SizedBox(height: 20);
+                      },
+                      itemCount: 40,
+                    );
+            }
+
+            if (state is StatusFormSuccess) {
+              return state.status.isEmpty
+                  ? Center(child: KNoItemsFound())
+                  : isTablet
+                  ? GridView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.vertical,
+                      physics: const BouncingScrollPhysics(),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isMobile
+                            ? 20
+                            : isTablet
+                            ? 30
+                            : 40,
+                        vertical: isMobile
+                            ? 20
+                            : isTablet
+                            ? 30
+                            : 40,
+                      ),
+                      itemCount: state.status.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 18,
+                            mainAxisSpacing: 18,
+                            childAspectRatio: 1.8,
+                          ),
+                      itemBuilder: (context, index) {
+                        final statusItem = state.status[index];
+
+                        return StatusCard(
+                          formTitle: statusItem.title,
+                          formStatus: statusItem.formStatus,
+                        );
+                      },
+                    )
+                  : isMobile
+                  ? ListView.separated(
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      physics: const BouncingScrollPhysics(),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isMobile
+                            ? 20
+                            : isTablet
+                            ? 30
+                            : 40,
+                        vertical: isMobile
+                            ? 20
+                            : isTablet
+                            ? 30
+                            : 40,
+                      ),
+                      itemBuilder: (context, index) {
+                        final statusItem = state.status[index];
+
+                        return StatusCard(
+                          formTitle: statusItem.title,
+                          formStatus: statusItem.formStatus,
+                        );
+                      },
+                      separatorBuilder: (context, index) {
+                        return const SizedBox(height: 20);
+                      },
+                      itemCount: state.status.length,
+                    )
+                  : SizedBox.shrink();
+            }
+
+            if (state is StatusFormFailure) {
+              AppLoggerHelper.logError("Status Error: ${state.message}");
+            }
+
+            return SizedBox.shrink();
+          },
+        ),
+      ),
     );
   }
 }

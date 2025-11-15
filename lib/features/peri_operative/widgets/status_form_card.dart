@@ -6,16 +6,14 @@ import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dar
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 
-class OperativeFormSurveyCard extends StatelessWidget {
-  final String title;
-  final VoidCallback onSurveyTap;
-  final bool isFormEnabled;
+class StatusCard extends StatelessWidget {
+  final String formTitle;
+  final String formStatus;
 
-  const OperativeFormSurveyCard({
+  const StatusCard({
     super.key,
-    required this.title,
-    required this.onSurveyTap,
-    this.isFormEnabled = false,
+    required this.formTitle,
+    required this.formStatus,
   });
 
   @override
@@ -88,69 +86,46 @@ class OperativeFormSurveyCard extends StatelessWidget {
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   color: AppColorConstants.secondaryColor,
-                  child: Row(
-                    spacing: 30,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            // Title
-                            KText(
-                              text: title,
-                              textAlign: TextAlign.start,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              fontSize: isMobile
-                                  ? 18
-                                  : isTablet
-                                  ? 20
-                                  : 22,
-                              fontWeight: FontWeight.w700,
-                              color: AppColorConstants.titleColor,
-                            ),
-
-                            const SizedBox(height: 8),
-
-                            // Open Survey
-                            GestureDetector(
-                              onTap: () {
-                                HapticFeedback.heavyImpact();
-                                onSurveyTap();
-                              },
-                              child: KText(
-                                text: appLoc.openSurvey,
-                                textAlign: TextAlign.start,
-                                textDecoration: TextDecoration.underline,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                                fontSize: isMobile
-                                    ? 14
-                                    : isTablet
-                                    ? 16
-                                    : 18,
-                                fontWeight: FontWeight.w600,
-                                color: AppColorConstants.titleColor,
-                              ),
-                            ),
-                          ],
-                        ),
+                      // Title
+                      KText(
+                        text: formTitle,
+                        textAlign: TextAlign.start,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        fontSize: isMobile
+                            ? 18
+                            : isTablet
+                            ? 20
+                            : 22,
+                        fontWeight: FontWeight.w700,
+                        color: AppColorConstants.titleColor,
                       ),
 
-                      isFormEnabled == false
-                          ? Icon(
-                              Icons.lock,
-                              size: isMobile
-                                  ? 30
-                                  : isTablet
-                                  ? 40
-                                  : 50,
-                              color: AppColorConstants.primaryColor,
-                            )
-                          : SizedBox.shrink(),
+                      const SizedBox(height: 8),
+
+                      // Open Survey
+                      GestureDetector(
+                        onTap: () {
+                          HapticFeedback.heavyImpact();
+                        },
+                        child: KText(
+                          text: "Form Status: $formStatus",
+                          textAlign: TextAlign.start,
+                          overflow: TextOverflow.visible,
+                          maxLines: 1,
+                          fontSize: isMobile
+                              ? 14
+                              : isTablet
+                              ? 16
+                              : 18,
+                          fontWeight: FontWeight.w600,
+                          color: AppColorConstants.titleColor,
+                        ),
+                      ),
                     ],
                   ),
                 ),

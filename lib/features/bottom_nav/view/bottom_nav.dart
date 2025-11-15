@@ -7,7 +7,7 @@ import 'package:meshal_doctor_booking_app/features/bottom_nav/view_model/cubit/b
 import 'package:meshal_doctor_booking_app/features/education/view/education_screen.dart';
 import 'package:meshal_doctor_booking_app/features/home/presentation/screens/home_screen.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/view/peri_operative_screen.dart';
-import 'package:meshal_doctor_booking_app/features/profile/presentation/screens/profile_screen.dart';
+import 'package:meshal_doctor_booking_app/features/profile/view/profile_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BottomNav extends StatefulWidget {
