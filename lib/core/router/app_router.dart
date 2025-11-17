@@ -7,13 +7,15 @@ import 'package:meshal_doctor_booking_app/features/auth/view/auth_otp_screen.dar
 import 'package:meshal_doctor_booking_app/features/auth/view/auth_screen.dart';
 import 'package:meshal_doctor_booking_app/features/bottom_nav/view/bottom_nav.dart';
 import 'package:meshal_doctor_booking_app/features/change_password/view/change_password_screen.dart';
-import 'package:meshal_doctor_booking_app/features/chat/presentation/screens/chat_screen.dart';
+import 'package:meshal_doctor_booking_app/features/chat/view/chat_list_screen.dart';
+import 'package:meshal_doctor_booking_app/features/chat/view/chat_screen.dart';
+import 'package:meshal_doctor_booking_app/features/chat/view/doctor_list_screen.dart';
 import 'package:meshal_doctor_booking_app/features/edit_personal_details/view/edit_personal_details_screen.dart';
 import 'package:meshal_doctor_booking_app/features/education/view/education_article_view_screen.dart';
 import 'package:meshal_doctor_booking_app/features/education/view/education_articles_screen.dart';
 import 'package:meshal_doctor_booking_app/features/education/view/education_sub_topics_screen.dart';
-import 'package:meshal_doctor_booking_app/features/intro/presentation/screens/doctor_intro_screen.dart';
-import 'package:meshal_doctor_booking_app/features/localization/presentation/screens/localization_screen.dart';
+import 'package:meshal_doctor_booking_app/features/intro/view/doctor_intro_screen.dart';
+import 'package:meshal_doctor_booking_app/features/localization/view/localization_screen.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/view/post_op_screen.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/view/pre_op_screen.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/view/status_screen.dart';
@@ -75,7 +77,13 @@ GoRouter appRouter = GoRouter(
       path: '/authOTP',
       name: AppRouterConstants.authOTP,
       builder: (context, state) {
-        return AuthOtpScreen();
+        final extra = state.extra as Map<String, dynamic>? ?? {};
+
+        final message = extra["message"] ?? "";
+        final email = extra["email"] ?? "";
+        final token = extra["token"] ?? "";
+
+        return AuthOtpScreen(message: message, email: email, token: token);
       },
     ),
 
@@ -84,7 +92,9 @@ GoRouter appRouter = GoRouter(
       path: '/authChangePassword',
       name: AppRouterConstants.authChangePassword,
       builder: (context, state) {
-        return AuthChangePasswordScreen();
+        // Email
+        final email = state.extra as String? ?? '';
+        return AuthChangePasswordScreen(email: email);
       },
     ),
 
@@ -141,12 +151,30 @@ GoRouter appRouter = GoRouter(
       },
     ),
 
+    // Chat List Screen
+    GoRoute(
+      path: '/chatList',
+      name: AppRouterConstants.chatList,
+      builder: (context, state) {
+        return ChatListScreen();
+      },
+    ),
+
     // Chat Screen
     GoRoute(
       path: '/chat',
       name: AppRouterConstants.chat,
       builder: (context, state) {
         return ChatScreen();
+      },
+    ),
+
+    // Doctor List Screen
+    GoRoute(
+      path: '/doctorList',
+      name: AppRouterConstants.doctorList,
+      builder: (context, state) {
+        return DoctorListScreen();
       },
     ),
 
@@ -211,10 +239,8 @@ GoRouter appRouter = GoRouter(
       builder: (context, state) {
         // Get the passed id from extra
         final operativeId = state.extra as String? ?? '';
-        return SurveyFormScreen(operativeId: operativeId,);
+        return SurveyFormScreen(operativeId: operativeId);
       },
     ),
-
-
   ],
 );

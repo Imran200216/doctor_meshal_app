@@ -13,6 +13,8 @@ class KAppBar extends StatelessWidget implements PreferredSizeWidget {
   final double? fontSize;
   final FontWeight? fontWeight;
 
+  final Widget? trailing; // 👈 NEW OPTIONAL TRAILING
+
   const KAppBar({
     super.key,
     required this.title,
@@ -23,6 +25,7 @@ class KAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.titleColor,
     this.fontSize,
     this.fontWeight,
+    this.trailing, // 👈 add to constructor
   });
 
   @override
@@ -33,9 +36,8 @@ class KAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     final titleWidget = Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: centerTitle
-          ? CrossAxisAlignment.center
-          : CrossAxisAlignment.start,
+      crossAxisAlignment:
+      centerTitle ? CrossAxisAlignment.center : CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
@@ -44,8 +46,7 @@ class KAppBar extends StatelessWidget implements PreferredSizeWidget {
             fontWeight: fontWeight ?? FontWeight.w700,
             color: titleColor ?? AppColorConstants.secondaryColor,
             fontFamily: "OpenSans",
-            fontSize:
-                fontSize ??
+            fontSize: fontSize ??
                 (isMobile
                     ? 18
                     : isTablet
@@ -63,10 +64,10 @@ class KAppBar extends StatelessWidget implements PreferredSizeWidget {
               fontSize: fontSize != null
                   ? fontSize! - 4
                   : (isMobile
-                        ? 14
-                        : isTablet
-                        ? 16
-                        : 18),
+                  ? 14
+                  : isTablet
+                  ? 16
+                  : 18),
               fontWeight: FontWeight.w400,
             ),
           ),
@@ -81,6 +82,8 @@ class KAppBar extends StatelessWidget implements PreferredSizeWidget {
         title: titleWidget,
         centerTitle: centerTitle,
         backgroundColor: backgroundColor ?? AppColorConstants.primaryColor,
+
+        // 👇 LEADING (BACK BUTTON)
         leading: IconButton(
           onPressed: onBack ?? () => Navigator.pop(context),
           icon: Icon(
@@ -88,6 +91,10 @@ class KAppBar extends StatelessWidget implements PreferredSizeWidget {
             color: AppColorConstants.secondaryColor,
           ),
         ),
+
+        // 👇 OPTIONAL TRAILING
+        actions: trailing != null ? [trailing!] : null,
+
         toolbarHeight: description != null ? 90 : kToolbarHeight,
       ),
     );

@@ -5,7 +5,7 @@ import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dar
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
 import 'package:meshal_doctor_booking_app/features/bottom_nav/view_model/cubit/bottom_nav_cubit.dart';
 import 'package:meshal_doctor_booking_app/features/education/view/education_screen.dart';
-import 'package:meshal_doctor_booking_app/features/home/presentation/screens/home_screen.dart';
+import 'package:meshal_doctor_booking_app/features/home/view/home_screen.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/view/peri_operative_screen.dart';
 import 'package:meshal_doctor_booking_app/features/profile/view/profile_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

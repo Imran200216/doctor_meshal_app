@@ -2,6 +2,9 @@ class AppAssetsConstants {
   // Png
   static const String splashLogo = "assets/images/png/splash-logo.png";
 
+  static const String personPlaceholder =
+      "assets/images/png/person-placeholder.png";
+
   // Jpeg
   static const String doctorIntro = "assets/images/jpeg/intro-doctor.jpeg";
 
@@ -47,4 +50,15 @@ class AppAssetsConstants {
   static const String status = "assets/icons/svg/status.svg";
 
   static const String empty = "assets/icons/svg/empty.svg";
+
+  static const String noDoctorFound = "assets/icons/svg/no-doctor-found.svg";
+
+  static const String doctor = "assets/icons/svg/doctor.svg";
+
+  static const String chats = "assets/icons/svg/chats.svg";
+
+  static const String noChatListFound =
+      "assets/icons/svg/no-chat-list-found.svg";
+
+  static const String noChatFound = "assets/icons/svg/no-chat-found.svg";
 }

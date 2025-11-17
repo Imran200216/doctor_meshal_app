@@ -46,7 +46,7 @@ class EmailAuthBloc extends Bloc<EmailAuthEvent, EmailAuthState> {
           AppLoggerHelper.logError(
             "No data returned from server for email: ${event.email}",
           );
-          emit(EmailAuthError("No data returned from server"));
+          emit(EmailAuthError("Login Failed!"));
           return;
         }
 
@@ -71,7 +71,6 @@ class EmailAuthBloc extends Bloc<EmailAuthEvent, EmailAuthState> {
     });
 
     // Email Auth Register Event
-
     on<EmailAuthRegisterEvent>((event, emit) async {
       emit(EmailAuthLoading());
 
@@ -122,6 +121,257 @@ class EmailAuthBloc extends Bloc<EmailAuthEvent, EmailAuthState> {
       } catch (e) {
         emit(EmailAuthError(e.toString()));
         AppLoggerHelper.logError("❌ Registration Error: $e");
+      }
+    });
+
+    // Email Auth Forget Password Event
+    on<EmailAuthForgotPasswordEvent>((event, emit) async {
+      emit(EmailAuthForgetPasswordLoading());
+
+      try {
+        String query =
+            '''
+       query Send_email_verification_for_forgot_user_password_ {
+  send_email_verification_for_forgot_user_password_(
+    email: "${event.email}"
+  ) {
+    message
+    success
+    token
+  }
+}
+
+        ''';
+
+        AppLoggerHelper.logInfo("GraphQL Query: $query");
+
+        final result = await graphQLService.performQuery(query);
+
+        // Access the data safely
+        final forgetPasswordData =
+            result.data?["send_email_verification_for_forgot_user_password_"];
+        AppLoggerHelper.logInfo("GraphQL Response Data: $forgetPasswordData");
+
+        if (forgetPasswordData == null) {
+          AppLoggerHelper.logError(
+            "No data returned from server for email: ${event.email}",
+          );
+          emit(
+            EmailAuthForgetPasswordFailure(
+              message: "Please enter valid Email Address",
+            ),
+          );
+          return;
+        }
+
+        emit(
+          EmailAuthForgetPasswordSuccess(
+            message: forgetPasswordData['message'],
+            success: forgetPasswordData['success'],
+            token: forgetPasswordData['token'],
+          ),
+        );
+
+        AppLoggerHelper.logInfo(
+          "Email login successful for email: ${event.email}",
+        );
+      } catch (e) {
+        emit(EmailAuthForgetPasswordFailure(message: e.toString()));
+      }
+    });
+
+    // Email Auth OTP Verification
+    on<EmailAuthVerifyOTPEvent>((event, emit) async {
+      emit(EmailAuthOTPVerificationLoading());
+
+      try {
+        String query =
+            ''' 
+        query Verification_OTP_Forgotpassword_Emailveriy_ {
+  Verification_OTP_Forgotpassword_Emailveriy_(
+    email: "${event.email}"
+    otp_: "${event.otp}"
+    token: "${event.token}"
+  ) {
+    message
+    status
+  }
+}
+
+         ''';
+
+        AppLoggerHelper.logInfo("GraphQL Query: $query");
+
+        final result = await graphQLService.performQuery(query);
+
+        // Access the data safely
+        final verifyOTPForgetPasswordData =
+            result.data?["Verification_OTP_Forgotpassword_Emailveriy_"];
+        AppLoggerHelper.logInfo(
+          "GraphQL Response Data: $verifyOTPForgetPasswordData",
+        );
+
+        if (verifyOTPForgetPasswordData == null) {
+          AppLoggerHelper.logError(
+            "No data returned from server for email: ${event.email}",
+          );
+          emit(
+            EmailAuthOTPVerificationFailure(
+              message: "Please Enter Valid OTP",
+              status: false,
+            ),
+          );
+          return;
+        }
+
+        emit(
+          EmailAuthOTPVerificationSuccess(
+            message: verifyOTPForgetPasswordData['message'],
+            status: verifyOTPForgetPasswordData['status'] == true,
+          ),
+        );
+
+        AppLoggerHelper.logInfo(
+          "Email otp verification successful for email: ${event.email}",
+        );
+      } catch (e) {
+        emit(
+          EmailAuthOTPVerificationFailure(message: e.toString(), status: false),
+        );
+      }
+    });
+
+    // Email Auth Change Password
+    on<EmailAuthChangePasswordEvent>((event, emit) async {
+      emit(EmailAuthChangePasswordLoading());
+
+      try {
+        String query =
+            ''' 
+        query Reset_User_Password_forgot_password {
+  Reset_User_Password_forgot_password(
+    email: "${event.email}"
+    newpassword: "${event.newPassword}"
+    confirm_password: "${event.confirmPassword}"
+  ) {
+    message
+    status
+  }
+}
+   ''';
+
+        AppLoggerHelper.logInfo("GraphQL Query: $query");
+
+        final result = await graphQLService.performQuery(query);
+
+        // Access the data safely
+        final resetUserForgetPasswordData =
+            result.data?["Reset_User_Password_forgot_password"];
+        AppLoggerHelper.logInfo(
+          "GraphQL Response Data: $resetUserForgetPasswordData",
+        );
+
+        if (resetUserForgetPasswordData == null) {
+          AppLoggerHelper.logError(
+            "No data returned from server for email: ${event.email}",
+          );
+          emit(
+            EmailAuthChangePasswordFailure(
+              message: "Please Enter Valid OTP",
+              status: resetUserForgetPasswordData['status'] == false,
+            ),
+          );
+          return;
+        }
+
+        emit(
+          EmailAuthChangePasswordSuccess(
+            message: resetUserForgetPasswordData['message'],
+            status: resetUserForgetPasswordData['status'] == true,
+          ),
+        );
+
+        AppLoggerHelper.logInfo(
+          "Email otp verification successful for email: ${event.email}",
+        );
+      } catch (e) {
+        emit(
+          EmailAuthChangePasswordFailure(message: e.toString(), status: false),
+        );
+      }
+    });
+
+    // Email Auth OTP Resend
+    on<EmailAuthOTPResendEvent>((event, emit) async {
+      emit(EmailAuthResendOTPLoading());
+
+      try {
+        String query =
+            ''' 
+      query Resend_OTP_for_Email_Verification_forgotpassword_ {
+        Resend_OTP_for_Email_Verification_forgotpassword_(
+          email: "${event.email}"
+        ) {
+          message
+          success
+          token
+        }
+      }
+    ''';
+
+        AppLoggerHelper.logInfo("GraphQL Query: $query");
+
+        final result = await graphQLService.performQuery(query);
+
+        // Access the data safely
+        final resendOTPData =
+            result.data?["Resend_OTP_for_Email_Verification_forgotpassword_"];
+
+        AppLoggerHelper.logInfo("GraphQL Response Data: $resendOTPData");
+
+        // Check if data is null or if the operation failed
+        if (resendOTPData == null) {
+          AppLoggerHelper.logError(
+            "No data returned from server for email: ${event.email}",
+          );
+          emit(
+            EmailAuthResendOTPFailure(
+              message: "No response from server",
+              success: false,
+            ),
+          );
+          return;
+        }
+
+        // Check if the operation was successful
+        if (resendOTPData['success'] == true) {
+          emit(
+            EmailAuthResendOTPSuccess(
+              message: resendOTPData['message'],
+              success: true,
+              token: resendOTPData['token'],
+            ),
+          );
+          AppLoggerHelper.logInfo(
+            "Email OTP resend successful for email: ${event.email}",
+          );
+        } else {
+          // API returned success: false
+          emit(
+            EmailAuthResendOTPFailure(
+              message: resendOTPData['message'] ?? "Failed to resend OTP",
+              success: false,
+            ),
+          );
+        }
+      } catch (e) {
+        AppLoggerHelper.logError("Error resending OTP: $e");
+        emit(
+          EmailAuthResendOTPFailure(
+            message: "An error occurred: ${e.toString()}",
+            success: false,
+          ),
+        );
       }
     });
   }

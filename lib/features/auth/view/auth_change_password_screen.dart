@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_filled_btn.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_password_text_form_field.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/k_snack_bar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
+import 'package:meshal_doctor_booking_app/core/utils/app_validator.dart';
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
+import 'package:meshal_doctor_booking_app/features/auth/view_model/bloc/email_auth/email_auth_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/auth/widgets/auth_app_bar.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 
 class AuthChangePasswordScreen extends StatefulWidget {
-  const AuthChangePasswordScreen({super.key});
+  final String email;
+
+  const AuthChangePasswordScreen({super.key, required this.email});
 
   @override
   State<AuthChangePasswordScreen> createState() =>
@@ -18,6 +24,9 @@ class AuthChangePasswordScreen extends StatefulWidget {
 }
 
 class _AuthChangePasswordScreenState extends State<AuthChangePasswordScreen> {
+  // Form Key
+  final _formKey = GlobalKey<FormState>();
+
   // Controllers
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
@@ -47,102 +56,145 @@ class _AuthChangePasswordScreenState extends State<AuthChangePasswordScreen> {
           GoRouter.of(context).pop();
         },
       ),
-      body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        physics: const BouncingScrollPhysics(),
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: isMobile
-                ? 20
-                : isTablet
-                ? 30
-                : 40,
-            vertical: isMobile
-                ? 20
-                : isTablet
-                ? 30
-                : 40,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Title
-              KText(
-                text: appLoc.changePassword,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.visible,
-                fontSize: isMobile
-                    ? 22
-                    : isTablet
-                    ? 24
-                    : 26,
-                fontWeight: FontWeight.w700,
-                color: AppColorConstants.titleColor,
-              ),
+      body: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          physics: const BouncingScrollPhysics(),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: isMobile
+                  ? 20
+                  : isTablet
+                  ? 30
+                  : 40,
+              vertical: isMobile
+                  ? 20
+                  : isTablet
+                  ? 30
+                  : 40,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Title
+                KText(
+                  text: appLoc.changePassword,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.visible,
+                  fontSize: isMobile
+                      ? 22
+                      : isTablet
+                      ? 24
+                      : 26,
+                  fontWeight: FontWeight.w700,
+                  color: AppColorConstants.titleColor,
+                ),
 
-              const SizedBox(height: 12),
+                const SizedBox(height: 12),
 
-              // Sub Title
-              KText(
-                text: appLoc.changePasswordSubTitle,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.visible,
-                maxLines: 3,
-                fontSize: isMobile
-                    ? 16
-                    : isTablet
-                    ? 18
-                    : 20,
-                fontWeight: FontWeight.w500,
-                color: AppColorConstants.subTitleColor,
-              ),
+                // Sub Title
+                KText(
+                  text: appLoc.changePasswordSubTitle,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.visible,
+                  maxLines: 3,
+                  fontSize: isMobile
+                      ? 16
+                      : isTablet
+                      ? 18
+                      : 20,
+                  fontWeight: FontWeight.w500,
+                  color: AppColorConstants.subTitleColor,
+                ),
 
-              const SizedBox(height: 30),
+                const SizedBox(height: 30),
 
-              // Password Text Form Field
-              KPasswordTextFormField(
-                controller: passwordController,
-                hintText: appLoc.enterPassword,
-                labelText: appLoc.password,
-              ),
+                // Password Text Form Field
+                KPasswordTextFormField(
+                  controller: passwordController,
+                  hintText: appLoc.enterPassword,
+                  labelText: appLoc.password,
+                  validator: (value) => AppValidators.password(context, value),
+                  autofillHints: [
+                    AutofillHints.password,
+                    AutofillHints.newPassword,
+                  ],
+                ),
 
-              const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-              // Confirm Password Text Form Field
-              KPasswordTextFormField(
-                controller: confirmPasswordController,
-                hintText: appLoc.enterConfirmPassword,
-                labelText: appLoc.confirmPassword,
-              ),
-
-              const SizedBox(height: 50),
-
-              // Change Password Btn
-              KFilledBtn(
-                btnTitle: appLoc.changePassword,
-                btnBgColor: AppColorConstants.primaryColor,
-                btnTitleColor: AppColorConstants.secondaryColor,
-                onTap: () {
-                  // Auth Change Password Success Screen
-                  GoRouter.of(
+                // Confirm Password Text Form Field
+                KPasswordTextFormField(
+                  controller: confirmPasswordController,
+                  hintText: appLoc.enterConfirmPassword,
+                  labelText: appLoc.confirmPassword,
+                  validator: (value) => AppValidators.confirmPassword(
                     context,
-                  ).pushNamed(AppRouterConstants.authChangePasswordSuccess);
-                },
-                borderRadius: 12,
-                fontSize: isMobile
-                    ? 16
-                    : isTablet
-                    ? 18
-                    : 20,
-                btnHeight: isMobile
-                    ? 50
-                    : isTablet
-                    ? 52
-                    : 54,
-                btnWidth: double.maxFinite,
-              ),
-            ],
+                    value,
+                    passwordController.text.trim(),
+                  ),
+                  autofillHints: [
+                    AutofillHints.password,
+                    AutofillHints.newPassword,
+                  ],
+                ),
+
+                const SizedBox(height: 50),
+
+                // Change Password Btn
+                BlocConsumer<EmailAuthBloc, EmailAuthState>(
+                  listener: (context, state) {
+                    if (state is EmailAuthChangePasswordSuccess) {
+                      // Success Snack Bar
+                      KSnackBar.success(
+                        context,
+                        "Password Changed Successfully",
+                      );
+
+                      // Auth Change Password Success Screen
+                      GoRouter.of(
+                        context,
+                      ).pushNamed(AppRouterConstants.authChangePasswordSuccess);
+                    }
+                  },
+                  builder: (context, state) {
+                    return KFilledBtn(
+                      isLoading: state is EmailAuthChangePasswordLoading,
+                      btnTitle: appLoc.changePassword,
+                      btnBgColor: AppColorConstants.primaryColor,
+                      btnTitleColor: AppColorConstants.secondaryColor,
+                      onTap: () async {
+                        if (_formKey.currentState!.validate()) {
+                          // Email Auth Change Password Event
+                          context.read<EmailAuthBloc>().add(
+                            EmailAuthChangePasswordEvent(
+                              email: widget.email,
+                              newPassword: passwordController.text.trim(),
+                              confirmPassword: confirmPasswordController.text
+                                  .trim(),
+                            ),
+                          );
+                        }
+                      },
+                      borderRadius: 12,
+                      fontSize: isMobile
+                          ? 16
+                          : isTablet
+                          ? 18
+                          : 20,
+                      btnHeight: isMobile
+                          ? 50
+                          : isTablet
+                          ? 52
+                          : 54,
+                      btnWidth: double.maxFinite,
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

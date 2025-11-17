@@ -3,7 +3,7 @@ import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
 
-class KTextFormField extends StatelessWidget {
+class ChatMessageTextFormField extends StatelessWidget {
   final bool readOnly;
   final String? labelText;
   final TextEditingController controller;
@@ -14,9 +14,9 @@ class KTextFormField extends StatelessWidget {
   final Iterable<String>? autofillHints;
   final int? maxLines;
 
-  final Widget? prefixIcon; // 👈 Added Optional Prefix Icon
+  final Widget? prefixIcon;
 
-  const KTextFormField({
+  const ChatMessageTextFormField({
     super.key,
     required this.controller,
     required this.hintText,
@@ -27,7 +27,7 @@ class KTextFormField extends StatelessWidget {
     this.labelText,
     this.maxLines,
     this.readOnly = false,
-    this.prefixIcon, // 👈 Allow passing prefix icon
+    this.prefixIcon,
   });
 
   @override
@@ -63,41 +63,32 @@ class KTextFormField extends StatelessWidget {
           maxLines: maxLines ?? 1,
           style: const TextStyle(fontWeight: FontWeight.w600),
           decoration: InputDecoration(
-            prefixIcon: prefixIcon, // 👈 Optional prefix icon
+            prefixIcon: prefixIcon,
 
+            // 👈 Optional prefix icon
             filled: true,
-            fillColor: AppColorConstants.secondaryColor.withOpacity(0.1),
+            fillColor: AppColorConstants.subTitleColor.withOpacity(0.1),
 
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: AppColorConstants.subTitleColor.withOpacity(0.2),
-                width: 1,
-              ),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: AppColorConstants.subTitleColor.withOpacity(0.2),
-                width: 1,
-              ),
+              borderRadius: BorderRadius.circular(30),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(30),
               borderSide: BorderSide(
                 color: AppColorConstants.primaryColor,
                 width: 1,
               ),
             ),
             errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(30),
               borderSide: BorderSide(
                 color: AppColorConstants.errorBorderColor,
                 width: 1,
               ),
             ),
             focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(30),
               borderSide: BorderSide(
                 color: AppColorConstants.primaryColor,
                 width: 1,
@@ -110,4 +101,3 @@ class KTextFormField extends StatelessWidget {
     );
   }
 }
-

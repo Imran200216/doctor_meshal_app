@@ -1,56 +1,73 @@
+import 'package:flutter/material.dart';
+import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
+
 class AppValidators {
-  static String? email(String? value) {
+  static String? email(BuildContext context, String? value) {
+    final appLoc = AppLocalizations.of(context)!;
+
     if (value == null || value.trim().isEmpty) {
-      return "Email cannot be empty";
+      return appLoc.emailEmpty;
     }
 
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     if (!emailRegex.hasMatch(value.trim())) {
-      return "Enter a valid email address";
+      return appLoc.emailInvalid;
     }
 
     return null;
   }
 
-  static String? password(String? value) {
+  static String? password(BuildContext context, String? value) {
+    final appLoc = AppLocalizations.of(context)!;
+
     if (value == null || value.trim().isEmpty) {
-      return "Password cannot be empty";
+      return appLoc.passwordEmpty;
     }
     return null;
   }
 
-  static String? firstName(String? value) {
+  static String? firstName(BuildContext context, String? value) {
+    final appLoc = AppLocalizations.of(context)!;
+
     if (value == null || value.trim().isEmpty) {
-      return "First name cannot be empty";
+      return appLoc.firstNameEmpty;
     }
     return null;
   }
 
-  static String? lastName(String? value) {
+  static String? lastName(BuildContext context, String? value) {
+    final appLoc = AppLocalizations.of(context)!;
+
     if (value == null || value.trim().isEmpty) {
-      return "Last name cannot be empty";
+      return appLoc.lastNameEmpty;
     }
     return null;
   }
 
-  static String? phoneNumber(String? value) {
+  static String? phoneNumber(BuildContext context, String? value) {
+    final appLoc = AppLocalizations.of(context)!;
+
     if (value == null || value.trim().isEmpty) {
-      return "Phone number cannot be empty";
+      return appLoc.phoneNumberEmpty;
     }
     return null;
   }
 
+  static String? confirmPassword(
+      BuildContext context,
+      String? value,
+      String newPassword,
+      ) {
+    final appLoc = AppLocalizations.of(context)!;
 
-  static String? confirmPassword(String? value, String newPassword) {
     if (value == null || value.trim().isEmpty) {
-      return "Confirm password cannot be empty";
+      return appLoc.confirmPasswordEmpty;
     }
 
     if (value.trim() != newPassword.trim()) {
-      return "Passwords do not match";
+      return appLoc.passwordsDoNotMatch;
     }
 
     return null;
   }
-
 }

@@ -9,6 +9,7 @@ final class EmailAuthInitial extends EmailAuthState {
   List<Object> get props => [];
 }
 
+// Email Auth Login & Register
 final class EmailAuthLoading extends EmailAuthState {
   @override
   List<Object> get props => [];
@@ -31,7 +32,6 @@ class EmailAuthSuccess extends EmailAuthState {
   List<Object?> get props => [id, message, success, token];
 }
 
-
 final class EmailAuthError extends EmailAuthState {
   final String message;
 
@@ -40,4 +40,146 @@ final class EmailAuthError extends EmailAuthState {
   @override
   // TODO: implement props
   List<Object?> get props => [message];
+}
+
+// Email Auth Forget Password
+final class EmailAuthForgetPasswordLoading extends EmailAuthState {
+  @override
+  List<Object> get props => [];
+}
+
+// Email Auth Forget Password Success
+class EmailAuthForgetPasswordSuccess extends EmailAuthState {
+  final String message;
+  final bool success;
+  final String token;
+
+  const EmailAuthForgetPasswordSuccess({
+    required this.message,
+    required this.success,
+    required this.token,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [message, token, success];
+}
+
+class EmailAuthForgetPasswordFailure extends EmailAuthState {
+  final String message;
+
+  const EmailAuthForgetPasswordFailure({required this.message});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [message];
+}
+
+// Email Auth Forget Password
+final class EmailAuthOTPVerificationLoading extends EmailAuthState {
+  @override
+  List<Object> get props => [];
+}
+
+// Email Auth Forget Password Success
+class EmailAuthOTPVerificationSuccess extends EmailAuthState {
+  final String message;
+  final bool status;
+
+  const EmailAuthOTPVerificationSuccess({
+    required this.message,
+    required this.status,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [message];
+}
+
+class EmailAuthOTPVerificationFailure extends EmailAuthState {
+  final String message;
+  final bool status;
+
+  const EmailAuthOTPVerificationFailure({
+    required this.message,
+    required this.status,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [message, status];
+}
+
+// Email Auth Change Password Loading
+final class EmailAuthChangePasswordLoading extends EmailAuthState {
+  @override
+  List<Object> get props => [];
+}
+
+// Email Auth Change Password Success
+class EmailAuthChangePasswordSuccess extends EmailAuthState {
+  final String message;
+  final bool status;
+
+  const EmailAuthChangePasswordSuccess({
+    required this.message,
+    required this.status,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [message];
+}
+
+// Email Auth Change Password Failure
+class EmailAuthChangePasswordFailure extends EmailAuthState {
+  final String message;
+  final bool status;
+
+  const EmailAuthChangePasswordFailure({
+    required this.message,
+    required this.status,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [message, status];
+}
+
+// Email Auth Resend OTP Loading
+final class EmailAuthResendOTPLoading extends EmailAuthState {
+  @override
+  List<Object> get props => [];
+}
+
+// Email Auth Resend OTP Success
+class EmailAuthResendOTPSuccess extends EmailAuthState {
+  final String message;
+  final bool success;
+  final String token;
+
+  const EmailAuthResendOTPSuccess({
+    required this.message,
+    required this.success,
+    required this.token,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [message, success, token];
+}
+
+// Email Auth Resend OTP Failure
+class EmailAuthResendOTPFailure extends EmailAuthState {
+  final String message;
+  final bool success;
+
+  const EmailAuthResendOTPFailure({
+    required this.message,
+    required this.success,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [message, success];
 }

@@ -97,5 +97,21 @@
   "internetConnection": "No Internet Connection",
   "back": "Back",
   "alertSurveyFormTitle": "Are you sure you want to exit?",
-  "alertSurveyFormDescription": "Your form progress will be lost if you leave this page. Do you want to continue?"
+  "alertSurveyFormDescription": "Your form progress will be lost if you leave this page. Do you want to continue?",
+  "languageSelected": "Language Selected Successfully",
+  "search": "Search",
+  "typeYourMessage": "Type your message",
+  "chats": "Chats",
+  "emailEmpty": "Email cannot be empty",
+  "emailInvalid": "Enter a valid email address",
+  "passwordEmpty": "Password cannot be empty",
+  "firstNameEmpty": "First name cannot be empty",
+  "lastNameEmpty": "Last name cannot be empty",
+  "phoneNumberEmpty": "Phone number cannot be empty",
+  "confirmPasswordEmpty": "Confirm password cannot be empty",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "doctorList": "Doctors List",
+  "searchDoctors": "Search Doctors",
+  "noChatsFound" : "No Chats Found",
+  "noDoctorsFound" : "No Doctors Found"
 }

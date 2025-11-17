@@ -304,4 +304,52 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get alertSurveyFormDescription => 'سيتم فقدان تقدمك في النموذج إذا غادرت هذه الصفحة. هل ترغب في المتابعة؟';
+
+  @override
+  String get languageSelected => 'تم اختيار اللغة بنجاح';
+
+  @override
+  String get search => 'بحث';
+
+  @override
+  String get typeYourMessage => 'اكتب رسالتك';
+
+  @override
+  String get chats => 'الدردشات';
+
+  @override
+  String get emailEmpty => 'لا يمكن أن يكون البريد الإلكتروني فارغًا';
+
+  @override
+  String get emailInvalid => 'الرجاء إدخال بريد إلكتروني صالح';
+
+  @override
+  String get passwordEmpty => 'لا يمكن أن تكون كلمة المرور فارغة';
+
+  @override
+  String get firstNameEmpty => 'لا يمكن أن يكون الاسم الأول فارغًا';
+
+  @override
+  String get lastNameEmpty => 'لا يمكن أن يكون اسم العائلة فارغًا';
+
+  @override
+  String get phoneNumberEmpty => 'لا يمكن أن يكون رقم الهاتف فارغًا';
+
+  @override
+  String get confirmPasswordEmpty => 'لا يمكن أن يكون تأكيد كلمة المرور فارغًا';
+
+  @override
+  String get passwordsDoNotMatch => 'كلمتا المرور غير متطابقتين';
+
+  @override
+  String get doctorList => 'قائمة الأطباء';
+
+  @override
+  String get searchDoctors => 'البحث عن الأطباء';
+
+  @override
+  String get noChatsFound => 'لا توجد دردشات';
+
+  @override
+  String get noDoctorsFound => 'لا يوجد أطباء';
 }

@@ -97,6 +97,21 @@
   "internetConnection": "لا يوجد اتصال بالإنترنت",
   "back": "رجوع",
   "alertSurveyFormTitle": "هل أنت متأكد أنك تريد الخروج؟",
-  "alertSurveyFormDescription": "سيتم فقدان تقدمك في النموذج إذا غادرت هذه الصفحة. هل ترغب في المتابعة؟"
-
+  "alertSurveyFormDescription": "سيتم فقدان تقدمك في النموذج إذا غادرت هذه الصفحة. هل ترغب في المتابعة؟",
+  "languageSelected": "تم اختيار اللغة بنجاح",
+  "search": "بحث",
+  "typeYourMessage": "اكتب رسالتك",
+  "chats": "الدردشات",
+  "emailEmpty": "لا يمكن أن يكون البريد الإلكتروني فارغًا",
+  "emailInvalid": "الرجاء إدخال بريد إلكتروني صالح",
+  "passwordEmpty": "لا يمكن أن تكون كلمة المرور فارغة",
+  "firstNameEmpty": "لا يمكن أن يكون الاسم الأول فارغًا",
+  "lastNameEmpty": "لا يمكن أن يكون اسم العائلة فارغًا",
+  "phoneNumberEmpty": "لا يمكن أن يكون رقم الهاتف فارغًا",
+  "confirmPasswordEmpty": "لا يمكن أن يكون تأكيد كلمة المرور فارغًا",
+  "passwordsDoNotMatch": "كلمتا المرور غير متطابقتين",
+  "doctorList": "قائمة الأطباء",
+  "searchDoctors": "البحث عن الأطباء",
+  "noChatsFound": "لا توجد دردشات",
+  "noDoctorsFound": "لا يوجد أطباء"
 }

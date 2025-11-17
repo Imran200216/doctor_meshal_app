@@ -105,7 +105,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         title: appLoc.personDetails,
         onBack: () => GoRouter.of(context).pop(),
       ),
-      body: RefreshIndicator(
+      body: RefreshIndicator.adaptive(
         color: AppColorConstants.secondaryColor,
         backgroundColor: AppColorConstants.primaryColor,
         onRefresh: () async {

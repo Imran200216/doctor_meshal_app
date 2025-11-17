@@ -109,7 +109,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   controller: _oldPasswordController,
                   hintText: appLoc.enterOldPassword,
                   labelText: appLoc.oldPassword,
-                  validator: (value) => AppValidators.password(value),
+                  validator: (value) => AppValidators.password(context, value),
                 ),
 
                 const SizedBox(height: 20),
@@ -119,7 +119,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   controller: _newPasswordController,
                   hintText: appLoc.enterNewPassword,
                   labelText: appLoc.newPassword,
-                  validator: (value) => AppValidators.password(value),
+                  validator: (value) => AppValidators.password(context, value),
                 ),
 
                 const SizedBox(height: 20),
@@ -130,6 +130,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   hintText: appLoc.enterConfirmPassword,
                   labelText: appLoc.confirmPassword,
                   validator: (value) => AppValidators.confirmPassword(
+                    context,
                     value,
                     _newPasswordController.text,
                   ),

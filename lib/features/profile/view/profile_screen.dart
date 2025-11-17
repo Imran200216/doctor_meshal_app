@@ -5,12 +5,13 @@ import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
+import 'package:meshal_doctor_booking_app/core/constants/app_url_constants.dart';
 import 'package:meshal_doctor_booking_app/core/service/hive_service.dart';
 import 'package:meshal_doctor_booking_app/core/utils/app_logger_helper.dart';
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
 import 'package:meshal_doctor_booking_app/core/utils/url_launcher_helper.dart';
 import 'package:meshal_doctor_booking_app/features/auth/view_model/bloc/user_auth/user_auth_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/localization/cubit/localization_cubit.dart';
+import 'package:meshal_doctor_booking_app/features/localization/view_model/cubit/localization_cubit.dart';
 import 'package:meshal_doctor_booking_app/features/profile/widgets/profile_details_container.dart';
 import 'package:meshal_doctor_booking_app/features/profile/widgets/profile_list_tile.dart';
 import 'package:meshal_doctor_booking_app/features/profile/widgets/profile_localization_bottom_sheet.dart';
@@ -89,7 +90,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           if (state is GetUserAuthSuccess) {
             final user = state.user;
 
-            return RefreshIndicator(
+            return RefreshIndicator.adaptive(
               color: AppColorConstants.secondaryColor,
               backgroundColor: AppColorConstants.primaryColor,
               onRefresh: () async {
@@ -272,21 +273,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             spacing: 10,
             children: [
-              ProfileListTile(
-                prefixIcon: Icons.app_registration,
-                title: appLoc.termsAndConditions,
-                onTap: () {
-                  UrlLauncherHelper.launchUrlLink('https://flutter.dev');
-                },
-              ),
+              // ProfileListTile(
+              //   prefixIcon: Icons.app_registration,
+              //   title: appLoc.termsAndConditions,
+              //   onTap: () {
+              //     UrlLauncherHelper.launchUrlLink('https://flutter.dev');
+              //   },
+              // ),
 
+              // Privacy Policy
               ProfileListTile(
                 prefixIcon: Icons.privacy_tip_outlined,
                 title: appLoc.privacyPolicy,
                 onTap: () {
-                  UrlLauncherHelper.launchUrlLink('https://flutter.dev');
+                  // Privacy Policy
+                  UrlLauncherHelper.launchUrlLink(
+                    AppUrlConstants.privacyPolicy,
+                  );
                 },
               ),
+
+              // Support
+
             ],
           ),
         ),

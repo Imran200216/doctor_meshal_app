@@ -688,6 +688,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your form progress will be lost if you leave this page. Do you want to continue?'**
   String get alertSurveyFormDescription;
+
+  /// No description provided for @languageSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Language Selected Successfully'**
+  String get languageSelected;
+
+  /// No description provided for @search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get search;
+
+  /// No description provided for @typeYourMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Type your message'**
+  String get typeYourMessage;
+
+  /// No description provided for @chats.
+  ///
+  /// In en, this message translates to:
+  /// **'Chats'**
+  String get chats;
+
+  /// No description provided for @emailEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Email cannot be empty'**
+  String get emailEmpty;
+
+  /// No description provided for @emailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email address'**
+  String get emailInvalid;
+
+  /// No description provided for @passwordEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Password cannot be empty'**
+  String get passwordEmpty;
+
+  /// No description provided for @firstNameEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'First name cannot be empty'**
+  String get firstNameEmpty;
+
+  /// No description provided for @lastNameEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Last name cannot be empty'**
+  String get lastNameEmpty;
+
+  /// No description provided for @phoneNumberEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number cannot be empty'**
+  String get phoneNumberEmpty;
+
+  /// No description provided for @confirmPasswordEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password cannot be empty'**
+  String get confirmPasswordEmpty;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @doctorList.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctors List'**
+  String get doctorList;
+
+  /// No description provided for @searchDoctors.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Doctors'**
+  String get searchDoctors;
+
+  /// No description provided for @noChatsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No Chats Found'**
+  String get noChatsFound;
+
+  /// No description provided for @noDoctorsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No Doctors Found'**
+  String get noDoctorsFound;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

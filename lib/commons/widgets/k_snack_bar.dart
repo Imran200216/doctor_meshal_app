@@ -10,20 +10,28 @@ class KSnackBar {
       position: DelightSnackbarPosition.bottom,
       autoDismiss: true,
       snackbarDuration: const Duration(seconds: 2),
-      builder: (context) => ToastCard(
-        color: Colors.green,
-        leading: const Icon(Icons.check_circle, color: Colors.white, size: 26),
-        title: Text(
-          message,
-          style: const TextStyle(
+      builder: (context) => Directionality(
+        textDirection: TextDirection.ltr,   // 👈 APPLY HERE
+        child: ToastCard(
+          color: Colors.green,
+          leading: const Icon(
+            Icons.check_circle,
             color: Colors.white,
-            fontWeight: FontWeight.w600,
-            fontSize: 14,
+            size: 26,
+          ),
+          title: Text(
+            message,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
           ),
         ),
       ),
     ).show(context);
   }
+
 
   // ERROR SNACKBAR
   static void error(BuildContext context, String message) {
@@ -31,18 +39,26 @@ class KSnackBar {
       position: DelightSnackbarPosition.bottom,
       autoDismiss: true,
       snackbarDuration: const Duration(seconds: 2),
-      builder: (context) => ToastCard(
-        color: Colors.red,
-        leading: const Icon(Icons.error, color: Colors.white, size: 26),
-        title: Text(
-          message,
-          style: const TextStyle(
+      builder: (context) => Directionality(
+        textDirection: TextDirection.ltr,
+        child: ToastCard(
+          color: Colors.red,
+          leading: const Icon(
+            Icons.error,
             color: Colors.white,
-            fontWeight: FontWeight.w600,
-            fontSize: 14,
+            size: 26,
+          ),
+          title: Text(
+            message,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
           ),
         ),
       ),
     ).show(context);
   }
+
 }

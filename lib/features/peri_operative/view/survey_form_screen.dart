@@ -15,6 +15,7 @@ import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/view_model/bloc/survey_operative_form/survey_operative_form_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/view_model/cubit/survey_form/survey_form_selection_cubit.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/widgets/survey_form_card.dart';
+import 'package:meshal_doctor_booking_app/features/peri_operative/widgets/survey_form_skeleton.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 
 class SurveyFormScreen extends StatefulWidget {
@@ -35,6 +36,7 @@ class _SurveyFormScreenState extends State<SurveyFormScreen> {
     _fetchSurveyFormData();
   }
 
+  // Fetch Survey Form Data
   Future<void> _fetchSurveyFormData() async {
     try {
       await HiveService.openBox(AppDBConstants.userBox);
@@ -61,8 +63,11 @@ class _SurveyFormScreenState extends State<SurveyFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Responsive
     final isTablet = Responsive.isTablet(context);
     final isMobile = Responsive.isMobile(context);
+
+    // Localization
     final appLoc = AppLocalizations.of(context)!;
 
     return Directionality(
@@ -131,7 +136,7 @@ class _SurveyFormScreenState extends State<SurveyFormScreen> {
               builder: (context) {
                 if (state is SurveyOperativeFormLoading ||
                     state is AddSurveyOperativeFormLoading) {
-                  return const Center(child: CircularProgressIndicator());
+                  return SurveyFormSkeleton();
                 }
 
                 if (state is SurveyOperativeFormError) {

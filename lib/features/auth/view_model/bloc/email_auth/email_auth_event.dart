@@ -65,3 +65,59 @@ class EmailAuthRegisterEvent extends EmailAuthEvent {
     phoneNumber,
   ];
 }
+
+// Forgot Password
+class EmailAuthForgotPasswordEvent extends EmailAuthEvent {
+  final String email;
+
+  const EmailAuthForgotPasswordEvent({required this.email});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [email];
+}
+
+// Verification OTP Forget Password Verify Event
+class EmailAuthVerifyOTPEvent extends EmailAuthEvent {
+  final String email;
+  final String otp;
+  final String token;
+
+  const EmailAuthVerifyOTPEvent({
+    required this.email,
+    required this.otp,
+    required this.token,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [email, otp, token];
+}
+
+// Email Auth Change Password Event
+class EmailAuthChangePasswordEvent extends EmailAuthEvent {
+  final String email;
+  final String newPassword;
+  final String confirmPassword;
+
+  const EmailAuthChangePasswordEvent({
+    required this.email,
+    required this.newPassword,
+    required this.confirmPassword,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [email, confirmPassword, newPassword];
+}
+
+// Email Auth OTP Resend Event
+class EmailAuthOTPResendEvent extends EmailAuthEvent {
+  final String email;
+
+  const EmailAuthOTPResendEvent({required this.email});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [email];
+}

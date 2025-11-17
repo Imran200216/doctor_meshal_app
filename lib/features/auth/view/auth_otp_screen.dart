@@ -1,16 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/k_snack_bar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
+import 'package:meshal_doctor_booking_app/features/auth/view_model/bloc/email_auth/email_auth_bloc.dart';
+import 'package:meshal_doctor_booking_app/features/auth/widgets/auth_app_bar.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 import 'package:pinput/pinput.dart';
 
-import '../widgets/auth_app_bar.dart' show AuthAppBar;
-
 class AuthOtpScreen extends StatelessWidget {
-  const AuthOtpScreen({super.key});
+  final String message;
+  final String email;
+  final String token;
+
+  const AuthOtpScreen({
+    super.key,
+    required this.message,
+    required this.email,
+    required this.token,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +132,7 @@ class AuthOtpScreen extends StatelessWidget {
 
               // Sub Title
               KText(
-                text: "${appLoc.otpSubTitle} imran@babuji162002@gmail.com",
+                text: message,
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.visible,
                 maxLines: 3,
@@ -137,22 +148,61 @@ class AuthOtpScreen extends StatelessWidget {
               const SizedBox(height: 30),
 
               // OTP Input
-              Pinput(
-                length: 6,
-                defaultPinTheme: defaultPinTheme,
-                focusedPinTheme: focusedPinTheme,
-                submittedPinTheme: submittedPinTheme,
-                showCursor: true,
-                cursor: Container(
-                  width: 2,
-                  height: 24,
-                  color: AppColorConstants.primaryColor,
-                ),
-                hapticFeedbackType: HapticFeedbackType.lightImpact,
-                autofocus: true,
-                keyboardType: TextInputType.number,
-                onSubmitted: (value) {
+              // OTP Input
+              BlocConsumer<EmailAuthBloc, EmailAuthState>(
+                listener: (context, state) {
+                  if (state is EmailAuthOTPVerificationSuccess) {
+                    if (state.status == true) {
+                      KSnackBar.success(context, "OTP Verified Successfully");
+                      GoRouter.of(context).pushReplacementNamed(
+                        AppRouterConstants.authChangePassword,
+                        extra: email,
+                      );
+                    } else {
+                      KSnackBar.error(context, state.message);
+                    }
+                  }
 
+                  if (state is EmailAuthOTPVerificationFailure) {
+                    KSnackBar.error(context, state.message);
+                  }
+
+                  if (state is EmailAuthResendOTPSuccess) {
+                    if (state.success) {
+                      KSnackBar.success(context, state.message);
+                    } else {
+                      KSnackBar.error(context, state.message);
+                    }
+                  }
+
+                  if (state is EmailAuthResendOTPFailure) {
+                    KSnackBar.error(context, state.message);
+                  }
+                },
+                builder: (context, state) {
+                  String otpToken = token;
+
+                  if (state is EmailAuthResendOTPSuccess) {
+                    otpToken = state.token;
+                  }
+
+                  return Pinput(
+                    length: 6,
+                    defaultPinTheme: defaultPinTheme,
+                    focusedPinTheme: focusedPinTheme,
+                    submittedPinTheme: submittedPinTheme,
+                    showCursor: true,
+                    keyboardType: TextInputType.number,
+                    onCompleted: (value) {
+                      context.read<EmailAuthBloc>().add(
+                        EmailAuthVerifyOTPEvent(
+                          email: email,
+                          otp: value,
+                          token: otpToken,
+                        ),
+                      );
+                    },
+                  );
                 },
               ),
 
@@ -179,26 +229,42 @@ class AuthOtpScreen extends StatelessWidget {
                   ),
 
                   // Didn't receive the code
-                  GestureDetector(
-                    onTap: () {
-                      // Auth Change Password Screen
-                      GoRouter.of(context).pushReplacementNamed(
-                        AppRouterConstants.authChangePassword,
+                  BlocConsumer<EmailAuthBloc, EmailAuthState>(
+                    listener: (context, state) {
+                      if (state is EmailAuthResendOTPSuccess) {
+                        if (state.success == true) {
+                          // Success
+                          KSnackBar.success(context, state.message);
+                        } else {
+                          // Failure from server
+                          KSnackBar.error(context, state.message);
+                        }
+                      } else if (state is EmailAuthResendOTPFailure) {
+                        KSnackBar.error(context, state.message);
+                      }
+                    },
+                    builder: (context, state) {
+                      return GestureDetector(
+                        onTap: () {
+                          context.read<EmailAuthBloc>().add(
+                            EmailAuthOTPResendEvent(email: email),
+                          );
+                        },
+                        child: KText(
+                          text: appLoc.tapToResend,
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.visible,
+                          maxLines: 3,
+                          fontSize: isMobile
+                              ? 16
+                              : isTablet
+                              ? 18
+                              : 20,
+                          fontWeight: FontWeight.w700,
+                          color: AppColorConstants.primaryColor,
+                        ),
                       );
                     },
-                    child: KText(
-                      text: appLoc.tapToResend,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.visible,
-                      maxLines: 3,
-                      fontSize: isMobile
-                          ? 16
-                          : isTablet
-                          ? 18
-                          : 20,
-                      fontWeight: FontWeight.w700,
-                      color: AppColorConstants.primaryColor,
-                    ),
                   ),
                 ],
               ),

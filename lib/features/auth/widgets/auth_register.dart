@@ -89,7 +89,7 @@ class _AuthRegisterState extends State<AuthRegister> {
               AutofillHints.namePrefix,
               AutofillHints.nameSuffix,
             ],
-            validator: (value) => AppValidators.lastName(value),
+            validator: (value) => AppValidators.lastName(context, value),
           ),
 
           // Last Name Text Form Field
@@ -102,7 +102,7 @@ class _AuthRegisterState extends State<AuthRegister> {
               AutofillHints.namePrefix,
               AutofillHints.nameSuffix,
             ],
-            validator: (value) => AppValidators.lastName(value),
+            validator: (value) => AppValidators.lastName(context, value),
           ),
 
           // Email Text Form Field
@@ -111,14 +111,14 @@ class _AuthRegisterState extends State<AuthRegister> {
             hintText: appLoc.enterEmail,
             labelText: appLoc.email,
             autofillHints: [AutofillHints.email],
-            validator: (value) => AppValidators.email(value),
+            validator: (value) => AppValidators.email(context, value),
           ),
 
           // Phone Number Text Form Field
           KPhoneNumberTextFormField(
             hintText: appLoc.enterPhoneNumber,
             labelText: appLoc.phoneNumber,
-            validator: (value) => AppValidators.phoneNumber(value),
+            validator: (value) => AppValidators.phoneNumber(context, value),
             locale: locale,
             onChanged: (value) {
               phoneNumber = value;
@@ -133,7 +133,7 @@ class _AuthRegisterState extends State<AuthRegister> {
             controller: _authPasswordRegisterController,
             hintText: appLoc.enterPassword,
             labelText: appLoc.password,
-            validator: (value) => AppValidators.password(value),
+            validator: (value) => AppValidators.password(context, value),
           ),
 
           const SizedBox(height: 30),
@@ -199,10 +199,7 @@ class _AuthRegisterState extends State<AuthRegister> {
 
                     if (connectivityState is ConnectivityFailure) {
                       Future.microtask(() {
-                        KSnackBar.error(
-                          context,
-                          appLoc.internetConnection,
-                        );
+                        KSnackBar.error(context, appLoc.internetConnection);
                       });
                       return;
                     }

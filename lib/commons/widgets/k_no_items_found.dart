@@ -7,15 +7,15 @@ import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 
 class KNoItemsFound extends StatelessWidget {
-  const KNoItemsFound({super.key});
+  final String? noItemsSvg; // optional
+  final String? noItemsFoundText; // optional
+
+  const KNoItemsFound({super.key, this.noItemsSvg, this.noItemsFoundText});
 
   @override
   Widget build(BuildContext context) {
-    // Responsive
     final isTablet = Responsive.isTablet(context);
     final isMobile = Responsive.isMobile(context);
-
-    // App Localization
     final appLoc = AppLocalizations.of(context)!;
 
     return Center(
@@ -23,7 +23,7 @@ class KNoItemsFound extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SvgPicture.asset(
-            AppAssetsConstants.empty,
+            noItemsSvg ?? AppAssetsConstants.empty,
             height: isMobile
                 ? 200
                 : isTablet
@@ -31,13 +31,12 @@ class KNoItemsFound extends StatelessWidget {
                 : 280,
             fit: BoxFit.cover,
           ),
-
           const SizedBox(height: 16),
 
           KText(
-            text: appLoc.noItemsFound,
+            text: noItemsFoundText ?? appLoc.noItemsFound,
             fontSize: 18,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w600,
             color: AppColorConstants.titleColor,
             textAlign: TextAlign.center,
           ),

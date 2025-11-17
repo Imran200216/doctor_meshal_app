@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/k_profile_avatar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
@@ -33,14 +34,21 @@ class ProfileDetailsContainer extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           // Profile Image
-          CircleAvatar(
-            radius: isMobile
-                ? 40
+          KProfileAvatar(
+            personImageUrl: profileImageUrl,
+            width: isMobile
+                ? 90
                 : isTablet
-                ? 44
-                : 48,
-            backgroundImage: NetworkImage(profileImageUrl),
+                ? 100
+                : 110,
+            height: isMobile
+                ? 90
+                : isTablet
+                ? 100
+                : 110,
           ),
+
+
 
           Column(
             spacing: 6,

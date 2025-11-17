@@ -74,7 +74,7 @@ class _AuthLoginState extends State<AuthLogin> {
             hintText: appLoc.enterEmail,
             labelText: appLoc.email,
             autofillHints: [AutofillHints.email],
-            validator: (value) => AppValidators.email(value),
+            validator: (value) => AppValidators.email(context, value),
           ),
 
           // Password Text Form Field
@@ -82,7 +82,7 @@ class _AuthLoginState extends State<AuthLogin> {
             controller: _authPasswordLoginController,
             hintText: appLoc.enterPassword,
             labelText: appLoc.password,
-            validator: (value) => AppValidators.password(value),
+            validator: (value) => AppValidators.password(context, value),
           ),
 
           // Forget Password Text Btn
@@ -174,10 +174,7 @@ class _AuthLoginState extends State<AuthLogin> {
 
                     if (connectivityState is ConnectivityFailure) {
                       Future.microtask(() {
-                        KSnackBar.error(
-                          context,
-                          appLoc.internetConnection,
-                        );
+                        KSnackBar.error(context, appLoc.internetConnection);
                       });
                       return;
                     }
@@ -209,68 +206,68 @@ class _AuthLoginState extends State<AuthLogin> {
 
           const SizedBox(height: 20),
 
-          Row(
-            spacing: 20,
-            children: [
-              Expanded(
-                child: Divider(
-                  color: AppColorConstants.subTitleColor.withOpacity(0.3),
-                  thickness: 1,
-                ),
-              ),
-
-              KText(
-                text: appLoc.orContinueWith,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.visible,
-                fontSize: isMobile
-                    ? 14
-                    : isTablet
-                    ? 16
-                    : 18,
-                fontWeight: FontWeight.w500,
-                color: AppColorConstants.subTitleColor,
-              ),
-
-              Expanded(
-                child: Divider(
-                  color: AppColorConstants.subTitleColor.withOpacity(0.3),
-                  thickness: 1,
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 20),
-
-          // Google
-          SocialBtn(
-            btnTitle: appLoc.continueWithGoogle,
-            borderColor: AppColorConstants.subTitleColor.withOpacity(0.2),
-            bgColor: Colors.white,
-            textColor: AppColorConstants.titleColor,
-            svgIcon: AppAssetsConstants.google,
-            onTap: () {
-              // Bottom Nav
-              GoRouter.of(
-                context,
-              ).pushReplacementNamed(AppRouterConstants.bottomNav);
-            },
-            btnWidth: double.maxFinite,
-          ),
-
-          if (!kIsWeb && Platform.isIOS)
-            SocialBtn(
-              btnTitle: appLoc.continueWithApple,
-              borderColor: AppColorConstants.subTitleColor.withOpacity(0.2),
-              bgColor: Colors.white,
-              textColor: AppColorConstants.titleColor,
-              svgIcon: AppAssetsConstants.apple,
-              onTap: () {},
-              btnWidth: double.maxFinite,
-            )
-          else
-            const SizedBox.shrink(),
+          // Row(
+          //   spacing: 20,
+          //   children: [
+          //     Expanded(
+          //       child: Divider(
+          //         color: AppColorConstants.subTitleColor.withOpacity(0.3),
+          //         thickness: 1,
+          //       ),
+          //     ),
+          //
+          //     KText(
+          //       text: appLoc.orContinueWith,
+          //       textAlign: TextAlign.center,
+          //       overflow: TextOverflow.visible,
+          //       fontSize: isMobile
+          //           ? 14
+          //           : isTablet
+          //           ? 16
+          //           : 18,
+          //       fontWeight: FontWeight.w500,
+          //       color: AppColorConstants.subTitleColor,
+          //     ),
+          //
+          //     Expanded(
+          //       child: Divider(
+          //         color: AppColorConstants.subTitleColor.withOpacity(0.3),
+          //         thickness: 1,
+          //       ),
+          //     ),
+          //   ],
+          // ),
+          //
+          // const SizedBox(height: 20),
+          //
+          // // Google
+          // SocialBtn(
+          //   btnTitle: appLoc.continueWithGoogle,
+          //   borderColor: AppColorConstants.subTitleColor.withOpacity(0.2),
+          //   bgColor: Colors.white,
+          //   textColor: AppColorConstants.titleColor,
+          //   svgIcon: AppAssetsConstants.google,
+          //   onTap: () {
+          //     // Bottom Nav
+          //     GoRouter.of(
+          //       context,
+          //     ).pushReplacementNamed(AppRouterConstants.bottomNav);
+          //   },
+          //   btnWidth: double.maxFinite,
+          // ),
+          //
+          // if (!kIsWeb && Platform.isIOS)
+          //   SocialBtn(
+          //     btnTitle: appLoc.continueWithApple,
+          //     borderColor: AppColorConstants.subTitleColor.withOpacity(0.2),
+          //     bgColor: Colors.white,
+          //     textColor: AppColorConstants.titleColor,
+          //     svgIcon: AppAssetsConstants.apple,
+          //     onTap: () {},
+          //     btnWidth: double.maxFinite,
+          //   )
+          // else
+          //   const SizedBox.shrink(),
         ],
       ),
     );

@@ -8,8 +8,8 @@ import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dar
 import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
 import 'package:meshal_doctor_booking_app/core/utils/app_logger_helper.dart';
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
-import 'package:meshal_doctor_booking_app/features/localization/cubit/localization_cubit.dart';
-import 'package:meshal_doctor_booking_app/features/localization/presentation/widgets/localization_check_box_list_tile.dart';
+import 'package:meshal_doctor_booking_app/features/localization/view_model/cubit/localization_cubit.dart';
+import 'package:meshal_doctor_booking_app/features/localization/widgets/localization_check_box_list_tile.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 
 class LocalizationScreen extends StatelessWidget {
@@ -92,10 +92,6 @@ class LocalizationScreen extends StatelessWidget {
               BlocConsumer<LocalizationCubit, LocalizationState>(
                 listener: (context, state) {
                   if (state is LocalizationSelected) {
-                    AppLoggerHelper.logInfo(
-                      "Navigating to AuthLoginScreen after selecting ${state.selectedLanguage}",
-                    );
-
                     // Doctor Intro Screen
                     GoRouter.of(
                       context,

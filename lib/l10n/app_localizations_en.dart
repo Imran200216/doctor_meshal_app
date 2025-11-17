@@ -304,4 +304,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get alertSurveyFormDescription => 'Your form progress will be lost if you leave this page. Do you want to continue?';
+
+  @override
+  String get languageSelected => 'Language Selected Successfully';
+
+  @override
+  String get search => 'Search';
+
+  @override
+  String get typeYourMessage => 'Type your message';
+
+  @override
+  String get chats => 'Chats';
+
+  @override
+  String get emailEmpty => 'Email cannot be empty';
+
+  @override
+  String get emailInvalid => 'Enter a valid email address';
+
+  @override
+  String get passwordEmpty => 'Password cannot be empty';
+
+  @override
+  String get firstNameEmpty => 'First name cannot be empty';
+
+  @override
+  String get lastNameEmpty => 'Last name cannot be empty';
+
+  @override
+  String get phoneNumberEmpty => 'Phone number cannot be empty';
+
+  @override
+  String get confirmPasswordEmpty => 'Confirm password cannot be empty';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get doctorList => 'Doctors List';
+
+  @override
+  String get searchDoctors => 'Search Doctors';
+
+  @override
+  String get noChatsFound => 'No Chats Found';
+
+  @override
+  String get noDoctorsFound => 'No Doctors Found';
 }

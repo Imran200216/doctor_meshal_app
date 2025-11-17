@@ -35,8 +35,14 @@ class AppRouterConstants {
   // Education Articles View
   static const String educationArticlesView = "educationArticlesView";
 
+  // Chat List
+  static const String chatList = "chatList";
+
   // Chat
   static const String chat = "chat";
+
+  // Doctor List
+  static const String doctorList = "doctorList";
 
   // Personal Details
   static const String personalDetails = "personalDetails";
@@ -58,7 +64,4 @@ class AppRouterConstants {
 
   // Survey Form
   static const String surveyForm = "surveyForm";
-
-
-
 }

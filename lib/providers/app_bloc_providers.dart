@@ -11,7 +11,7 @@ import 'package:meshal_doctor_booking_app/features/education/view_model/educatio
 import 'package:meshal_doctor_booking_app/features/education/view_model/education_articles/education_articles_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/education/view_model/education_full_view_article/education_full_view_article_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/education/view_model/education_sub_title/education_sub_title_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/localization/cubit/localization_cubit.dart';
+import 'package:meshal_doctor_booking_app/features/localization/view_model/cubit/localization_cubit.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/view_model/bloc/operative_form/operative_form_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/view_model/bloc/status/status_form_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/view_model/bloc/survey_operative_form/survey_operative_form_bloc.dart';

@@ -88,7 +88,7 @@ class _EducationArticlesScreenState extends State<EducationArticlesScreen> {
             backgroundColor: AppColorConstants.primaryColor,
           ),
 
-          body: RefreshIndicator(
+          body: RefreshIndicator.adaptive(
             color: AppColorConstants.secondaryColor,
             backgroundColor: AppColorConstants.primaryColor,
             onRefresh: () async {

@@ -71,7 +71,7 @@ class _StatusScreenState extends State<StatusScreen> {
           GoRouter.of(context).pop();
         },
       ),
-      body: RefreshIndicator(
+      body: RefreshIndicator.adaptive(
         color: AppColorConstants.secondaryColor,
         backgroundColor: AppColorConstants.primaryColor,
         onRefresh: () async {

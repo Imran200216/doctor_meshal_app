@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/k_floating_action_btn.dart';
+import 'package:meshal_doctor_booking_app/core/constants/app_assets_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
@@ -18,20 +19,21 @@ class HomeScreen extends StatelessWidget {
     // App Localization
     final appLoc = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      backgroundColor: AppColorConstants.secondaryColor,
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: AppColorConstants.primaryColor,
-        onPressed: () {
-          HapticFeedback.heavyImpact();
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Scaffold(
+        backgroundColor: AppColorConstants.secondaryColor,
 
-          // Chat Screen
-          GoRouter.of(context).pushNamed(AppRouterConstants.chat);
-        },
-        child: Icon(Icons.chat, color: AppColorConstants.secondaryColor),
+        floatingActionButton: KFloatingActionBtn(
+          onTap: () {
+            // Chat List Screen
+            GoRouter.of(context).pushNamed(AppRouterConstants.chatList);
+          },
+          fabIconPath: AppAssetsConstants.chats,
+          heroTag: "chats",
+        ),
+        body: Center(child: Text("home")),
       ),
-      body: Center(child: Text("home")),
     );
   }
 }
