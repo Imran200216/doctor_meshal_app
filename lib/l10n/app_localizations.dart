@@ -784,6 +784,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No Doctors Found'**
   String get noDoctorsFound;
+
+  /// No description provided for @codeExpiresIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Code expires in:'**
+  String get codeExpiresIn;
+
+  /// No description provided for @codeExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Code expired'**
+  String get codeExpired;
+
+  /// No description provided for @timerIsRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Timer is running'**
+  String get timerIsRunning;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @areYouSure.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure'**
+  String get areYouSure;
+
+  /// No description provided for @cancelOTPVerifyProcess.
+  ///
+  /// In en, this message translates to:
+  /// **'You want to cancel this process'**
+  String get cancelOTPVerifyProcess;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

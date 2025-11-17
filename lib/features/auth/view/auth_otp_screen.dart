@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/k_alert_dialog.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_snack_bar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
@@ -11,7 +13,7 @@ import 'package:meshal_doctor_booking_app/features/auth/widgets/auth_app_bar.dar
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 import 'package:pinput/pinput.dart';
 
-class AuthOtpScreen extends StatelessWidget {
+class AuthOtpScreen extends StatefulWidget {
   final String message;
   final String email;
   final String token;
@@ -24,6 +26,48 @@ class AuthOtpScreen extends StatelessWidget {
   });
 
   @override
+  State<AuthOtpScreen> createState() => _AuthOtpScreenState();
+}
+
+class _AuthOtpScreenState extends State<AuthOtpScreen> {
+  // 3 Minutes
+  late Timer _timer;
+  int _secondsRemaining = 180;
+
+  @override
+  void initState() {
+    super.initState();
+    startTimer();
+  }
+
+  // Start Timer
+  void startTimer() {
+    _secondsRemaining = 180;
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_secondsRemaining == 0) {
+        timer.cancel();
+      } else {
+        setState(() {
+          _secondsRemaining--;
+        });
+      }
+    });
+  }
+
+  // Formatted Time
+  String get formattedTime {
+    int minutes = _secondsRemaining ~/ 60;
+    int seconds = _secondsRemaining % 60;
+    return "${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}";
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     // Responsive
     final isTablet = Responsive.isTablet(context);
@@ -32,7 +76,7 @@ class AuthOtpScreen extends StatelessWidget {
     // App Localization
     final appLoc = AppLocalizations.of(context)!;
 
-    // Pinput theme
+    // Pin put theme
     final defaultPinTheme = PinTheme(
       width: isMobile
           ? 50
@@ -63,6 +107,7 @@ class AuthOtpScreen extends StatelessWidget {
       ),
     );
 
+    // Focused Pin put theme
     final focusedPinTheme = defaultPinTheme.copyWith(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -78,6 +123,7 @@ class AuthOtpScreen extends StatelessWidget {
       ),
     );
 
+    // Submitted Pin put theme
     final submittedPinTheme = defaultPinTheme.copyWith(
       decoration: BoxDecoration(
         color: AppColorConstants.primaryColor.withOpacity(0.05),
@@ -90,8 +136,32 @@ class AuthOtpScreen extends StatelessWidget {
       backgroundColor: AppColorConstants.secondaryColor,
       appBar: AuthAppBar(
         onBackTap: () {
-          // Back
-          GoRouter.of(context).pop();
+          // Alert Dialog
+          showAdaptiveDialog(
+            context: context,
+            builder: (context) {
+              return KAlertDialog(
+                cancelText: appLoc.cancel,
+                confirmText: appLoc.confirm,
+                titleText: appLoc.areYouSure,
+                contentText: appLoc.cancelOTPVerifyProcess,
+                onCancelTap: () {
+                  // Back
+                  GoRouter.of(context).pop();
+                },
+                onConfirmTap: () {
+                  // stop Timer
+                  _timer.cancel();
+
+                  // Dialog Close
+                  GoRouter.of(context).pop();
+
+                  // Back
+                  GoRouter.of(context).pop();
+                },
+              );
+            },
+          );
         },
       ),
       body: SingleChildScrollView(
@@ -132,7 +202,7 @@ class AuthOtpScreen extends StatelessWidget {
 
               // Sub Title
               KText(
-                text: message,
+                text: widget.message,
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.visible,
                 maxLines: 3,
@@ -148,7 +218,6 @@ class AuthOtpScreen extends StatelessWidget {
               const SizedBox(height: 30),
 
               // OTP Input
-              // OTP Input
               BlocConsumer<EmailAuthBloc, EmailAuthState>(
                 listener: (context, state) {
                   if (state is EmailAuthOTPVerificationSuccess) {
@@ -156,7 +225,7 @@ class AuthOtpScreen extends StatelessWidget {
                       KSnackBar.success(context, "OTP Verified Successfully");
                       GoRouter.of(context).pushReplacementNamed(
                         AppRouterConstants.authChangePassword,
-                        extra: email,
+                        extra: widget.email,
                       );
                     } else {
                       KSnackBar.error(context, state.message);
@@ -180,7 +249,7 @@ class AuthOtpScreen extends StatelessWidget {
                   }
                 },
                 builder: (context, state) {
-                  String otpToken = token;
+                  String otpToken = widget.token;
 
                   if (state is EmailAuthResendOTPSuccess) {
                     otpToken = state.token;
@@ -196,7 +265,7 @@ class AuthOtpScreen extends StatelessWidget {
                     onCompleted: (value) {
                       context.read<EmailAuthBloc>().add(
                         EmailAuthVerifyOTPEvent(
-                          email: email,
+                          email: widget.email,
                           otp: value,
                           token: otpToken,
                         ),
@@ -204,6 +273,70 @@ class AuthOtpScreen extends StatelessWidget {
                     },
                   );
                 },
+              ),
+
+              const SizedBox(height: 20),
+
+              // Timer Display
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: isMobile
+                      ? 16
+                      : isTablet
+                      ? 20
+                      : 24,
+                  vertical: isMobile
+                      ? 10
+                      : isTablet
+                      ? 12
+                      : 14,
+                ),
+                decoration: BoxDecoration(
+                  color: _secondsRemaining > 0
+                      ? AppColorConstants.primaryColor.withOpacity(0.1)
+                      : Colors.red.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: _secondsRemaining > 0
+                        ? AppColorConstants.primaryColor.withOpacity(0.3)
+                        : AppColorConstants.errorBorderColor.withOpacity(0.3),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      _secondsRemaining > 0
+                          ? Icons.timer_outlined
+                          : Icons.timer_off_outlined,
+                      color: _secondsRemaining > 0
+                          ? AppColorConstants.primaryColor
+                          : AppColorConstants.errorBorderColor,
+                      size: isMobile
+                          ? 20
+                          : isTablet
+                          ? 22
+                          : 24,
+                    ),
+                    const SizedBox(width: 8),
+
+                    KText(
+                      text: _secondsRemaining > 0
+                          ? "${appLoc.codeExpiresIn} $formattedTime"
+                          : appLoc.codeExpired,
+                      fontSize: isMobile
+                          ? 14
+                          : isTablet
+                          ? 16
+                          : 18,
+                      fontWeight: FontWeight.w600,
+                      color: _secondsRemaining > 0
+                          ? AppColorConstants.primaryColor
+                          : AppColorConstants.errorBorderColor,
+                    ),
+                  ],
+                ),
               ),
 
               const SizedBox(height: 20),
@@ -244,12 +377,25 @@ class AuthOtpScreen extends StatelessWidget {
                       }
                     },
                     builder: (context, state) {
+                      bool canResend = _secondsRemaining == 0;
+
                       return GestureDetector(
                         onTap: () {
+                          if (!canResend) {
+                            // Error Snack bar
+                            KSnackBar.error(context, appLoc.timerIsRunning);
+                            return;
+                          }
+
+                          // Resend OTP
                           context.read<EmailAuthBloc>().add(
-                            EmailAuthOTPResendEvent(email: email),
+                            EmailAuthOTPResendEvent(email: widget.email),
                           );
+
+                          // Restart timer only when timer is finished
+                          startTimer();
                         },
+
                         child: KText(
                           text: appLoc.tapToResend,
                           textAlign: TextAlign.center,

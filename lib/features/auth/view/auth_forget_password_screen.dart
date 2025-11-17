@@ -123,21 +123,25 @@ class _AuthForgetPasswordScreenState extends State<AuthForgetPasswordScreen> {
                 BlocConsumer<EmailAuthBloc, EmailAuthState>(
                   listener: (context, state) {
                     if (state is EmailAuthForgetPasswordSuccess) {
-                      // Success Snack Bar
-                      KSnackBar.success(context, "OTP Sent Successfully!");
+                      if (state.success == true) {
+                        // Success Snack Bar
+                        KSnackBar.success(context, state.message);
 
-                      // Auth OTP Screen
-                      GoRouter.of(context).pushNamed(
-                        AppRouterConstants.authOTP,
-                        extra: {
-                          "message": state.message,
-                          "email": forgetPasswordEmailController.text.trim(),
-                          "token": state.token,
-                        },
-                      );
+                        // Auth OTP Screen
+                        GoRouter.of(context).pushNamed(
+                          AppRouterConstants.authOTP,
+                          extra: {
+                            "message": state.message,
+                            "email": forgetPasswordEmailController.text.trim(),
+                            "token": state.token,
+                          },
+                        );
 
-                      // Clear Controller
-                      clearController();
+                        // Clear Controller
+                        clearController();
+                      } else {
+                        KSnackBar.error(context, state.message);
+                      }
                     } else if (state is EmailAuthForgetPasswordFailure) {
                       // Error Snack bar
                       KSnackBar.error(context, "Invalid User!");

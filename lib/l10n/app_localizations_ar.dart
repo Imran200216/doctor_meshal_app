@@ -352,4 +352,22 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noDoctorsFound => 'لا يوجد أطباء';
+
+  @override
+  String get codeExpiresIn => 'ستنتهي صلاحية الرمز خلال:';
+
+  @override
+  String get codeExpired => 'انتهت صلاحية الرمز';
+
+  @override
+  String get timerIsRunning => 'المؤقت قيد التشغيل';
+
+  @override
+  String get confirm => 'تأكيد';
+
+  @override
+  String get areYouSure => 'هل أنت متأكد؟';
+
+  @override
+  String get cancelOTPVerifyProcess => 'هل تريد إلغاء عملية التحقق؟';
 }

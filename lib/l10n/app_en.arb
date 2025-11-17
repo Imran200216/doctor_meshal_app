@@ -113,5 +113,11 @@
   "doctorList": "Doctors List",
   "searchDoctors": "Search Doctors",
   "noChatsFound" : "No Chats Found",
-  "noDoctorsFound" : "No Doctors Found"
+  "noDoctorsFound" : "No Doctors Found",
+  "codeExpiresIn": "Code expires in:",
+  "codeExpired" : "Code expired",
+  "timerIsRunning" : "Timer is running",
+  "confirm": "Confirm",
+  "areYouSure" : "Are you sure",
+  "cancelOTPVerifyProcess" : "You want to cancel this process"
 }

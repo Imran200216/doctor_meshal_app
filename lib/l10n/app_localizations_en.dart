@@ -352,4 +352,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noDoctorsFound => 'No Doctors Found';
+
+  @override
+  String get codeExpiresIn => 'Code expires in:';
+
+  @override
+  String get codeExpired => 'Code expired';
+
+  @override
+  String get timerIsRunning => 'Timer is running';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get areYouSure => 'Are you sure';
+
+  @override
+  String get cancelOTPVerifyProcess => 'You want to cancel this process';
 }

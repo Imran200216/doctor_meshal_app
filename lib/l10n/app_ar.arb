@@ -113,5 +113,12 @@
   "doctorList": "قائمة الأطباء",
   "searchDoctors": "البحث عن الأطباء",
   "noChatsFound": "لا توجد دردشات",
-  "noDoctorsFound": "لا يوجد أطباء"
+  "noDoctorsFound": "لا يوجد أطباء",
+  "codeExpiresIn": "ستنتهي صلاحية الرمز خلال:",
+  "codeExpired": "انتهت صلاحية الرمز",
+  "timerIsRunning": "المؤقت قيد التشغيل",
+  "confirm": "تأكيد",
+  "areYouSure": "هل أنت متأكد؟",
+  "cancelOTPVerifyProcess": "هل تريد إلغاء عملية التحقق؟"
+
 }
