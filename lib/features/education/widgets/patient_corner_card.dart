@@ -30,7 +30,7 @@ class PatientCornerCard extends StatelessWidget {
     final isTablet = Responsive.isTablet(context);
     final isMobile = Responsive.isMobile(context);
 
-    // App Localization
+    // Localization
     final appLoc = AppLocalizations.of(context)!;
 
     return Directionality(
@@ -38,7 +38,6 @@ class PatientCornerCard extends StatelessWidget {
       child: GestureDetector(
         onTap: () {
           HapticFeedback.heavyImpact();
-
           onTap();
         },
         child: Container(
@@ -61,6 +60,7 @@ class PatientCornerCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // TOP IMAGE
                 Expanded(
                   flex: 2,
                   child: SizedBox(
@@ -98,90 +98,86 @@ class PatientCornerCard extends StatelessWidget {
                   ),
                 ),
 
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    color: AppColorConstants.secondaryColor,
-                    child: Column(
-                      spacing: 8,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        // Title
-                        KText(
-                          text: title,
-                          textAlign: TextAlign.start,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          fontSize: isMobile
-                              ? 20
-                              : isTablet
-                              ? 22
-                              : 24,
-                          fontWeight: FontWeight.w700,
-                          color: AppColorConstants.titleColor,
-                        ),
+                // BOTTOM SECTION — FIXED OVERFLOW
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  color: AppColorConstants.secondaryColor,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min, // FIX 1
+                    spacing: 8,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // TITLE
+                      KText(
+                        text: title,
+                        textAlign: TextAlign.start,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        fontSize: isMobile
+                            ? 20
+                            : isTablet
+                            ? 22
+                            : 24,
+                        fontWeight: FontWeight.w700,
+                        color: AppColorConstants.titleColor,
+                      ),
 
-                        // Title
-                        Row(
-                          spacing: 24,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            // 👇 Wrap the left row in Flexible
-                            Flexible(
-                              child: Row(
-                                spacing: 8,
-                                children: [
-                                  SvgPicture.asset(
-                                    AppAssetsConstants.subTopics,
-                                    height: isMobile
-                                        ? 16
+                      // ROW WITH TOPICS + ARTICLES
+                      Row(
+                        spacing: 24,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // LEFT SIDE
+                          Flexible(
+                            child: Row(
+                              spacing: 8,
+                              children: [
+                                SvgPicture.asset(
+                                  AppAssetsConstants.subTopics,
+                                  height: isMobile
+                                      ? 16
+                                      : isTablet
+                                      ? 18
+                                      : 20,
+                                  fit: BoxFit.cover,
+                                  color: AppColorConstants.primaryColor,
+                                ),
+
+                                Flexible(
+                                  child: KText(
+                                    text: "$noOfTopics ${appLoc.topics}",
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    fontSize: isMobile
+                                        ? 14
                                         : isTablet
-                                        ? 18
-                                        : 20,
-                                    fit: BoxFit.cover,
-                                    color: AppColorConstants.primaryColor,
+                                        ? 16
+                                        : 18,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColorConstants.titleColor,
                                   ),
-
-                                  // 👇 Make text flexible to avoid overflow
-                                  Flexible(
-                                    child: KText(
-                                      text: "$noOfTopics ${appLoc.topics}",
-                                      textAlign: TextAlign.start,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                      fontSize: isMobile
-                                          ? 14
-                                          : isTablet
-                                          ? 16
-                                          : 18,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColorConstants.titleColor,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
+                          ),
 
-                            // ✅ Right side stays normal
-                            KText(
-                              text: "$noOfArticles ${appLoc.articles}",
-                              textAlign: TextAlign.start,
-                              overflow: TextOverflow.visible,
-                              fontSize: isMobile
-                                  ? 14
-                                  : isTablet
-                                  ? 16
-                                  : 18,
-                              fontWeight: FontWeight.w600,
-                              color: AppColorConstants.titleColor,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                          // RIGHT SIDE
+                          KText(
+                            text: "$noOfArticles ${appLoc.articles}",
+                            fontSize: isMobile
+                                ? 14
+                                : isTablet
+                                ? 16
+                                : 18,
+                            fontWeight: FontWeight.w600,
+                            color: AppColorConstants.titleColor,
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ],

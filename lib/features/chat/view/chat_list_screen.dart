@@ -51,7 +51,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
       child: Scaffold(
         backgroundColor: AppColorConstants.secondaryColor,
         appBar: KAppBar(
-          title: appLoc.chats,
+          title: appLoc.consultDoctor,
           onBack: () {
             // Haptics
             HapticFeedback.heavyImpact();

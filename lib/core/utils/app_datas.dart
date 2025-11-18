@@ -1,14 +1,14 @@
 final List<Map<String, String>> doctors = [
-  // {"name": "Dr. B. Imran", "designation": "MBBS, Cardiology"},
-  // {"name": "Dr. Aisha Rahman", "designation": "MD, Dermatology"},
-  // {"name": "Dr. Salman Khan", "designation": "MS, Orthopedics"},
-  // {"name": "Dr. Zoya Siddiqui", "designation": "MBBS, Gynecology"},
-  // {"name": "Dr. Ahmed Raza", "designation": "MD, Pediatrics"},
-  // {"name": "Dr. Fatima Noor", "designation": "MD, Neurology"},
-  // {"name": "Dr. Mohammed Irfan", "designation": "MS, General Surgery"},
-  // {"name": "Dr. Sara Abdul", "designation": "MBBS, Ophthalmology"},
-  // {"name": "Dr. Hamza Qureshi", "designation": "MD, Radiology"},
-  // {"name": "Dr. Maryam Ansari", "designation": "MBBS, Psychiatry"},
+  {"name": "Dr. B. Imran", "designation": "MBBS, Cardiology"},
+  {"name": "Dr. Aisha Rahman", "designation": "MD, Dermatology"},
+  {"name": "Dr. Salman Khan", "designation": "MS, Orthopedics"},
+  {"name": "Dr. Zoya Siddiqui", "designation": "MBBS, Gynecology"},
+  {"name": "Dr. Ahmed Raza", "designation": "MD, Pediatrics"},
+  {"name": "Dr. Fatima Noor", "designation": "MD, Neurology"},
+  {"name": "Dr. Mohammed Irfan", "designation": "MS, General Surgery"},
+  {"name": "Dr. Sara Abdul", "designation": "MBBS, Ophthalmology"},
+  {"name": "Dr. Hamza Qureshi", "designation": "MD, Radiology"},
+  {"name": "Dr. Maryam Ansari", "designation": "MBBS, Psychiatry"},
 ];
 
 final List<Map<String, String>> chatUsers = [

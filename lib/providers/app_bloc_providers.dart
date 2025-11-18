@@ -6,11 +6,13 @@ import 'package:meshal_doctor_booking_app/features/auth/view_model/bloc/user_aut
 import 'package:meshal_doctor_booking_app/features/auth/view_model/cubit/auth_selected_type_cubit.dart';
 import 'package:meshal_doctor_booking_app/features/bottom_nav/view_model/cubit/bottom_nav_cubit.dart';
 import 'package:meshal_doctor_booking_app/features/change_password/view_model/bloc/change_password/change_password_bloc.dart';
+import 'package:meshal_doctor_booking_app/features/chat/view_model/bloc/doctor_list/doctor_list_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/edit_personal_details/view_model/bloc/update_user_profile_details_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/education/view_model/education/education_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/education/view_model/education_articles/education_articles_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/education/view_model/education_full_view_article/education_full_view_article_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/education/view_model/education_sub_title/education_sub_title_bloc.dart';
+import 'package:meshal_doctor_booking_app/features/home/view_model/bloc/operative_summary_counts/operative_summary_counts_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/localization/view_model/cubit/localization_cubit.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/view_model/bloc/operative_form/operative_form_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/view_model/bloc/status/status_form_bloc.dart';
@@ -93,4 +95,12 @@ List<BlocProvider> appBlocProviders = [
 
   // Status Form Bloc
   BlocProvider<StatusFormBloc>(create: (context) => getIt<StatusFormBloc>()),
+
+  // Doctor List Bloc
+  BlocProvider<DoctorListBloc>(create: (context) => getIt<DoctorListBloc>()),
+
+  // Operative Summary Counts Bloc
+  BlocProvider<OperativeSummaryCountsBloc>(
+    create: (context) => getIt<OperativeSummaryCountsBloc>(),
+  ),
 ];

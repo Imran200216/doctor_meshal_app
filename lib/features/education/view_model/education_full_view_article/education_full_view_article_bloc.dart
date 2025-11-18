@@ -25,6 +25,8 @@ class EducationFullViewArticleBloc
             article
             article_name
             id
+            title_name
+            sub_title_name
           }
         }
         ''';

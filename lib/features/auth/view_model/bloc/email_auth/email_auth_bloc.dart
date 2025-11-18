@@ -180,7 +180,7 @@ class EmailAuthBloc extends Bloc<EmailAuthEvent, EmailAuthState> {
       }
     });
 
-    // Email Auth OTP Verification
+    // Email Auth OTP Verification Event
     on<EmailAuthVerifyOTPEvent>((event, emit) async {
       emit(EmailAuthOTPVerificationLoading());
 
@@ -241,7 +241,7 @@ class EmailAuthBloc extends Bloc<EmailAuthEvent, EmailAuthState> {
       }
     });
 
-    // Email Auth Change Password
+    // Email Auth Change Password Event
     on<EmailAuthChangePasswordEvent>((event, emit) async {
       emit(EmailAuthChangePasswordLoading());
 
@@ -301,7 +301,7 @@ class EmailAuthBloc extends Bloc<EmailAuthEvent, EmailAuthState> {
       }
     });
 
-    // Email Auth OTP Resend
+    // Email Auth OTP Resend Event
     on<EmailAuthOTPResendEvent>((event, emit) async {
       emit(EmailAuthResendOTPLoading());
 
@@ -372,6 +372,68 @@ class EmailAuthBloc extends Bloc<EmailAuthEvent, EmailAuthState> {
             success: false,
           ),
         );
+      }
+    });
+
+    // Email Auth Logout Event
+    on<EmailAuthLogoutEvent>((event, emit) async {
+      emit(EmailAuthLogoutLoading());
+
+      try {
+        String query =
+            ''' 
+        
+        query Log_out_user_ {
+  log_out_user_(user_id: "${event.userId}") {
+    message
+    status
+  }
+}
+          ''';
+
+        AppLoggerHelper.logInfo("GraphQL Query: $query");
+
+
+        final result = await graphQLService.performQuery(query);
+
+        // Access the data safely
+        final logOutUser = result.data?["log_out_user_"];
+
+        AppLoggerHelper.logInfo("GraphQL Response Data: $logOutUser");
+
+        // Check if data is null or if the operation failed
+        if (logOutUser == null) {
+          AppLoggerHelper.logError(
+            "No data returned from server for email: ${event.userId}",
+          );
+          emit(
+            EmailAuthLogoutFailure(
+              message: "No response from server",
+              status: false,
+            ),
+          );
+          return;
+        }
+
+        // Check if the operation was successful
+        if (logOutUser['status'] == true) {
+          emit(
+            EmailAuthLogoutSuccess(
+              message: logOutUser['message'],
+              status: logOutUser['status'] == true,
+            ),
+          );
+        } else {
+          // API returned success: false
+          emit(
+            EmailAuthLogoutFailure(
+              message: logOutUser['message'] ?? "Failed to Logout",
+              status: false,
+            ),
+          );
+        }
+      } catch (e) {
+        emit(EmailAuthLogoutFailure(message: e.toString(), status: false));
       }
     });
   }

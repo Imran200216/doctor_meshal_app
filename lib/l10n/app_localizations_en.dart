@@ -370,4 +370,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cancelOTPVerifyProcess => 'You want to cancel this process';
+
+  @override
+  String get goodMorning => 'Good Morning';
+
+  @override
+  String get goodAfternoon => 'Good Afternoon';
+
+  @override
+  String get goodEvening => 'Good Evening';
+
+  @override
+  String get periOperativeScore => 'Peri Operative Score';
+
+  @override
+  String get totalFormSubmit => 'Total Form Submit';
+
+  @override
+  String get preOpSubmit => 'Pre-op Submit';
+
+  @override
+  String get postOpSubmit => 'Post-op Submit';
+
+  @override
+  String get logoutSuccess => 'Logout Success';
+
+  @override
+  String get logoutFailed => 'Logout Failed';
+
+  @override
+  String get consultDoctor => 'Consult Doctor';
 }

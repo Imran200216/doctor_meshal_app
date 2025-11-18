@@ -370,4 +370,34 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get cancelOTPVerifyProcess => 'هل تريد إلغاء عملية التحقق؟';
+
+  @override
+  String get goodMorning => 'صباح الخير';
+
+  @override
+  String get goodAfternoon => 'مساء الخير';
+
+  @override
+  String get goodEvening => 'مساء الخير';
+
+  @override
+  String get periOperativeScore => 'درجة ما قبل وبعد العملية';
+
+  @override
+  String get totalFormSubmit => 'إجمالي إرسال النموذج';
+
+  @override
+  String get preOpSubmit => 'إرسال ما قبل العملية';
+
+  @override
+  String get postOpSubmit => 'إرسال ما بعد العملية';
+
+  @override
+  String get logoutSuccess => 'تم تسجيل الخروج بنجاح';
+
+  @override
+  String get logoutFailed => 'فشل تسجيل الخروج';
+
+  @override
+  String get consultDoctor => 'استشارة طبيب';
 }

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_app_bar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_no_items_found.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/k_skeleton_rectangle.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
@@ -96,18 +97,11 @@ class _EducationSubTopicsScreenState extends State<EducationSubTopicsScreen> {
                   ? GridView.builder(
                       shrinkWrap: true,
                       padding: EdgeInsets.symmetric(
-                        horizontal: isMobile
-                            ? 20
-                            : isTablet
-                            ? 30
-                            : 40,
-                        vertical: isMobile
-                            ? 20
-                            : isTablet
-                            ? 30
-                            : 40,
+                        horizontal: 20,
+                        vertical: 20,
                       ),
-                      itemCount: 6,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: 20,
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
@@ -116,42 +110,27 @@ class _EducationSubTopicsScreenState extends State<EducationSubTopicsScreen> {
                             childAspectRatio: 1.6,
                           ),
                       itemBuilder: (context, index) {
-                        return Skeletonizer(
-                          enabled: true,
-                          child: EducationSubTopicsCard(
-                            onTap: () {},
-                            imageUrl: "",
-                            title: "",
-                            noOfArticles: "",
-                          ),
+                        return KSkeletonRectangle(
+                          width: double.maxFinite,
+                          radius: 12,
+                          height: 160,
                         );
                       },
                     )
                   : ListView.separated(
                       shrinkWrap: true,
                       padding: EdgeInsets.symmetric(
-                        horizontal: isMobile
-                            ? 20
-                            : isTablet
-                            ? 30
-                            : 40,
-                        vertical: isMobile
-                            ? 20
-                            : isTablet
-                            ? 30
-                            : 40,
+                        horizontal: 20,
+                        vertical: 20,
                       ),
-                      itemCount: 6,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: 20,
                       separatorBuilder: (_, __) => const SizedBox(height: 18),
                       itemBuilder: (context, index) {
-                        return Skeletonizer(
-                          enabled: true,
-                          child: EducationSubTopicsCard(
-                            onTap: () {},
-                            imageUrl: "",
-                            title: "",
-                            noOfArticles: "",
-                          ),
+                        return KSkeletonRectangle(
+                          width: double.maxFinite,
+                          radius: 12,
+                          height: 180,
                         );
                       },
                     );

@@ -12,6 +12,7 @@ class KText extends StatelessWidget {
   final double? height;
   final TextDecoration? textDecoration;
   final FontStyle? fontStyle;
+  final bool? softWrap; // ✅ Optional softWrap
 
   const KText({
     super.key,
@@ -26,6 +27,7 @@ class KText extends StatelessWidget {
     this.height,
     this.textDecoration,
     this.fontStyle,
+    this.softWrap, // ✅ Add to constructor
   });
 
   @override
@@ -35,6 +37,7 @@ class KText extends StatelessWidget {
       textAlign: textAlign ?? TextAlign.start,
       maxLines: maxLines,
       overflow: overflow ?? TextOverflow.ellipsis,
+      softWrap: softWrap ?? true, // ✅ Default to true
       style: TextStyle(
         fontFamily: "OpenSans",
         fontSize: fontSize ?? 14,

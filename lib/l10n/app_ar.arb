@@ -119,6 +119,18 @@
   "timerIsRunning": "المؤقت قيد التشغيل",
   "confirm": "تأكيد",
   "areYouSure": "هل أنت متأكد؟",
-  "cancelOTPVerifyProcess": "هل تريد إلغاء عملية التحقق؟"
+  "cancelOTPVerifyProcess": "هل تريد إلغاء عملية التحقق؟",
+  "goodMorning": "صباح الخير",
+  "goodAfternoon": "مساء الخير",
+  "goodEvening": "مساء الخير",
+  "periOperativeScore": "درجة ما قبل وبعد العملية",
+  "totalFormSubmit": "إجمالي إرسال النموذج",
+  "preOpSubmit": "إرسال ما قبل العملية",
+  "postOpSubmit": "إرسال ما بعد العملية",
+  "logoutSuccess" : "تم تسجيل الخروج بنجاح",
+  "logoutFailed": "فشل تسجيل الخروج",
+  "consultDoctor": "استشارة طبيب"
+
+
 
 }

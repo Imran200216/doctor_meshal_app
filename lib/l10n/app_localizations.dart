@@ -820,6 +820,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You want to cancel this process'**
   String get cancelOTPVerifyProcess;
+
+  /// No description provided for @goodMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'Good Morning'**
+  String get goodMorning;
+
+  /// No description provided for @goodAfternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Good Afternoon'**
+  String get goodAfternoon;
+
+  /// No description provided for @goodEvening.
+  ///
+  /// In en, this message translates to:
+  /// **'Good Evening'**
+  String get goodEvening;
+
+  /// No description provided for @periOperativeScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Peri Operative Score'**
+  String get periOperativeScore;
+
+  /// No description provided for @totalFormSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Form Submit'**
+  String get totalFormSubmit;
+
+  /// No description provided for @preOpSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Pre-op Submit'**
+  String get preOpSubmit;
+
+  /// No description provided for @postOpSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Post-op Submit'**
+  String get postOpSubmit;
+
+  /// No description provided for @logoutSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout Success'**
+  String get logoutSuccess;
+
+  /// No description provided for @logoutFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout Failed'**
+  String get logoutFailed;
+
+  /// No description provided for @consultDoctor.
+  ///
+  /// In en, this message translates to:
+  /// **'Consult Doctor'**
+  String get consultDoctor;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -183,3 +183,33 @@ class EmailAuthResendOTPFailure extends EmailAuthState {
   // TODO: implement props
   List<Object?> get props => [message, success];
 }
+
+// Email Auth Logout Loading
+class EmailAuthLogoutLoading extends EmailAuthState {
+  @override
+  List<Object> get props => [];
+}
+
+// Email Auth Logout Success
+class EmailAuthLogoutSuccess extends EmailAuthState {
+  final String message;
+  final bool status;
+
+  const EmailAuthLogoutSuccess({required this.message, required this.status});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [message, status];
+}
+
+// Email Auth Logout Failure
+class EmailAuthLogoutFailure extends EmailAuthState {
+  final String message;
+  final bool status;
+
+  const EmailAuthLogoutFailure({required this.message, required this.status});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [message, status];
+}

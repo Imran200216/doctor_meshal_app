@@ -119,5 +119,15 @@
   "timerIsRunning" : "Timer is running",
   "confirm": "Confirm",
   "areYouSure" : "Are you sure",
-  "cancelOTPVerifyProcess" : "You want to cancel this process"
+  "cancelOTPVerifyProcess" : "You want to cancel this process",
+  "goodMorning": "Good Morning",
+  "goodAfternoon": "Good Afternoon",
+  "goodEvening": "Good Evening",
+  "periOperativeScore": "Peri Operative Score",
+  "totalFormSubmit": "Total Form Submit",
+  "preOpSubmit": "Pre-op Submit",
+  "postOpSubmit": "Post-op Submit",
+  "logoutSuccess" : "Logout Success",
+  "logoutFailed": "Logout Failed",
+  "consultDoctor": "Consult Doctor"
 }

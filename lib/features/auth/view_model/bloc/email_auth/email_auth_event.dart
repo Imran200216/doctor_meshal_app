@@ -31,10 +31,12 @@ class EmailAuthLoginEvent extends EmailAuthEvent {
 
 // Logout Event
 final class EmailAuthLogoutEvent extends EmailAuthEvent {
-  const EmailAuthLogoutEvent();
+  final String userId;
+
+  const EmailAuthLogoutEvent({required this.userId});
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [userId];
 }
 
 // Register Event

@@ -74,7 +74,7 @@ class _EducationArticlesScreenState extends State<EducationArticlesScreen> {
 
     return BlocBuilder<EducationArticlesBloc, EducationArticlesState>(
       builder: (context, state) {
-        String appBarTitle = "ALC Injuries";
+        String appBarTitle = "";
 
         if (state is EducationArticlesSuccess && state.topics.isNotEmpty) {
           appBarTitle = state.topics.first.subTitleName;
@@ -114,26 +114,36 @@ class _EducationArticlesScreenState extends State<EducationArticlesScreen> {
     if (state is EducationArticlesLoading) {
       return isTablet
           ? GridView.builder(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               shrinkWrap: true,
-              padding: _padding(isMobile, isTablet),
-              itemCount: 40,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: 20,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 18,
                 mainAxisSpacing: 18,
-                childAspectRatio: 5,
+                childAspectRatio: 1.6,
               ),
               itemBuilder: (context, index) {
-                return KSkeletonRectangle(width: 200, height: 80);
+                return KSkeletonRectangle(
+                  width: double.maxFinite,
+                  radius: 12,
+                  height: 100,
+                );
               },
             )
           : ListView.separated(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               shrinkWrap: true,
-              padding: _padding(isMobile, isTablet),
-              itemCount: 40,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: 20,
               separatorBuilder: (_, __) => const SizedBox(height: 18),
               itemBuilder: (context, index) {
-                return KSkeletonRectangle(width: double.maxFinite, height: 80);
+                return KSkeletonRectangle(
+                  width: double.maxFinite,
+                  radius: 12,
+                  height: 80,
+                );
               },
             );
     }

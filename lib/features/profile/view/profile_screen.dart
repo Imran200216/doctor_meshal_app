@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/k_snack_bar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
@@ -10,6 +11,7 @@ import 'package:meshal_doctor_booking_app/core/service/hive_service.dart';
 import 'package:meshal_doctor_booking_app/core/utils/app_logger_helper.dart';
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
 import 'package:meshal_doctor_booking_app/core/utils/url_launcher_helper.dart';
+import 'package:meshal_doctor_booking_app/features/auth/view_model/bloc/email_auth/email_auth_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/auth/view_model/bloc/user_auth/user_auth_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/localization/view_model/cubit/localization_cubit.dart';
 import 'package:meshal_doctor_booking_app/features/profile/widgets/profile_details_container.dart';
@@ -79,87 +81,91 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Scaffold(
       backgroundColor: AppColorConstants.secondaryColor,
-      body: BlocBuilder<UserAuthBloc, UserAuthState>(
-        builder: (context, state) {
-          // Loading
-          if (state is GetUserAuthLoading || state is UserAuthInitial) {
-            return ProfileSkeleton();
-          }
+      body: SafeArea(
+        top: true,
+        bottom: true,
+        child: BlocBuilder<UserAuthBloc, UserAuthState>(
+          builder: (context, state) {
+            // Loading
+            if (state is GetUserAuthLoading || state is UserAuthInitial) {
+              return ProfileSkeleton();
+            }
 
-          // Success
-          if (state is GetUserAuthSuccess) {
-            final user = state.user;
+            // Success
+            if (state is GetUserAuthSuccess) {
+              final user = state.user;
 
-            return RefreshIndicator.adaptive(
-              color: AppColorConstants.secondaryColor,
-              backgroundColor: AppColorConstants.primaryColor,
-              onRefresh: () async {
-                _fetchUserAuth();
-              },
-              child: SingleChildScrollView(
-                child: Directionality(
-                  textDirection: TextDirection.ltr,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: isMobile
-                          ? 20
-                          : isTablet
-                          ? 30
-                          : 40,
-                      vertical: isMobile
-                          ? 20
-                          : isTablet
-                          ? 30
-                          : 40,
-                    ),
-                    child: Column(
-                      spacing: 20,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // My Account
-                        KText(
-                          text: appLoc.myAccount,
-                          fontSize: isMobile
-                              ? 20
-                              : isTablet
-                              ? 22
-                              : 24,
-                          fontWeight: FontWeight.w700,
-                        ),
+              return RefreshIndicator.adaptive(
+                color: AppColorConstants.secondaryColor,
+                backgroundColor: AppColorConstants.primaryColor,
+                onRefresh: () async {
+                  _fetchUserAuth();
+                },
+                child: SingleChildScrollView(
+                  child: Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isMobile
+                            ? 20
+                            : isTablet
+                            ? 30
+                            : 40,
+                        vertical: isMobile
+                            ? 20
+                            : isTablet
+                            ? 30
+                            : 40,
+                      ),
+                      child: Column(
+                        spacing: 20,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // My Account
+                          KText(
+                            text: appLoc.myAccount,
+                            fontSize: isMobile
+                                ? 20
+                                : isTablet
+                                ? 22
+                                : 24,
+                            fontWeight: FontWeight.w700,
+                          ),
 
-                        // Profile
-                        ProfileDetailsContainer(
-                          profileImageUrl: user.profileImage.isNotEmpty
-                              ? user.profileImage
-                              : personPlaceholder,
-                          name: "${user.firstName} ${user.lastName}",
-                          email: user.email,
-                        ),
+                          // Profile
+                          ProfileDetailsContainer(
+                            profileImageUrl: user.profileImage.isNotEmpty
+                                ? user.profileImage
+                                : personPlaceholder,
+                            name: "${user.firstName} ${user.lastName}",
+                            email: user.email,
+                          ),
 
-                        // ---------- REST OF YOUR UI BELOW ----------
-                        _buildGeneralSection(
-                          context,
-                          appLoc,
-                          isMobile,
-                          isTablet,
-                        ),
-                        _buildSupportSection(
-                          context,
-                          appLoc,
-                          isMobile,
-                          isTablet,
-                        ),
-                        _buildLogoutSection(context, appLoc),
-                      ],
+                          // ---------- REST OF YOUR UI BELOW ----------
+                          _buildGeneralSection(
+                            context,
+                            appLoc,
+                            isMobile,
+                            isTablet,
+                          ),
+                          _buildSupportSection(
+                            context,
+                            appLoc,
+                            isMobile,
+                            isTablet,
+                          ),
+                          _buildLogoutSection(context, appLoc),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            );
-          }
+              );
+            }
 
-          return SizedBox.shrink();
-        },
+            return SizedBox.shrink();
+          },
+        ),
       ),
     );
   }
@@ -294,7 +300,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
 
               // Support
-
             ],
           ),
         ),
@@ -313,25 +318,71 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         spacing: 10,
         children: [
-          ProfileListTile(
-            prefixIcon: Icons.logout,
-            title: appLoc.logout,
-            onTap: () {
-              showModalBottomSheet(
-                context: context,
-                builder: (_) {
-                  return ProfileLogOutBottomSheet(
-                    onCancelTap: () => GoRouter.of(context).pop(),
-                    onSubmitTap: () {
-                      GoRouter.of(
-                        context,
-                      ).goNamed(AppRouterConstants.localization);
-                      context.read<LocalizationCubit>().clearLanguage();
-                    },
-                  );
-                },
-              );
+          BlocListener<EmailAuthBloc, EmailAuthState>(
+            listener: (context, state) {
+              if (state is EmailAuthLogoutSuccess) {
+                if (state.status == true) {
+                  // Success Snack Bar
+                  KSnackBar.success(context, appLoc.logoutSuccess);
+
+                  // Navigate to Localization Screen
+                  GoRouter.of(context).goNamed(AppRouterConstants.localization);
+
+                  // Clear Language
+                  context.read<LocalizationCubit>().clearLanguage();
+
+                  // Clear Hive Boxes
+                  try {
+                    HiveService.clearBox(AppDBConstants.userBox);
+                    AppLoggerHelper.logInfo(
+                      "Hive Box Cleared: ${AppDBConstants.userBox}",
+                    );
+                  } catch (e) {
+                    AppLoggerHelper.logError(
+                      "Failed to clear Hive Box userBox: $e",
+                    );
+                  }
+
+                  try {
+                    HiveService.clearBox(AppDBConstants.surveyForm);
+                    AppLoggerHelper.logInfo(
+                      "Hive Box Cleared: ${AppDBConstants.surveyForm}",
+                    );
+                  } catch (e) {
+                    AppLoggerHelper.logError(
+                      "Failed to clear Hive Box surveyForm: $e",
+                    );
+                  }
+                } else {
+                  // Failure Snack Bar
+                  KSnackBar.error(context, appLoc.logoutFailed);
+                }
+              } else if (state is EmailAuthLogoutFailure) {
+                // Failure Snack Bar
+                KSnackBar.error(context, state.message);
+              }
             },
+
+            child: ProfileListTile(
+              prefixIcon: Icons.logout,
+              title: appLoc.logout,
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (_) {
+                    return ProfileLogOutBottomSheet(
+                      onCancelTap: () => GoRouter.of(context).pop(),
+                      onSubmitTap: () {
+                        // Logout Functionality
+                        context.read<EmailAuthBloc>().add(
+                          EmailAuthLogoutEvent(userId: userId!),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),

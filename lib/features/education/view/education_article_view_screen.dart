@@ -81,13 +81,27 @@ class _EducationArticleViewScreenState
 
     return Scaffold(
       backgroundColor: AppColorConstants.secondaryColor,
-      appBar: KAppBar(
-        title: "ALC Injuries",
-        onBack: () {
-          // Back
-          GoRouter.of(context).pop();
-        },
-        backgroundColor: AppColorConstants.primaryColor,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child:
+            BlocBuilder<
+              EducationFullViewArticleBloc,
+              EducationFullViewArticleState
+            >(
+              builder: (context, state) {
+                String appBarTitle = "";
+
+                if (state is EducationFullViewArticleSuccess) {
+                  appBarTitle = state.article.articleName;
+                }
+
+                return KAppBar(
+                  title: appBarTitle,
+                  onBack: () => GoRouter.of(context).pop(),
+                  backgroundColor: AppColorConstants.primaryColor,
+                );
+              },
+            ),
       ),
 
       body: RefreshIndicator.adaptive(
@@ -125,10 +139,14 @@ class _EducationArticleViewScreenState
                 if (state is EducationFullViewArticleSuccess) {
                   final educationFullViewArticle = state.article;
 
-                  return SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    physics: const BouncingScrollPhysics(),
-                    child: Padding(
+                  return InteractiveViewer(
+                    minScale: 1.0,
+                    maxScale: 5.0,
+                    panEnabled: true,
+                    scaleEnabled: true,
+                    constrained: false,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
                       padding: EdgeInsets.symmetric(
                         horizontal: isMobile
                             ? 20
@@ -163,7 +181,7 @@ class _EducationArticleViewScreenState
                                   ),
                                 ),
                                 TextSpan(
-                                  text: "ACL Injuries",
+                                  text: educationFullViewArticle.titleName,
                                   style: TextStyle(
                                     fontFamily: "OpenSans",
                                     fontWeight: FontWeight.w600,
@@ -198,7 +216,7 @@ class _EducationArticleViewScreenState
                                   ),
                                 ),
                                 TextSpan(
-                                  text: "Pharmacy",
+                                  text: educationFullViewArticle.subTitleName,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
                                     fontSize: isMobile

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_no_items_found.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/k_skeleton_rectangle.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
@@ -12,7 +13,6 @@ import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
 import 'package:meshal_doctor_booking_app/features/education/view_model/education/education_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/education/widgets/patient_corner_card.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 class EducationScreen extends StatefulWidget {
   const EducationScreen({super.key});
@@ -22,6 +22,7 @@ class EducationScreen extends StatefulWidget {
 }
 
 class _EducationScreenState extends State<EducationScreen> {
+  // User Id
   String? userId;
 
   @override
@@ -110,7 +111,7 @@ class _EducationScreenState extends State<EducationScreen> {
                       return isTablet
                           ? GridView.builder(
                               shrinkWrap: true,
-
+                              physics: const NeverScrollableScrollPhysics(),
                               itemCount: 20,
                               gridDelegate:
                                   const SliverGridDelegateWithFixedCrossAxisCount(
@@ -120,34 +121,24 @@ class _EducationScreenState extends State<EducationScreen> {
                                     childAspectRatio: 1.6,
                                   ),
                               itemBuilder: (context, index) {
-                                return Skeletonizer(
-                                  enabled: true,
-                                  child: PatientCornerCard(
-                                    onTap: () {},
-                                    imageUrl: "",
-                                    title: "",
-                                    noOfArticles: "",
-                                    noOfTopics: "",
-                                  ),
+                                return KSkeletonRectangle(
+                                  width: double.maxFinite,
+                                  radius: 12,
+                                  height: 160,
                                 );
                               },
                             )
                           : ListView.separated(
                               shrinkWrap: true,
-
+                              physics: const NeverScrollableScrollPhysics(),
                               itemCount: 20,
                               separatorBuilder: (_, __) =>
                                   const SizedBox(height: 18),
                               itemBuilder: (context, index) {
-                                return Skeletonizer(
-                                  enabled: true,
-                                  child: PatientCornerCard(
-                                    onTap: () {},
-                                    imageUrl: "",
-                                    title: "",
-                                    noOfArticles: "",
-                                    noOfTopics: "",
-                                  ),
+                                return KSkeletonRectangle(
+                                  width: double.maxFinite,
+                                  radius: 12,
+                                  height: 180,
                                 );
                               },
                             );
@@ -181,7 +172,7 @@ class _EducationScreenState extends State<EducationScreen> {
                                   },
                                   imageUrl: edu.image,
                                   title: edu.title,
-                                  noOfArticles: "9",
+                                  noOfArticles: edu.articleCounts.toString(),
                                   noOfTopics: edu.subTitleCounts.toString(),
                                 );
                               },
@@ -204,8 +195,8 @@ class _EducationScreenState extends State<EducationScreen> {
                                   },
                                   imageUrl: edu.image,
                                   title: edu.title,
-                                  noOfArticles: edu.subTitleCounts.toString(),
-                                  noOfTopics: "9",
+                                  noOfArticles: edu.articleCounts.toString(),
+                                  noOfTopics: edu.subTitleCounts.toString(),
                                 );
                               },
                             );
