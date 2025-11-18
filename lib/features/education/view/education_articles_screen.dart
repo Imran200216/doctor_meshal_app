@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_app_bar.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/k_no_internet_found.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_no_items_found.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_skeleton_rectangle.dart';
+import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
@@ -12,7 +14,6 @@ import 'package:meshal_doctor_booking_app/core/utils/app_logger_helper.dart';
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
 import 'package:meshal_doctor_booking_app/features/education/view_model/education_articles/education_articles_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/education/widgets/education_article_card.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 class EducationArticlesScreen extends StatefulWidget {
   final String educationArticleId;
@@ -96,7 +97,21 @@ class _EducationArticlesScreenState extends State<EducationArticlesScreen> {
               _fetchEducationArticles();
             },
 
-            child: _buildBody(state, isMobile, isTablet),
+            child: BlocBuilder<ConnectivityBloc, ConnectivityState>(
+              builder: (context, connectivityState) {
+                if (connectivityState is ConnectivityFailure) {
+                  return Align(
+                    alignment: Alignment.center,
+                    heightFactor: 3,
+                    child: const KInternetFound(),
+                  );
+                } else if (connectivityState is ConnectivitySuccess) {
+                  return _buildBody(state, isMobile, isTablet);
+                } else {
+                  return SizedBox.shrink();
+                }
+              },
+            ),
           ),
         );
       },

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_app_bar.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/k_no_internet_found.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_no_items_found.dart';
+import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
 import 'package:meshal_doctor_booking_app/core/service/hive_service.dart';
@@ -78,145 +80,165 @@ class _StatusScreenState extends State<StatusScreen> {
           // Fetch Status Datas
           _fetchStatusForm();
         },
-        child: BlocBuilder<StatusFormBloc, StatusFormState>(
-          builder: (context, state) {
-            if (state is StatusFormLoading) {
-              return isTablet
-                  ? GridView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.vertical,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: isMobile
-                            ? 20
-                            : isTablet
-                            ? 30
-                            : 40,
-                        vertical: isMobile
-                            ? 20
-                            : isTablet
-                            ? 30
-                            : 40,
-                      ),
-                      itemCount: 40,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 18,
-                            mainAxisSpacing: 18,
-                            childAspectRatio: 1.8,
-                          ),
-                      itemBuilder: (context, index) {
-                        return Skeletonizer(
-                          effect: ShimmerEffect(),
-                          enabled: true,
-                          child: StatusCard(formTitle: "", formStatus: ""),
-                        );
-                      },
-                    )
-                  : ListView.separated(
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: isMobile
-                            ? 20
-                            : isTablet
-                            ? 30
-                            : 40,
-                        vertical: isMobile
-                            ? 20
-                            : isTablet
-                            ? 30
-                            : 40,
-                      ),
-                      itemBuilder: (context, index) {
-                        return Skeletonizer(
-                          effect: ShimmerEffect(),
-                          enabled: true,
-                          child: StatusCard(formTitle: "", formStatus: ""),
-                        );
-                      },
-                      separatorBuilder: (context, index) {
-                        return const SizedBox(height: 20);
-                      },
-                      itemCount: 40,
-                    );
+        child: BlocBuilder<ConnectivityBloc, ConnectivityState>(
+          builder: (context, connectivityState) {
+            if (connectivityState is ConnectivityFailure) {
+              return Align(
+                alignment: Alignment.center,
+                heightFactor: 3,
+                child: const KInternetFound(),
+              );
+            } else if (connectivityState is ConnectivitySuccess) {
+              return BlocBuilder<StatusFormBloc, StatusFormState>(
+                builder: (context, state) {
+                  if (state is StatusFormLoading) {
+                    return isTablet
+                        ? GridView.builder(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.vertical,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: isMobile
+                                  ? 20
+                                  : isTablet
+                                  ? 30
+                                  : 40,
+                              vertical: isMobile
+                                  ? 20
+                                  : isTablet
+                                  ? 30
+                                  : 40,
+                            ),
+                            itemCount: 40,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 18,
+                                  mainAxisSpacing: 18,
+                                  childAspectRatio: 1.8,
+                                ),
+                            itemBuilder: (context, index) {
+                              return Skeletonizer(
+                                effect: ShimmerEffect(),
+                                enabled: true,
+                                child: StatusCard(
+                                  formTitle: "",
+                                  formStatus: "",
+                                ),
+                              );
+                            },
+                          )
+                        : ListView.separated(
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: isMobile
+                                  ? 20
+                                  : isTablet
+                                  ? 30
+                                  : 40,
+                              vertical: isMobile
+                                  ? 20
+                                  : isTablet
+                                  ? 30
+                                  : 40,
+                            ),
+                            itemBuilder: (context, index) {
+                              return Skeletonizer(
+                                effect: ShimmerEffect(),
+                                enabled: true,
+                                child: StatusCard(
+                                  formTitle: "",
+                                  formStatus: "",
+                                ),
+                              );
+                            },
+                            separatorBuilder: (context, index) {
+                              return const SizedBox(height: 20);
+                            },
+                            itemCount: 40,
+                          );
+                  }
+
+                  if (state is StatusFormSuccess) {
+                    return state.status.isEmpty
+                        ? Center(child: KNoItemsFound())
+                        : isTablet
+                        ? GridView.builder(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.vertical,
+                            physics: const BouncingScrollPhysics(),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: isMobile
+                                  ? 20
+                                  : isTablet
+                                  ? 30
+                                  : 40,
+                              vertical: isMobile
+                                  ? 20
+                                  : isTablet
+                                  ? 30
+                                  : 40,
+                            ),
+                            itemCount: state.status.length,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 18,
+                                  mainAxisSpacing: 18,
+                                  childAspectRatio: 1.8,
+                                ),
+                            itemBuilder: (context, index) {
+                              final statusItem = state.status[index];
+
+                              return StatusCard(
+                                formTitle: statusItem.title,
+                                formStatus: statusItem.formStatus,
+                              );
+                            },
+                          )
+                        : isMobile
+                        ? ListView.separated(
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            physics: const BouncingScrollPhysics(),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: isMobile
+                                  ? 20
+                                  : isTablet
+                                  ? 30
+                                  : 40,
+                              vertical: isMobile
+                                  ? 20
+                                  : isTablet
+                                  ? 30
+                                  : 40,
+                            ),
+                            itemBuilder: (context, index) {
+                              final statusItem = state.status[index];
+
+                              return StatusCard(
+                                formTitle: statusItem.title,
+                                formStatus: statusItem.formStatus,
+                              );
+                            },
+                            separatorBuilder: (context, index) {
+                              return const SizedBox(height: 20);
+                            },
+                            itemCount: state.status.length,
+                          )
+                        : SizedBox.shrink();
+                  }
+
+                  if (state is StatusFormFailure) {
+                    AppLoggerHelper.logError("Status Error: ${state.message}");
+                  }
+
+                  return SizedBox.shrink();
+                },
+              );
+            } else {
+              return SizedBox.shrink();
             }
-
-            if (state is StatusFormSuccess) {
-              return state.status.isEmpty
-                  ? Center(child: KNoItemsFound())
-                  : isTablet
-                  ? GridView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.vertical,
-                      physics: const BouncingScrollPhysics(),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: isMobile
-                            ? 20
-                            : isTablet
-                            ? 30
-                            : 40,
-                        vertical: isMobile
-                            ? 20
-                            : isTablet
-                            ? 30
-                            : 40,
-                      ),
-                      itemCount: state.status.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 18,
-                            mainAxisSpacing: 18,
-                            childAspectRatio: 1.8,
-                          ),
-                      itemBuilder: (context, index) {
-                        final statusItem = state.status[index];
-
-                        return StatusCard(
-                          formTitle: statusItem.title,
-                          formStatus: statusItem.formStatus,
-                        );
-                      },
-                    )
-                  : isMobile
-                  ? ListView.separated(
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      physics: const BouncingScrollPhysics(),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: isMobile
-                            ? 20
-                            : isTablet
-                            ? 30
-                            : 40,
-                        vertical: isMobile
-                            ? 20
-                            : isTablet
-                            ? 30
-                            : 40,
-                      ),
-                      itemBuilder: (context, index) {
-                        final statusItem = state.status[index];
-
-                        return StatusCard(
-                          formTitle: statusItem.title,
-                          formStatus: statusItem.formStatus,
-                        );
-                      },
-                      separatorBuilder: (context, index) {
-                        return const SizedBox(height: 20);
-                      },
-                      itemCount: state.status.length,
-                    )
-                  : SizedBox.shrink();
-            }
-
-            if (state is StatusFormFailure) {
-              AppLoggerHelper.logError("Status Error: ${state.message}");
-            }
-
-            return SizedBox.shrink();
           },
         ),
       ),

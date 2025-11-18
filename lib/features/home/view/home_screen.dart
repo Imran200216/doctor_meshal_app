@@ -189,29 +189,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                         CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                      // ⭐ GOOD MORNING + SHIMMER
-                                      isLoading
-                                          ? HomeSkeleton() // shimmer for greeting
-                                          : KText(
-                                              textAlign: TextAlign.start,
-                                              text:
-                                                  "${getGreetingMessage(appLoc)},",
-                                              fontSize: isMobile
-                                                  ? 22
-                                                  : isTablet
-                                                  ? 24
-                                                  : 26,
-                                              fontWeight: FontWeight.w700,
-                                              color: AppColorConstants
-                                                  .secondaryColor,
-                                            ),
+                                      KText(
+                                        textAlign: TextAlign.start,
+                                        text: "${getGreetingMessage(appLoc)},",
+                                        fontSize: isMobile
+                                            ? 22
+                                            : isTablet
+                                            ? 24
+                                            : 26,
+                                        fontWeight: FontWeight.w700,
+                                        color: AppColorConstants.secondaryColor,
+                                      ),
 
                                       const SizedBox(height: 5),
 
-                                      // ⭐ USER NAME + SHIMMER
-                                      if (isLoading)
-                                        HomeSkeleton()
-                                      else if (state is GetUserAuthSuccess)
+                                      if (state is GetUserAuthSuccess)
                                         KText(
                                           textAlign: TextAlign.start,
                                           text:

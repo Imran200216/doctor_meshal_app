@@ -129,5 +129,6 @@
   "postOpSubmit": "Post-op Submit",
   "logoutSuccess" : "Logout Success",
   "logoutFailed": "Logout Failed",
-  "consultDoctor": "Consult Doctor"
+  "consultDoctor": "Consult Doctor",
+  "noInternet": "No internet connection. Please check your network settings."
 }

@@ -880,6 +880,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Consult Doctor'**
   String get consultDoctor;
+
+  /// No description provided for @noInternet.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection. Please check your network settings.'**
+  String get noInternet;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

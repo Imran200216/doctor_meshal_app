@@ -127,10 +127,8 @@
   "totalFormSubmit": "إجمالي إرسال النموذج",
   "preOpSubmit": "إرسال ما قبل العملية",
   "postOpSubmit": "إرسال ما بعد العملية",
-  "logoutSuccess" : "تم تسجيل الخروج بنجاح",
+  "logoutSuccess": "تم تسجيل الخروج بنجاح",
   "logoutFailed": "فشل تسجيل الخروج",
-  "consultDoctor": "استشارة طبيب"
-
-
-
+  "consultDoctor": "استشارة طبيب",
+  "noInternet": "لا يوجد اتصال بالإنترنت. يرجى التحقق من إعدادات الشبكة."
 }

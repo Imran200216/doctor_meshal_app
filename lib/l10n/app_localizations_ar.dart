@@ -400,4 +400,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get consultDoctor => 'استشارة طبيب';
+
+  @override
+  String get noInternet => 'لا يوجد اتصال بالإنترنت. يرجى التحقق من إعدادات الشبكة.';
 }

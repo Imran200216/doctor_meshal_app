@@ -61,4 +61,7 @@ class AppAssetsConstants {
       "assets/icons/svg/no-chat-list-found.svg";
 
   static const String noChatFound = "assets/icons/svg/no-chat-found.svg";
+
+  static const String noInternetFound =
+      "assets/icons/svg/no-internet.svg";
 }
