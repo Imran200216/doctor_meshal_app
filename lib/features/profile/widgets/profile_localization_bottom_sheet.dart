@@ -29,7 +29,6 @@ class ProfileLocalizationBottomSheet extends StatelessWidget {
         color: AppColorConstants.secondaryColor,
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [

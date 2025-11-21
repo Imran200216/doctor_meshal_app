@@ -17,6 +17,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.13.0"
+  badges:
+    dependency: "direct main"
+    description:
+      name: badges
+      sha256: a7b6bbd60dce418df0db3058b53f9d083c22cdb5132a052145dc267494df0b84
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.2"
   bloc:
     dependency: "direct main"
     description:
@@ -342,7 +350,7 @@ packages:
     source: hosted
     version: "1.0.1"
   graphql:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: graphql
       sha256: "297a1680520e7b4d3c5784cfcea11a16d599702911b74a8ab50857c6d58741b9"
@@ -963,7 +971,7 @@ packages:
     source: hosted
     version: "1.0.1"
   web_socket_channel:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: web_socket_channel
       sha256: d645757fb0f4773d602444000a8131ff5d48c9e47adfe9772652dd1a4f2d45c8

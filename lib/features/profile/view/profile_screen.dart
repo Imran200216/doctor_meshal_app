@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/k_no_internet_found.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_snack_bar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
+import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
@@ -84,86 +86,105 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SafeArea(
         top: true,
         bottom: true,
-        child: BlocBuilder<UserAuthBloc, UserAuthState>(
-          builder: (context, state) {
-            // Loading
-            if (state is GetUserAuthLoading || state is UserAuthInitial) {
-              return ProfileSkeleton();
-            }
-
-            // Success
-            if (state is GetUserAuthSuccess) {
-              final user = state.user;
-
-              return RefreshIndicator.adaptive(
-                color: AppColorConstants.secondaryColor,
-                backgroundColor: AppColorConstants.primaryColor,
-                onRefresh: () async {
-                  _fetchUserAuth();
-                },
-                child: SingleChildScrollView(
-                  child: Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: isMobile
-                            ? 20
-                            : isTablet
-                            ? 30
-                            : 40,
-                        vertical: isMobile
-                            ? 20
-                            : isTablet
-                            ? 30
-                            : 40,
-                      ),
-                      child: Column(
-                        spacing: 20,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // My Account
-                          KText(
-                            text: appLoc.myAccount,
-                            fontSize: isMobile
-                                ? 20
-                                : isTablet
-                                ? 22
-                                : 24,
-                            fontWeight: FontWeight.w700,
-                          ),
-
-                          // Profile
-                          ProfileDetailsContainer(
-                            profileImageUrl: user.profileImage.isNotEmpty
-                                ? user.profileImage
-                                : personPlaceholder,
-                            name: "${user.firstName} ${user.lastName}",
-                            email: user.email,
-                          ),
-
-                          // ---------- REST OF YOUR UI BELOW ----------
-                          _buildGeneralSection(
-                            context,
-                            appLoc,
-                            isMobile,
-                            isTablet,
-                          ),
-                          _buildSupportSection(
-                            context,
-                            appLoc,
-                            isMobile,
-                            isTablet,
-                          ),
-                          _buildLogoutSection(context, appLoc),
-                        ],
-                      ),
-                    ),
-                  ),
+        child: BlocBuilder<ConnectivityBloc, ConnectivityState>(
+          builder: (context, connectivityState) {
+            if (connectivityState is ConnectivityFailure) {
+              return Align(
+                alignment: Alignment.center,
+                heightFactor: 3,
+                child: Column(
+                  spacing: 20,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [const KInternetFound()],
                 ),
               );
-            }
+            } else if (connectivityState is ConnectivitySuccess) {
+              return BlocBuilder<UserAuthBloc, UserAuthState>(
+                builder: (context, state) {
+                  // Loading
+                  if (state is GetUserAuthLoading || state is UserAuthInitial) {
+                    return ProfileSkeleton();
+                  }
 
-            return SizedBox.shrink();
+                  // Success
+                  if (state is GetUserAuthSuccess) {
+                    final user = state.user;
+
+                    return RefreshIndicator.adaptive(
+                      color: AppColorConstants.secondaryColor,
+                      backgroundColor: AppColorConstants.primaryColor,
+                      onRefresh: () async {
+                        _fetchUserAuth();
+                      },
+                      child: SingleChildScrollView(
+                        child: Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: isMobile
+                                  ? 20
+                                  : isTablet
+                                  ? 30
+                                  : 40,
+                              vertical: isMobile
+                                  ? 20
+                                  : isTablet
+                                  ? 30
+                                  : 40,
+                            ),
+                            child: Column(
+                              spacing: 20,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // My Account
+                                KText(
+                                  text: appLoc.myAccount,
+                                  fontSize: isMobile
+                                      ? 20
+                                      : isTablet
+                                      ? 22
+                                      : 24,
+                                  fontWeight: FontWeight.w700,
+                                ),
+
+                                // Profile
+                                ProfileDetailsContainer(
+                                  profileImageUrl: user.profileImage.isNotEmpty
+                                      ? user.profileImage
+                                      : personPlaceholder,
+                                  name: "${user.firstName} ${user.lastName}",
+                                  email: user.email,
+                                ),
+
+                                // ---------- REST OF YOUR UI BELOW ----------
+                                _buildGeneralSection(
+                                  context,
+                                  appLoc,
+                                  isMobile,
+                                  isTablet,
+                                ),
+                                _buildSupportSection(
+                                  context,
+                                  appLoc,
+                                  isMobile,
+                                  isTablet,
+                                ),
+                                _buildLogoutSection(context, appLoc),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+
+                  return SizedBox.shrink();
+                },
+              );
+            } else {
+              return const SizedBox.shrink();
+            }
           },
         ),
       ),
@@ -334,8 +355,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // Clear Hive Boxes
                   try {
                     HiveService.clearBox(AppDBConstants.userBox);
+                    HiveService.clearBox(AppDBConstants.surveyForm);
+
                     AppLoggerHelper.logInfo(
-                      "Hive Box Cleared: ${AppDBConstants.userBox}",
+                      "Hive Box Cleared: ${AppDBConstants.userBox}, ${AppDBConstants.surveyForm}",
                     );
                   } catch (e) {
                     AppLoggerHelper.logError(

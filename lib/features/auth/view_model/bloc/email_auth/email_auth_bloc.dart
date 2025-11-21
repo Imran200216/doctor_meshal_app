@@ -107,6 +107,7 @@ class EmailAuthBloc extends Bloc<EmailAuthEvent, EmailAuthState> {
               token: data['token'],
               id: data['id'],
               success: data['success'],
+
             ),
           );
           AppLoggerHelper.logInfo(

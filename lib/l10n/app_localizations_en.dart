@@ -403,4 +403,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noInternet => 'No internet connection. Please check your network settings.';
+
+  @override
+  String get retry => 'Retry';
 }

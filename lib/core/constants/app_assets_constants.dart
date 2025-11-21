@@ -62,6 +62,11 @@ class AppAssetsConstants {
 
   static const String noChatFound = "assets/icons/svg/no-chat-found.svg";
 
-  static const String noInternetFound =
-      "assets/icons/svg/no-internet.svg";
+  static const String noInternetFound = "assets/icons/svg/no-internet.svg";
+
+  static const String zoomIn = "assets/icons/svg/zoom-in.svg";
+
+  static const String zoomOut = "assets/icons/svg/zoom-out.svg";
+
+  static const String reset = "assets/icons/svg/reset.svg";
 }

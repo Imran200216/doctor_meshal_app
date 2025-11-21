@@ -6,6 +6,7 @@ import 'package:meshal_doctor_booking_app/features/auth/view/auth_forget_passwor
 import 'package:meshal_doctor_booking_app/features/auth/view/auth_otp_screen.dart';
 import 'package:meshal_doctor_booking_app/features/auth/view/auth_screen.dart';
 import 'package:meshal_doctor_booking_app/features/bottom_nav/view/bottom_nav.dart';
+import 'package:meshal_doctor_booking_app/features/bottom_nav/view/doctor_bottom_nav.dart';
 import 'package:meshal_doctor_booking_app/features/change_password/view/change_password_screen.dart';
 import 'package:meshal_doctor_booking_app/features/chat/view/chat_list_screen.dart';
 import 'package:meshal_doctor_booking_app/features/chat/view/chat_screen.dart';
@@ -165,7 +166,17 @@ GoRouter appRouter = GoRouter(
       path: '/chat',
       name: AppRouterConstants.chat,
       builder: (context, state) {
-        return ChatScreen();
+        final extra = state.extra as Map<String, dynamic>? ?? {};
+
+        final receiverRoomId = extra["receiverRoomId"] ?? "";
+        final senderRoomId = extra["senderRoomId"] ?? "";
+        final userId = extra["userId"] ?? "";
+
+        return ChatScreen(
+          receiverRoomId: receiverRoomId,
+          senderRoomId: senderRoomId,
+          userId: userId,
+        );
       },
     ),
 
@@ -240,6 +251,15 @@ GoRouter appRouter = GoRouter(
         // Get the passed id from extra
         final operativeId = state.extra as String? ?? '';
         return SurveyFormScreen(operativeId: operativeId);
+      },
+    ),
+
+    // Doctor Bottom Nav
+    GoRoute(
+      path: '/doctorBottomNav',
+      name: AppRouterConstants.doctorBottomNav,
+      builder: (context, state) {
+        return DoctorBottomNav();
       },
     ),
   ],

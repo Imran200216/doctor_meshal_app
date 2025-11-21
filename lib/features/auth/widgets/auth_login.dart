@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -9,7 +7,6 @@ import 'package:meshal_doctor_booking_app/commons/widgets/k_snack_bar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text_form_field.dart';
 import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_assets_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
@@ -19,7 +16,6 @@ import 'package:meshal_doctor_booking_app/core/utils/app_validator.dart';
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
 import 'package:meshal_doctor_booking_app/features/auth/view_model/bloc/email_auth/email_auth_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/auth/view_model/bloc/user_auth/user_auth_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/auth/widgets/social_btn.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 
 class AuthLogin extends StatefulWidget {
@@ -113,95 +109,204 @@ class _AuthLoginState extends State<AuthLogin> {
           const SizedBox(height: 30),
 
           // Login Btn
-          BlocConsumer<EmailAuthBloc, EmailAuthState>(
-            listener: (context, state) async {
-              if (state is EmailAuthSuccess) {
-                // Get User Aut Event Functionality
-                context.read<UserAuthBloc>().add(
-                  GetUserAuthEvent(id: state.id, token: state.token),
-                );
+          MultiBlocListener(
+            listeners: [
+              // EmailAuthBloc Listener
+              BlocListener<EmailAuthBloc, EmailAuthState>(
+                listener: (context, state) async {
+                  if (state is EmailAuthSuccess) {
+                    // Save userId in Hive
+                    try {
+                      AppLoggerHelper.logInfo(
+                        "Opening Hive box: ${AppDBConstants.userBox}",
+                      );
+                      await HiveService.openBox(AppDBConstants.userBox);
+                      AppLoggerHelper.logInfo("Hive box opened successfully");
 
-                try {
-                  await HiveService.openBox(AppDBConstants.userBox);
+                      // User Id
+                      AppLoggerHelper.logInfo("Saving User ID: ${state.id}");
+                      await HiveService.saveData(
+                        boxName: AppDBConstants.userBox,
+                        key: AppDBConstants.userId,
+                        value: state.id,
+                      );
+                      AppLoggerHelper.logInfo(
+                        "User ID saved successfully in Hive",
+                      );
 
-                  await HiveService.saveData(
-                    boxName: AppDBConstants.userBox,
-                    key: AppDBConstants.userId,
-                    value: state.id,
-                  );
+                      // User Logged Status
+                      AppLoggerHelper.logInfo(
+                        "Saving User Logged Status: true",
+                      );
+                      await HiveService.saveData(
+                        boxName: AppDBConstants.userBox,
+                        key: AppDBConstants.userAuthLoggedStatus,
+                        value: true,
+                      );
+                      AppLoggerHelper.logInfo(
+                        "User Logged Status saved successfully in Hive",
+                      );
 
-                  final userId = await HiveService.getData<String>(
-                    boxName: AppDBConstants.userBox,
-                    key: AppDBConstants.userId,
-                  );
-
-                  AppLoggerHelper.logInfo("User ID stored in Hive: $userId");
-                } catch (e) {
-                  AppLoggerHelper.logError("Hive Error: $e");
-                }
-
-                // Show success BEFORE navigation
-                KSnackBar.success(context, appLoc.loginSuccess);
-
-                // Delay navigation so snackbar shows properly
-                Future.delayed(const Duration(milliseconds: 400), () {
-                  GoRouter.of(
-                    context,
-                  ).pushReplacementNamed(AppRouterConstants.bottomNav);
-                });
-
-                clearControllers();
-              }
-
-              if (state is EmailAuthError) {
-                Future.microtask(() {
-                  KSnackBar.error(context, state.message);
-                });
-              }
-            },
-            builder: (context, state) {
-              return KFilledBtn(
-                isLoading: state is EmailAuthLoading,
-                btnTitle: appLoc.login,
-                btnBgColor: AppColorConstants.primaryColor,
-                btnTitleColor: AppColorConstants.secondaryColor,
-                onTap: () async {
-                  if (_formKey.currentState!.validate()) {
-                    // INTERNET CHECK
-                    final connectivityState = context
-                        .read<ConnectivityBloc>()
-                        .state;
-
-                    if (connectivityState is ConnectivityFailure) {
-                      Future.microtask(() {
-                        KSnackBar.error(context, appLoc.internetConnection);
-                      });
-                      return;
+                      // Show success message only once
+                      if (context.mounted) {
+                        KSnackBar.success(context, appLoc.loginSuccess);
+                      }
+                    } catch (e) {
+                      AppLoggerHelper.logError(
+                        "Hive Error while saving login data: $e",
+                      );
                     }
 
-                    // Proceed with Login
-                    context.read<EmailAuthBloc>().add(
-                      EmailAuthLoginEvent(
-                        email: _authEmailLoginController.text.trim(),
-                        password: _authPasswordLoginController.text.trim(),
-                      ),
+                    // Trigger fetching full user data
+                    if (context.mounted) {
+                      AppLoggerHelper.logInfo(
+                        "Triggering GetUserAuthEvent for user: ${state.id}",
+                      );
+                      context.read<UserAuthBloc>().add(
+                        GetUserAuthEvent(id: state.id, token: state.token),
+                      );
+                    }
+
+                    clearControllers();
+                  }
+
+                  if (state is EmailAuthError) {
+                    AppLoggerHelper.logError(
+                      "Email Auth Error: ${state.message}",
                     );
+                    if (context.mounted) {
+                      KSnackBar.error(context, state.message);
+                    }
                   }
                 },
-                borderRadius: 12,
-                fontSize: isMobile
-                    ? 16
-                    : isTablet
-                    ? 18
-                    : 20,
-                btnHeight: isMobile
-                    ? 50
-                    : isTablet
-                    ? 52
-                    : 54,
-                btnWidth: double.maxFinite,
-              );
-            },
+              ),
+
+              // UserAuthBloc Listener
+              BlocListener<UserAuthBloc, UserAuthState>(
+                listener: (context, state) {
+                  if (state is GetUserAuthSuccess) {
+                    final userType = state.user.userType;
+                    AppLoggerHelper.logInfo(
+                      "User authenticated successfully. User Type: $userType",
+                    );
+
+                    // Save router reference before async gap
+                    final router = GoRouter.of(context);
+
+                    Future.delayed(const Duration(milliseconds: 400), () async {
+                      try {
+                        // Navigate based on user type
+                        if (userType == 'patient') {
+                          // User Logged Type
+                          AppLoggerHelper.logInfo(
+                            "Saving User Logged Type: patient",
+                          );
+                          await HiveService.saveData(
+                            boxName: AppDBConstants.userBox,
+                            key: AppDBConstants.userAuthLoggedType,
+                            value: 'patient',
+                          );
+                          AppLoggerHelper.logInfo(
+                            "User Logged Type 'patient' saved successfully",
+                          );
+                          AppLoggerHelper.logInfo(
+                            "Navigating to Patient Bottom Nav",
+                          );
+
+                          router.pushReplacementNamed(
+                            AppRouterConstants.bottomNav,
+                          );
+                        } else if (userType == 'doctor') {
+                          // User Logged Type - FIX: Should be 'doctor' not 'patient'
+                          AppLoggerHelper.logInfo(
+                            "Saving User Logged Type: doctor",
+                          );
+                          await HiveService.saveData(
+                            boxName: AppDBConstants.userBox,
+                            key: AppDBConstants.userAuthLoggedType,
+                            value: 'doctor', // Fixed: was 'patient'
+                          );
+                          AppLoggerHelper.logInfo(
+                            "User Logged Type 'doctor' saved successfully",
+                          );
+                          AppLoggerHelper.logInfo(
+                            "Navigating to Doctor Bottom Nav",
+                          );
+
+                          router.pushReplacementNamed(
+                            AppRouterConstants.doctorBottomNav,
+                          );
+                        } else {
+                          AppLoggerHelper.logInfo(
+                            "Unknown user type, navigating to default Bottom Nav",
+                          );
+                          router.pushReplacementNamed(
+                            AppRouterConstants.bottomNav,
+                          );
+                        }
+                      } catch (e) {
+                        AppLoggerHelper.logError(
+                          "Error saving user type to Hive: $e",
+                        );
+                      }
+                    });
+                  }
+
+                  if (state is GetUserAuthFailure) {
+                    AppLoggerHelper.logError(
+                      "Get User Auth Failure: ${state.message}",
+                    );
+                    if (context.mounted) {
+                      KSnackBar.error(context, state.message);
+                    }
+                  }
+                },
+              ),
+            ],
+            child: BlocBuilder<EmailAuthBloc, EmailAuthState>(
+              builder: (context, state) {
+                return KFilledBtn(
+                  isLoading: state is EmailAuthLoading,
+                  btnTitle: appLoc.login,
+                  btnBgColor: AppColorConstants.primaryColor,
+                  btnTitleColor: AppColorConstants.secondaryColor,
+                  onTap: () {
+                    if (_formKey.currentState!.validate()) {
+                      final connectivityState = context
+                          .read<ConnectivityBloc>()
+                          .state;
+                      if (connectivityState is ConnectivityFailure) {
+                        AppLoggerHelper.logError("No internet connection");
+                        KSnackBar.error(context, appLoc.internetConnection);
+                        return;
+                      }
+
+                      AppLoggerHelper.logInfo(
+                        "Attempting login for email: ${_authEmailLoginController.text.trim()}",
+                      );
+                      context.read<EmailAuthBloc>().add(
+                        EmailAuthLoginEvent(
+                          email: _authEmailLoginController.text.trim(),
+                          password: _authPasswordLoginController.text.trim(),
+                        ),
+                      );
+                    }
+                  },
+                  borderRadius: 12,
+                  fontSize: isMobile
+                      ? 16
+                      : isTablet
+                      ? 18
+                      : 20,
+                  btnHeight: isMobile
+                      ? 50
+                      : isTablet
+                      ? 52
+                      : 54,
+                  btnWidth: double.maxFinite,
+                );
+              },
+            ),
           ),
 
           const SizedBox(height: 20),

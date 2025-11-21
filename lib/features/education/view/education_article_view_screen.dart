@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_app_bar.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/k_floating_action_btn.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_no_internet_found.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
 import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
+import 'package:meshal_doctor_booking_app/core/constants/app_assets_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
 import 'package:meshal_doctor_booking_app/core/service/hive_service.dart';
@@ -39,7 +41,7 @@ class _EducationArticleViewScreenState
     super.initState();
   }
 
-  // Fetch Education Articles
+  // Fetch Education Articles View
   Future<void> _fetchEducationArticlesView() async {
     try {
       await HiveService.openBox(AppDBConstants.userBox);
@@ -72,6 +74,10 @@ class _EducationArticleViewScreenState
     }
   }
 
+  // Font Size for Zoom In and Zoom Out
+  double _contentFontSize = 16;
+  double _titleFontSize = 18;
+
   @override
   Widget build(BuildContext context) {
     // Responsive
@@ -83,6 +89,48 @@ class _EducationArticleViewScreenState
 
     return Scaffold(
       backgroundColor: AppColorConstants.secondaryColor,
+      floatingActionButton: Column(
+        spacing: 12,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Zoom In
+          KFloatingActionBtn(
+            onTap: () {
+              setState(() {
+                _contentFontSize += 2;
+                _titleFontSize += 2;
+              });
+            },
+            fabIconPath: AppAssetsConstants.zoomIn,
+            heroTag: "zoomIn",
+          ),
+
+          // Zoom Out
+          KFloatingActionBtn(
+            onTap: () {
+              setState(() {
+                if (_contentFontSize > 8) _contentFontSize -= 2;
+                if (_titleFontSize > 10) _titleFontSize -= 2;
+              });
+            },
+            fabIconPath: AppAssetsConstants.zoomOut,
+            heroTag: "zoomOUt",
+          ),
+
+          // Reset
+          KFloatingActionBtn(
+            onTap: () {
+              setState(() {
+                _contentFontSize = 16;
+                _titleFontSize = 18;
+              });
+            },
+            fabIconPath: AppAssetsConstants.reset,
+            heroTag: "reset",
+          ),
+        ],
+      ),
+
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(kToolbarHeight),
         child:
@@ -149,14 +197,10 @@ class _EducationArticleViewScreenState
                   if (state is EducationFullViewArticleSuccess) {
                     final educationFullViewArticle = state.article;
 
-                    return InteractiveViewer(
-                      minScale: 1.0,
-                      maxScale: 5.0,
-                      panEnabled: true,
-                      scaleEnabled: true,
-                      constrained: false,
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
                       child: Container(
-                        width: MediaQuery.of(context).size.width,
+                        width: double.maxFinite,
                         padding: EdgeInsets.symmetric(
                           horizontal: isMobile
                               ? 20
@@ -248,11 +292,7 @@ class _EducationArticleViewScreenState
                               text: appLoc.articles,
                               textAlign: TextAlign.start,
                               overflow: TextOverflow.visible,
-                              fontSize: isMobile
-                                  ? 18
-                                  : isTablet
-                                  ? 20
-                                  : 22,
+                              fontSize: _titleFontSize,
                               fontWeight: FontWeight.w700,
                               color: AppColorConstants.titleColor,
                             ),
@@ -264,11 +304,7 @@ class _EducationArticleViewScreenState
                               text: educationFullViewArticle.article,
                               textAlign: TextAlign.start,
                               overflow: TextOverflow.visible,
-                              fontSize: isMobile
-                                  ? 16
-                                  : isTablet
-                                  ? 18
-                                  : 20,
+                              fontSize: _contentFontSize,
                               fontWeight: FontWeight.w500,
                               height: 1.2,
                               color: AppColorConstants.subTitleColor,

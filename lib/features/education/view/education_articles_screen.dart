@@ -170,7 +170,7 @@ class _EducationArticlesScreenState extends State<EducationArticlesScreen> {
           .expand((topic) => topic.educationArticles)
           .toList();
 
-      if (educationArticles.isEmpty) {
+      if (allArticles.isEmpty) {
         return KNoItemsFound();
       }
 

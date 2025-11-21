@@ -28,6 +28,7 @@ dependencies:
 
   # graphql flutter
   graphql_flutter: ^5.2.1
+  graphql: ^5.2.3
 
   # logger
   logger: ^2.6.2
@@ -68,6 +69,13 @@ dependencies:
 
   # chat bubbles
   chat_bubbles: ^1.7.0
+
+  # badges
+  badges: ^3.1.2
+
+  # web socket channel
+  web_socket_channel: ^3.0.3
+
 
 dev_dependencies:
   flutter_test:

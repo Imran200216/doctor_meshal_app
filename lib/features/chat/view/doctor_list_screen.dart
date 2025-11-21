@@ -10,6 +10,7 @@ import 'package:meshal_doctor_booking_app/commons/widgets/k_text_form_field.dart
 import 'package:meshal_doctor_booking_app/core/constants/app_assets_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
+import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
 import 'package:meshal_doctor_booking_app/core/service/hive_service.dart';
 import 'package:meshal_doctor_booking_app/core/utils/app_logger_helper.dart';
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
@@ -29,6 +30,8 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
   // User Id
   String? userId;
 
+  late String receiverRoomId = "";
+
   // Search Controller
   final TextEditingController _searchController = TextEditingController();
 
@@ -38,7 +41,7 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchDoctorList();
+    _fetchAllData();
   }
 
   @override
@@ -46,6 +49,18 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
     _searchController.dispose();
     _debounce?.cancel();
     super.dispose();
+  }
+
+  // Fetch all data
+  Future<void> _fetchAllData() async {
+    try {
+      // Run all futures in parallel
+      await Future.wait([_fetchDoctorList()]);
+
+      AppLoggerHelper.logInfo("All data fetched successfully!");
+    } catch (e) {
+      AppLoggerHelper.logError("Error fetching data: $e");
+    }
   }
 
   // Fetch Doctor List
@@ -112,6 +127,23 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
       itemBuilder: (context, index) {
         final doctor = doctorsList[index];
         return DoctorListTile(
+          onTap: () async {
+            // Sender Room Id in hive
+            final senderRoomId = await HiveService.getData(
+              boxName: AppDBConstants.chatRoom,
+              key: AppDBConstants.chatRoomSenderRoomId,
+            );
+
+            // Chat Screen
+            GoRouter.of(context).pushNamed(
+              AppRouterConstants.chat,
+              extra: {
+                "receiverRoomId": doctor.id,
+                "senderRoomId": senderRoomId,
+                "userId": userId,
+              },
+            );
+          },
           profileImageUrl: doctor.user.profileImage,
           doctorName: doctor.user.firstName,
           doctorDesignation: doctor.user.specialization,

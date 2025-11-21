@@ -886,6 +886,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No internet connection. Please check your network settings.'**
   String get noInternet;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

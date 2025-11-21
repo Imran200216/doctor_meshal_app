@@ -1,63 +1,79 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_app_bar.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_no_items_found.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_assets_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
-import 'package:meshal_doctor_booking_app/core/utils/app_datas.dart';
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
+import 'package:meshal_doctor_booking_app/features/chat/view_model/bloc/subscribe_chat_message/subscribe_chat_message_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/chat/widgets/chat_message_text_form_field.dart';
-import 'package:chat_bubbles/chat_bubbles.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+  final String receiverRoomId;
+  final String senderRoomId;
+  final String userId;
+
+  const ChatScreen({
+    super.key,
+    required this.receiverRoomId,
+    required this.senderRoomId,
+    required this.userId,
+  });
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  //  Controllers
   final TextEditingController _messageController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    context.read<SubscribeChatMessageBloc>().add(
+      StartSubscribeChatMessageEvent(
+        senderRoomId: widget.senderRoomId,
+        recieverRoomId: widget.receiverRoomId,
+        userId: widget.userId,
+      ),
+    );
+  }
+
+  @override
   void dispose() {
+    context.read<SubscribeChatMessageBloc>().add(
+      StopSubcribeChatMessageEvent(),
+    );
     _messageController.dispose();
+
     super.dispose();
   }
 
   void sendMessage() {
     if (_messageController.text.trim().isEmpty) return;
 
-    setState(() {
-      messages.add({"text": _messageController.text.trim(), "isMe": true});
-    });
-
+    // Here, you can call your mutation to send message
+    // For now, just clearing text
     _messageController.clear();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Responsive
     final isTablet = Responsive.isTablet(context);
     final isMobile = Responsive.isMobile(context);
-
-    // App Localization
     final appLoc = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: AppColorConstants.secondaryColor,
       appBar: KAppBar(
-        title: "Zayan",
+        title: "Chat",
         onBack: () {
           HapticFeedback.heavyImpact();
           GoRouter.of(context).pop();
         },
         centerTitle: false,
       ),
-
       body: Directionality(
         textDirection: TextDirection.ltr,
         child: Padding(
@@ -75,70 +91,77 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           child: Column(
             children: [
-              // Chat Messages
+              // Chat Messages List
               Expanded(
                 flex: 10,
-                child: messages.isEmpty
-                    ? KNoItemsFound(
-                        noItemsFoundText: appLoc.noChatsFound,
-                        noItemsSvg: AppAssetsConstants.noChatFound,
-                      )
-                    : ListView.builder(
-                        itemCount: messages.length,
-                        padding: const EdgeInsets.only(bottom: 20, top: 10),
-                        itemBuilder: (context, index) {
-                          final msg = messages[index];
-
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: Column(
-                              crossAxisAlignment: msg["isMe"]
-                                  ? CrossAxisAlignment.end
-                                  : CrossAxisAlignment.start,
-                              children: [
-                                BubbleSpecialOne(
-                                  sent: true,
-                                  delivered: true,
-                                  tail: true,
-                                  seen: true,
-                                  text: msg["text"],
-                                  isSender: msg["isMe"],
-                                  color: msg["isMe"]
-                                      ? AppColorConstants.primaryColor
-                                      : AppColorConstants.subTitleColor
-                                            .withOpacity(0.15),
-                                  textStyle: TextStyle(
-                                    color: msg["isMe"]
-                                        ? AppColorConstants.secondaryColor
-                                        : AppColorConstants.titleColor,
-                                    fontFamily: "OpenSans",
-                                    fontSize: isMobile
-                                        ? 14
-                                        : isTablet
-                                        ? 16
-                                        : 18,
-                                  ),
-                                ),
-
-                                // Message Time Text
-                                const SizedBox(height: 4),
-                                Text(
-                                  msg["time"],
-                                  style: TextStyle(
-                                    color: AppColorConstants.subTitleColor,
-                                    fontSize: isMobile
-                                        ? 12
-                                        : isTablet
-                                        ? 14
-                                        : 16,
-                                    fontFamily: "OpenSans",
-                                  ),
-                                ),
-                              ],
+                child:
+                    BlocBuilder<
+                      SubscribeChatMessageBloc,
+                      SubscribeChatMessageState
+                    >(
+                      builder: (context, state) {
+                        if (state is GetSubscribeChatMessageLoading) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else if (state is GetSubscribeChatMessageError) {
+                          return Center(
+                            child: Text(
+                              "Error: ${state.message}",
+                              style: const TextStyle(color: Colors.red),
                             ),
                           );
-                        },
-                      ),
+                        } else if (state is GetSubscribeChatMessageSuccess) {
+                          final messages = state.chatMessage.messages;
+
+                          if (messages.isEmpty) {
+                            return const Center(child: Text("No messages yet"));
+                          }
+
+                          return ListView.builder(
+                            reverse: true,
+                            itemCount: messages.length,
+                            itemBuilder: (context, index) {
+                              final message =
+                                  messages[messages.length - 1 - index];
+                              final isMe = message.type == "SEND";
+
+                              return Align(
+                                alignment: isMe
+                                    ? Alignment.centerRight
+                                    : Alignment.centerLeft,
+                                child: Container(
+                                  margin: const EdgeInsets.symmetric(
+                                    vertical: 4,
+                                    horizontal: 8,
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 10,
+                                    horizontal: 14,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isMe
+                                        ? AppColorConstants.primaryColor
+                                        : Colors.grey.shade300,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    message.message,
+                                    style: TextStyle(
+                                      color: isMe
+                                          ? AppColorConstants.secondaryColor
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        } else {
+                          return const Center(child: Text("Loading chat..."));
+                        }
+                      },
+                    ),
               ),
 
               // Chat Input Area
@@ -153,11 +176,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   spacing: 10,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Attach Files
                     IconButton(
-                      onPressed: () {
-                        HapticFeedback.heavyImpact();
-                      },
+                      onPressed: () => HapticFeedback.heavyImpact(),
                       icon: Icon(
                         Icons.attach_file_outlined,
                         size: isMobile
@@ -168,16 +188,12 @@ class _ChatScreenState extends State<ChatScreen> {
                         color: AppColorConstants.subTitleColor,
                       ),
                     ),
-
-                    // Message Text Field
                     Expanded(
                       child: ChatMessageTextFormField(
                         controller: _messageController,
                         hintText: appLoc.typeYourMessage,
                       ),
                     ),
-
-                    // Send Button
                     GestureDetector(
                       onTap: () {
                         HapticFeedback.heavyImpact();

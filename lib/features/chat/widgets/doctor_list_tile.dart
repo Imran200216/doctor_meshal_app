@@ -5,6 +5,7 @@ import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dar
 import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
 
 class DoctorListTile extends StatelessWidget {
+  final VoidCallback onTap;
   final String profileImageUrl;
   final String doctorName;
   final String doctorDesignation;
@@ -14,6 +15,7 @@ class DoctorListTile extends StatelessWidget {
     required this.profileImageUrl,
     required this.doctorName,
     required this.doctorDesignation,
+    required this.onTap,
   });
 
   @override
@@ -26,6 +28,9 @@ class DoctorListTile extends StatelessWidget {
       onTap: () {
         // Haptics
         HapticFeedback.heavyImpact();
+
+        // on tap
+        onTap();
       },
       contentPadding: EdgeInsets.zero,
       leading: KProfileAvatar(

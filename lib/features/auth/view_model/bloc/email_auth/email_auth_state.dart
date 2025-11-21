@@ -24,6 +24,7 @@ class EmailAuthSuccess extends EmailAuthState {
   const EmailAuthSuccess({
     required this.id,
     required this.message,
+
     required this.success,
     required this.token,
   });

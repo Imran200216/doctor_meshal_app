@@ -3,10 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_app_bar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_date_picker_text_form_field.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_no_internet_found.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_skeleton_text_form_field.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text_form_field.dart';
-import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
 import 'package:meshal_doctor_booking_app/core/service/hive_service.dart';
@@ -114,202 +112,186 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
           // Fetch User Id Details
           _fetchUserIdAndDetails();
         },
-        child: BlocBuilder<ConnectivityBloc, ConnectivityState>(
-          builder: (context, connectivityState) {
-            if (connectivityState is ConnectivityFailure) {
-              return Align(
-                alignment: Alignment.center,
-                heightFactor: 3,
-                child: const KInternetFound(),
-              );
-            } else if (connectivityState is ConnectivitySuccess) {
-              return BlocBuilder<UserAuthBloc, UserAuthState>(
-                builder: (context, state) {
-                  if (state is GetUserAuthLoading) {
-                    return ListView.separated(
-                      padding: EdgeInsets.only(
-                        left: isMobile
-                            ? 20
-                            : isTablet
-                            ? 30
-                            : 40,
-                        right: isMobile
-                            ? 20
-                            : isTablet
-                            ? 30
-                            : 40,
-                        top: isMobile
-                            ? 20
-                            : isTablet
-                            ? 30
-                            : 40,
-                        bottom: isMobile
-                            ? 20
-                            : isTablet
-                            ? 30
-                            : 40,
-                      ),
-                      itemCount: 30,
-                      separatorBuilder: (context, index) {
-                        return const SizedBox(height: 20);
-                      },
-                      itemBuilder: (context, index) {
-                        return KSkeletonTextFormField();
-                      },
-                    );
-                  }
-
-                  if (state is GetUserAuthSuccess) {
-                    final user = state.user;
-
-                    // Populate controllers
-                    firstNameController.text = user.firstName;
-                    lastNameController.text = user.lastName;
-                    emailController.text = user.email;
-                    phoneNumberController.text = user.phoneNumber;
-                    dobController.text = user.age;
-                    genderController.text = user.gender;
-                    registerDateController.text = user.registerDate;
-                    heightController.text = user.height;
-                    weightController.text = user.weight;
-                    bloodGroupController.text = user.bloodGroup;
-                    civilIdController.text = user.cid;
-                    phoneCode = user.phoneCode;
-                  }
-
-                  if (state is GetUserAuthFailure) {
-                    AppLoggerHelper.logError(
-                      "Failed to load user: ${state.message}",
-                    );
-                  }
-
-                  return SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        left: isMobile
-                            ? 20
-                            : isTablet
-                            ? 30
-                            : 40,
-                        right: isMobile
-                            ? 20
-                            : isTablet
-                            ? 30
-                            : 40,
-                        top: isMobile
-                            ? 20
-                            : isTablet
-                            ? 30
-                            : 40,
-                        bottom: isMobile
-                            ? 100
-                            : isTablet
-                            ? 130
-                            : 140,
-                      ),
-                      child: Column(
-                        spacing: 20,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // First Name
-                          KTextFormField(
-                            readOnly: true,
-                            controller: firstNameController,
-                            hintText: appLoc.enterFirstName,
-                            labelText: appLoc.firstName,
-                          ),
-
-                          // Last Name
-                          KTextFormField(
-                            readOnly: true,
-                            controller: lastNameController,
-                            hintText: appLoc.enterLastName,
-                            labelText: appLoc.lastName,
-                          ),
-
-                          // Email
-                          KTextFormField(
-                            readOnly: true,
-                            controller: emailController,
-                            hintText: appLoc.enterEmail,
-                            labelText: appLoc.email,
-                          ),
-
-                          // Phone Number
-                          KTextFormField(
-                            readOnly: true,
-                            hintText: appLoc.enterPhoneNumber,
-                            controller: phoneNumberController,
-                            labelText: appLoc.phoneNumber,
-                          ),
-
-                          // Civil Id
-                          KTextFormField(
-                            readOnly: true,
-                            controller: civilIdController,
-                            hintText: appLoc.enterCivilId,
-                            labelText: appLoc.civilId,
-                          ),
-
-                          // Gender
-                          KTextFormField(
-                            readOnly: true,
-                            controller: genderController,
-                            hintText: appLoc.enterGender,
-                            labelText: appLoc.gender,
-                          ),
-
-                          // Age
-                          KDatePickerTextFormField(
-                            readOnly: true,
-                            controller: dobController,
-                            labelText: appLoc.dateOfBirth,
-                            hintText: appLoc.dateOfBirth,
-                          ),
-
-                          // Register Date
-                          KDatePickerTextFormField(
-                            readOnly: true,
-                            controller: registerDateController,
-                            labelText: appLoc.registerDate,
-                            hintText: appLoc.selectDate,
-                          ),
-
-                          // Height
-                          KTextFormField(
-                            readOnly: true,
-                            controller: heightController,
-                            labelText: appLoc.height,
-                            hintText: appLoc.enterHeight,
-                            keyboardType: TextInputType.number,
-                          ),
-
-                          // Weight
-                          KTextFormField(
-                            readOnly: true,
-                            controller: weightController,
-                            labelText: appLoc.weight,
-                            hintText: appLoc.enterWeight,
-                            keyboardType: TextInputType.number,
-                          ),
-
-                          // Blood Group
-                          KTextFormField(
-                            readOnly: true,
-                            controller: bloodGroupController,
-                            labelText: appLoc.bloodGroup,
-                            hintText: appLoc.enterBloodGroup,
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
+        child: BlocBuilder<UserAuthBloc, UserAuthState>(
+          builder: (context, state) {
+            if (state is GetUserAuthLoading) {
+              return ListView.separated(
+                padding: EdgeInsets.only(
+                  left: isMobile
+                      ? 20
+                      : isTablet
+                      ? 30
+                      : 40,
+                  right: isMobile
+                      ? 20
+                      : isTablet
+                      ? 30
+                      : 40,
+                  top: isMobile
+                      ? 20
+                      : isTablet
+                      ? 30
+                      : 40,
+                  bottom: isMobile
+                      ? 20
+                      : isTablet
+                      ? 30
+                      : 40,
+                ),
+                itemCount: 30,
+                separatorBuilder: (context, index) {
+                  return const SizedBox(height: 20);
+                },
+                itemBuilder: (context, index) {
+                  return KSkeletonTextFormField();
                 },
               );
-            } else {
-              return const SizedBox.shrink();
             }
+
+            if (state is GetUserAuthSuccess) {
+              final user = state.user;
+
+              // Populate controllers
+              firstNameController.text = user.firstName;
+              lastNameController.text = user.lastName;
+              emailController.text = user.email;
+              phoneNumberController.text = user.phoneNumber;
+              dobController.text = user.age;
+              genderController.text = user.gender;
+              registerDateController.text = user.registerDate;
+              heightController.text = user.height;
+              weightController.text = user.weight;
+              bloodGroupController.text = user.bloodGroup;
+              civilIdController.text = user.cid;
+              phoneCode = user.phoneCode;
+            }
+
+            if (state is GetUserAuthFailure) {
+              AppLoggerHelper.logError("Failed to load user: ${state.message}");
+            }
+
+            return SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left: isMobile
+                      ? 20
+                      : isTablet
+                      ? 30
+                      : 40,
+                  right: isMobile
+                      ? 20
+                      : isTablet
+                      ? 30
+                      : 40,
+                  top: isMobile
+                      ? 20
+                      : isTablet
+                      ? 30
+                      : 40,
+                  bottom: isMobile
+                      ? 100
+                      : isTablet
+                      ? 130
+                      : 140,
+                ),
+                child: Column(
+                  spacing: 20,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // First Name
+                    KTextFormField(
+                      readOnly: true,
+                      controller: firstNameController,
+                      hintText: appLoc.enterFirstName,
+                      labelText: appLoc.firstName,
+                    ),
+
+                    // Last Name
+                    KTextFormField(
+                      readOnly: true,
+                      controller: lastNameController,
+                      hintText: appLoc.enterLastName,
+                      labelText: appLoc.lastName,
+                    ),
+
+                    // Email
+                    KTextFormField(
+                      readOnly: true,
+                      controller: emailController,
+                      hintText: appLoc.enterEmail,
+                      labelText: appLoc.email,
+                    ),
+
+                    // Phone Number
+                    KTextFormField(
+                      readOnly: true,
+                      hintText: appLoc.enterPhoneNumber,
+                      controller: phoneNumberController,
+                      labelText: appLoc.phoneNumber,
+                    ),
+
+                    // Civil Id
+                    KTextFormField(
+                      readOnly: true,
+                      controller: civilIdController,
+                      hintText: appLoc.enterCivilId,
+                      labelText: appLoc.civilId,
+                    ),
+
+                    // Gender
+                    KTextFormField(
+                      readOnly: true,
+                      controller: genderController,
+                      hintText: appLoc.enterGender,
+                      labelText: appLoc.gender,
+                    ),
+
+                    // Age
+                    KDatePickerTextFormField(
+                      readOnly: true,
+                      controller: dobController,
+                      labelText: appLoc.dateOfBirth,
+                      hintText: appLoc.dateOfBirth,
+                    ),
+
+                    // Register Date
+                    KDatePickerTextFormField(
+                      readOnly: true,
+                      controller: registerDateController,
+                      labelText: appLoc.registerDate,
+                      hintText: appLoc.selectDate,
+                    ),
+
+                    // Height
+                    KTextFormField(
+                      readOnly: true,
+                      controller: heightController,
+                      labelText: appLoc.height,
+                      hintText: appLoc.enterHeight,
+                      keyboardType: TextInputType.number,
+                    ),
+
+                    // Weight
+                    KTextFormField(
+                      readOnly: true,
+                      controller: weightController,
+                      labelText: appLoc.weight,
+                      hintText: appLoc.enterWeight,
+                      keyboardType: TextInputType.number,
+                    ),
+
+                    // Blood Group
+                    KTextFormField(
+                      readOnly: true,
+                      controller: bloodGroupController,
+                      labelText: appLoc.bloodGroup,
+                      hintText: appLoc.enterBloodGroup,
+                    ),
+                  ],
+                ),
+              ),
+            );
           },
         ),
       ),

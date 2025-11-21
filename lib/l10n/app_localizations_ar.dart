@@ -403,4 +403,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noInternet => 'لا يوجد اتصال بالإنترنت. يرجى التحقق من إعدادات الشبكة.';
+
+  @override
+  String get retry => 'إعادة المحاولة';
 }

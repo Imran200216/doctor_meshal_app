@@ -8,8 +8,7 @@ import 'package:meshal_doctor_booking_app/features/auth/view_model/cubit/auth_se
 final GetIt getIt = GetIt.instance;
 
 void initAuthInjection() {
-  // Graphql Service
-  getIt.registerLazySingleton(() => GraphQLService(AppApiConstants.baseUrl));
+
 
   // Auth Selected Type Cubit
   getIt.registerLazySingleton(() => AuthSelectedTypeCubit());

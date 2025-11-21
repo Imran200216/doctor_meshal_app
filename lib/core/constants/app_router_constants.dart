@@ -64,4 +64,7 @@ class AppRouterConstants {
 
   // Survey Form
   static const String surveyForm = "surveyForm";
+
+  // Doctor Bottom Nav
+  static const String doctorBottomNav = "doctorBottomNav";
 }

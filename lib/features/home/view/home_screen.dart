@@ -16,6 +16,7 @@ import 'package:meshal_doctor_booking_app/features/auth/view_model/bloc/user_aut
 import 'package:meshal_doctor_booking_app/features/education/view_model/education/education_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/education/widgets/patient_corner_card.dart';
 import 'package:meshal_doctor_booking_app/features/home/view_model/bloc/operative_summary_counts/operative_summary_counts_bloc.dart';
+import 'package:meshal_doctor_booking_app/features/home/view_model/bloc/user_chat_room/view_user_chat_room_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/home/widgets/home_skeleton.dart';
 import 'package:meshal_doctor_booking_app/features/home/widgets/peri_operative_score_card.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
@@ -35,9 +36,24 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchUserIdAndLoadEducation();
-    _fetchUserAuth();
-    _fetchOperativeSummaryCounts();
+    _fetchAllData();
+  }
+
+  // Fetch all data
+  Future<void> _fetchAllData() async {
+    try {
+      // Run all futures in parallel
+      await Future.wait([
+        _fetchUserIdAndLoadEducation(),
+        _fetchUserAuth(),
+        _fetchOperativeSummaryCounts(),
+        _viewUserChatRoom(),
+      ]);
+
+      AppLoggerHelper.logInfo("All data fetched successfully!");
+    } catch (e) {
+      AppLoggerHelper.logError("Error fetching data: $e");
+    }
   }
 
   // Fetch Use Id And Load Education
@@ -117,6 +133,33 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // View User Chat Room
+  Future<void> _viewUserChatRoom() async {
+    try {
+      await HiveService.openBox(AppDBConstants.userBox);
+
+      final storedUserId = await HiveService.getData<String>(
+        boxName: AppDBConstants.userBox,
+        key: AppDBConstants.userId,
+      );
+
+      if (storedUserId != null) {
+        userId = storedUserId;
+
+        AppLoggerHelper.logInfo("User ID fetched: $userId");
+
+        // Get View User Chat Room
+        context.read<ViewUserChatRoomBloc>().add(
+          GetViewChatRoomEvent(userId: userId!),
+        );
+      } else {
+        AppLoggerHelper.logError("No User ID found in Hive!");
+      }
+    } catch (e) {
+      AppLoggerHelper.logError("Error fetching User ID: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Responsive
@@ -130,14 +173,63 @@ class _HomeScreenState extends State<HomeScreen> {
       textDirection: TextDirection.ltr,
       child: Scaffold(
         backgroundColor: AppColorConstants.secondaryColor,
-        floatingActionButton: KFloatingActionBtn(
-          onTap: () {
-            // Chat List Screen
-            GoRouter.of(context).pushNamed(AppRouterConstants.chatList);
-          },
-          fabIconPath: AppAssetsConstants.chats,
-          heroTag: "chats",
-        ),
+        floatingActionButton:
+            BlocBuilder<ViewUserChatRoomBloc, ViewUserChatRoomState>(
+              builder: (context, state) {
+                int count = 0;
+
+                if (state is GetViewUserChatRoomSuccess) {
+                  try {
+                    count = int.tryParse(state.notificationCount) ?? 0;
+
+                    /// Log before opening Hive box
+                    AppLoggerHelper.logInfo(
+                      "Opening Hive box: ${AppDBConstants.chatRoom}",
+                    );
+
+                    HiveService.openBox(AppDBConstants.chatRoom);
+
+                    /// Save Data to Hive
+                    HiveService.saveData(
+                      boxName: AppDBConstants.chatRoom,
+                      key: AppDBConstants.chatRoomSenderRoomId,
+                      value: state.id,
+                    );
+
+                    /// Log success
+                    AppLoggerHelper.logInfo(
+                      "Hive Save Success → box: ${AppDBConstants.chatRoom}, "
+                      "key: ${AppDBConstants.chatRoomSenderRoomId}, "
+                      "value: ${state.id}",
+                    );
+                  } catch (e) {
+                    /// Log error
+                    AppLoggerHelper.logError("Hive Save Failed → Error: $e");
+                  }
+                }
+
+                return FittedBox(
+                  child: Stack(
+                    alignment: const Alignment(1.4, -1.5),
+                    children: [
+                      KFloatingActionBtn(
+                        onTap: () {
+                          GoRouter.of(
+                            context,
+                          ).pushNamed(AppRouterConstants.chatList);
+                        },
+                        fabIconPath: AppAssetsConstants.chats,
+                        heroTag: "doctorList",
+                      ),
+
+                      // Show badge only when count > 0
+                      Badge.count(count: count, isLabelVisible: true),
+                    ],
+                  ),
+                );
+              },
+            ),
+
         body: SafeArea(
           child: RefreshIndicator.adaptive(
             color: AppColorConstants.secondaryColor,

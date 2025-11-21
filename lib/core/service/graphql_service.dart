@@ -1,46 +1,117 @@
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:meshal_doctor_booking_app/core/utils/app_logger_helper.dart';
 
 class GraphQLService {
   late final GraphQLClient _client;
+  late final WebSocketLink _websocketLink;
 
-  GraphQLService(String endpoint, {String? authToken}) {
-    final HttpLink httpLink = HttpLink(endpoint);
+  GraphQLService({
+    required String httpEndpoint,
+    required String websocketEndpoint,
+  }) {
+    AppLoggerHelper.logInfo('Initializing GraphQL Service');
+    AppLoggerHelper.logInfo('WebSocket URL: $websocketEndpoint');
 
-    Link link = httpLink;
-    if (authToken != null && authToken.isNotEmpty) {
-      link = AuthLink(
-        getToken: () async => 'Bearer $authToken',
-      ).concat(httpLink);
-    }
+    /// HTTP Link (Queries + Mutations)
+    final HttpLink httpLink = HttpLink(httpEndpoint);
 
-    _client = GraphQLClient(
-      cache: GraphQLCache(store: InMemoryStore()),
-      link: link,
+    /// WebSocket Link (Subscriptions)
+    _websocketLink = WebSocketLink(
+      websocketEndpoint,
+      // ✅ Use graphql-transport-ws to match Node `graphql-ws` server
+      subProtocol: GraphQLProtocol.graphqlTransportWs,
+      config: SocketClientConfig(
+        autoReconnect: true,
+        inactivityTimeout: const Duration(seconds: 30),
+        delayBetweenReconnectionAttempts: const Duration(seconds: 5),
+        onConnectionLost: (code, reason) {
+          AppLoggerHelper.logError(
+            '❌ Connection lost: Code=$code, Reason=$reason',
+          );
+        },
+      ),
     );
+
+    /// Split:
+    /// - Subscriptions → websocket
+    /// - Queries/Mutations → http
+    final Link link = Link.split(
+      (request) => request.isSubscription,
+      _websocketLink,
+      httpLink,
+    );
+
+    _client = GraphQLClient(link: link, cache: GraphQLCache());
   }
 
-  /// ✅ Run a GraphQL query
+  /// ===========================
+  /// 🔵 QUERY
+  /// ===========================
   Future<QueryResult> performQuery(
     String query, {
     Map<String, dynamic>? variables,
   }) async {
-    final options = QueryOptions(
-      document: gql(query),
-      variables: variables ?? {},
-      fetchPolicy: FetchPolicy.networkOnly,
-    );
-    return await _client.query(options);
+    try {
+      AppLoggerHelper.logInfo('Executing query');
+      return await _client.query(
+        QueryOptions(
+          document: gql(query),
+          variables: variables ?? {},
+          fetchPolicy: FetchPolicy.networkOnly,
+        ),
+      );
+    } catch (e) {
+      AppLoggerHelper.logError('Query error: $e');
+      rethrow;
+    }
   }
 
-  /// ✅ Run a GraphQL mutation
+  /// ===========================
+  /// 🟢 MUTATION
+  /// ===========================
   Future<QueryResult> performMutation(
     String mutation, {
     Map<String, dynamic>? variables,
   }) async {
-    final options = MutationOptions(
-      document: gql(mutation),
-      variables: variables ?? {},
+    try {
+      AppLoggerHelper.logInfo('Executing mutation');
+      return await _client.mutate(
+        MutationOptions(document: gql(mutation), variables: variables ?? {}),
+      );
+    } catch (e) {
+      AppLoggerHelper.logError('Mutation error: $e');
+      rethrow;
+    }
+  }
+
+  /// ===========================
+  /// 🔴 SUBSCRIPTION
+  /// ===========================
+  Stream<QueryResult> performSubscribe(
+    String subscription, {
+    Map<String, dynamic>? variables,
+  }) {
+    AppLoggerHelper.logInfo('Starting subscription');
+    AppLoggerHelper.logInfo('Subscription query: $subscription');
+    AppLoggerHelper.logInfo('Variables: $variables');
+
+    return _client.subscribe(
+      SubscriptionOptions(
+        document: gql(subscription),
+        variables: variables ?? {},
+      ),
     );
-    return await _client.mutate(options);
+  }
+
+  /// Manually reconnect websocket
+  void reconnectWebSocket() {
+    AppLoggerHelper.logInfo('Manually reconnecting WebSocket');
+    _websocketLink.connectOrReconnect();
+  }
+
+  /// Dispose websocket connection
+  Future<void> dispose() async {
+    AppLoggerHelper.logInfo('Disposing GraphQL Service');
+    await _websocketLink.dispose();
   }
 }

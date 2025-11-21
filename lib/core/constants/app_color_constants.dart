@@ -18,4 +18,7 @@ class AppColorConstants {
 
   // Intro Bg Color
   static const Color introBgColor = Color(0xFF1E2D66);
+
+  // Notification Bg Color
+  static const Color notificationBgColor = Color(0xFFBA1A1B);
 }

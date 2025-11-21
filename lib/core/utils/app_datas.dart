@@ -76,7 +76,19 @@ final List<Map<String, String>> chatUsers = [
 
 // Message
 final List<Map<String, dynamic>> messages = [
-  // {"text": "Hello Doctor 👋", "isMe": false, "time": "10:25 AM"},
-  // {"text": "How are you today?", "isMe": false, "time": "10:26 AM"},
-  // {"text": "I’m good, how can I help you?", "isMe": true, "time": "10:27 AM"},
+  {"text": "Hello Doctor 👋", "isMe": false, "time": "10:25 AM"},
+  {"text": "How are you today?", "isMe": false, "time": "10:26 AM"},
+  {"text": "I’m good, how can I help you?", "isMe": true, "time": "10:27 AM"},
+  {"text": "Hello Doctor 👋", "isMe": false, "time": "10:25 AM"},
+  {"text": "How are you today?", "isMe": false, "time": "10:26 AM"},
+  {"text": "I’m good, how can I help you?", "isMe": true, "time": "10:27 AM"},
+  {"text": "Hello Doctor 👋", "isMe": false, "time": "10:25 AM"},
+  {"text": "How are you today?", "isMe": false, "time": "10:26 AM"},
+  {"text": "I’m good, how can I help you?", "isMe": true, "time": "10:27 AM"},
+  {"text": "Hello Doctor 👋", "isMe": false, "time": "10:25 AM"},
+  {"text": "How are you today?", "isMe": false, "time": "10:26 AM"},
+  {"text": "I’m good, how can I help you?", "isMe": true, "time": "10:27 AM"},
+  {"text": "Hello Doctor 👋", "isMe": false, "time": "10:25 AM"},
+  {"text": "How are you today?", "isMe": false, "time": "10:26 AM"},
+  {"text": "I’m good, how can I help you?", "isMe": true, "time": "10:27 AM"},
 ];

@@ -130,5 +130,6 @@
   "logoutSuccess" : "Logout Success",
   "logoutFailed": "Logout Failed",
   "consultDoctor": "Consult Doctor",
-  "noInternet": "No internet connection. Please check your network settings."
+  "noInternet": "No internet connection. Please check your network settings.",
+  "retry": "Retry"
 }

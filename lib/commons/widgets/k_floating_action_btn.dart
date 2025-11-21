@@ -22,26 +22,23 @@ class KFloatingActionBtn extends StatelessWidget {
     final isTablet = Responsive.isTablet(context);
     final isMobile = Responsive.isMobile(context);
 
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: FloatingActionButton(
-        heroTag: heroTag,
-        backgroundColor: AppColorConstants.primaryColor,
-        onPressed: () {
-          HapticFeedback.heavyImpact();
-
-          onTap();
-        },
-        child: SvgPicture.asset(
-          fabIconPath,
-          height: isMobile
-              ? 30
-              : isTablet
-              ? 34
-              : 38,
-          color: AppColorConstants.secondaryColor,
-          fit: BoxFit.contain,
-        ),
+    return FloatingActionButton(
+      heroTag: heroTag,
+      clipBehavior: Clip.none,
+      backgroundColor: AppColorConstants.primaryColor,
+      onPressed: () {
+        HapticFeedback.heavyImpact();
+        onTap();
+      },
+      child: SvgPicture.asset(
+        fabIconPath,
+        height: isMobile
+            ? 30
+            : isTablet
+            ? 34
+            : 38,
+        color: AppColorConstants.secondaryColor,
+        fit: BoxFit.contain,
       ),
     );
   }
