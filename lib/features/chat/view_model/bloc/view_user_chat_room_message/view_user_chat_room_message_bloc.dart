@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:meshal_doctor_booking_app/core/service/chat_graphql_service.dart';
 import 'package:meshal_doctor_booking_app/core/service/graphql_service.dart';
 import 'package:meshal_doctor_booking_app/core/utils/app_logger_helper.dart';
 import 'package:meshal_doctor_booking_app/features/chat/model/view_user_chat_message_model.dart';
@@ -10,9 +11,9 @@ part 'view_user_chat_room_message_state.dart';
 
 class ViewUserChatRoomMessageBloc
     extends Bloc<ViewUserChatRoomMessageEvent, ViewUserChatRoomMessageState> {
-  final GraphQLService graphQLService;
+  final ChatGraphQLHttpService chatGraphQLHttpService;
 
-  ViewUserChatRoomMessageBloc({required this.graphQLService})
+  ViewUserChatRoomMessageBloc({required this.chatGraphQLHttpService})
     : super(ViewUserChatRoomMessageInitial()) {
     // Get Chatroom Messages
     on<GetViewUserChatRoomMessageEvent>((event, emit) async {
@@ -30,7 +31,7 @@ class ViewUserChatRoomMessageBloc
 }
         ''';
 
-        final result = await graphQLService.performQuery(query);
+        final result = await chatGraphQLHttpService.performQuery(query);
 
         // Log result
         AppLoggerHelper.logInfo("📥 Chatroom Query Result: ${result.data}");
@@ -56,11 +57,7 @@ class ViewUserChatRoomMessageBloc
         // Parse Model
         final messageModel = ChatData.fromJson(json);
 
-        emit(
-          GetViewUserChatRoomMessageSuccess(
-            chatMessage: messageModel,
-          ),
-        );
+        emit(GetViewUserChatRoomMessageSuccess(chatMessage: messageModel));
       } catch (e) {
         emit(GetViewUserChatRoomMessageFailure(message: e.toString()));
       }

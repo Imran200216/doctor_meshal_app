@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ChatMessage extends Equatable {
   final String id;
@@ -70,19 +69,42 @@ class ChatData extends Equatable {
   });
 
   factory ChatData.fromJson(Map<String, dynamic> json) {
-    final recRoom = json['reciever_room_id'] as Map<String, dynamic>?;
-    final userProfileJson = recRoom?['user_id'] as Map<String, dynamic>?;
-
-    final chatMessages = (json['chat_data_'] as List<dynamic>?)
-        ?.map((e) => ChatMessage.fromJson(e as Map<String, dynamic>))
-        .toList() ??
+    // Handle different response structures for subscription vs query
+    final chatMessages =
+        (json['chat_data_'] as List<dynamic>?)
+            ?.map((e) => ChatMessage.fromJson(e as Map<String, dynamic>))
+            .toList() ??
         [];
+
+    // Try to get receiver profile from different possible locations
+    UserProfile? receiverProfile;
+
+    // Try subscription format first
+    final recRoom = json['reciever_room_id'] as Map<String, dynamic>?;
+    if (recRoom != null) {
+      final userProfileJson = recRoom['user_id'] as Map<String, dynamic>?;
+      if (userProfileJson != null) {
+        receiverProfile = UserProfile.fromJson(userProfileJson);
+      }
+    }
+
+    // Try query format if subscription format didn't work
+    if (receiverProfile == null) {
+      final senderRoom = json['sender_room_id'] as Map<String, dynamic>?;
+      if (senderRoom != null) {
+        final userProfileJson = senderRoom['user_id'] as Map<String, dynamic>?;
+        if (userProfileJson != null) {
+          receiverProfile = UserProfile.fromJson(userProfileJson);
+        }
+      }
+    }
+
+    // Fallback to empty profile if still null
+    receiverProfile ??= const UserProfile(firstName: "User", lastName: "");
 
     return ChatData(
       isReceiverOnline: json['is_receiver_online'] as bool? ?? false,
-      receiverProfile: userProfileJson != null
-          ? UserProfile.fromJson(userProfileJson)
-          : const UserProfile(firstName: "", lastName: ""),
+      receiverProfile: receiverProfile,
       messages: chatMessages,
     );
   }

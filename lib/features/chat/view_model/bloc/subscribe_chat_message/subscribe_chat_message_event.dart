@@ -1,7 +1,10 @@
 part of 'subscribe_chat_message_bloc.dart';
 
-sealed class SubscribeChatMessageEvent extends Equatable {
+abstract class SubscribeChatMessageEvent extends Equatable {
   const SubscribeChatMessageEvent();
+
+  @override
+  List<Object?> get props => [];
 }
 
 class StartSubscribeChatMessageEvent extends SubscribeChatMessageEvent {
@@ -16,13 +19,31 @@ class StartSubscribeChatMessageEvent extends SubscribeChatMessageEvent {
   });
 
   @override
-  // TODO: implement props
-  List<Object?> get props => [senderRoomId,recieverRoomId, userId];
+  List<Object?> get props => [senderRoomId, recieverRoomId, userId];
 }
 
-class StopSubcribeChatMessageEvent extends SubscribeChatMessageEvent {
+class StopSubscribeChatMessageEvent extends SubscribeChatMessageEvent {
+  const StopSubscribeChatMessageEvent();
+}
+
+/// Event to ensure subscription is active for a specific room
+/// Useful when entering chat screen
+class EnsureSubscriptionActiveEvent extends SubscribeChatMessageEvent {
+  final String senderRoomId;
+  final String recieverRoomId;
+  final String userId;
+
+  const EnsureSubscriptionActiveEvent({
+    required this.senderRoomId,
+    required this.recieverRoomId,
+    required this.userId,
+  });
+
   @override
-  // TODO: implement props
-  List<Object?> get props =>[];
+  List<Object?> get props => [senderRoomId, recieverRoomId, userId];
 }
 
+/// Internal event for reconnection attempts
+class ReconnectSubscriptionEvent extends SubscribeChatMessageEvent {
+  const ReconnectSubscriptionEvent();
+}
