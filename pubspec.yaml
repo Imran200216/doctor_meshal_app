@@ -73,8 +73,7 @@ dependencies:
   # badges
   badges: ^3.1.2
 
-  # web socket channel
-  web_socket_channel: ^3.0.3
+
 
 
 dev_dependencies:
