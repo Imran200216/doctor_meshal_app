@@ -24,7 +24,8 @@ class AppRouterConstants {
   static const String authChangePasswordSuccess = "authChangePasswordSuccess";
 
   // Bottom Nav
-  static const String bottomNav = "bottomNav";
+  static const String patientBottomNav = "patientBottomNav";
+  static const String doctorBottomNav = "doctorBottomNav";
 
   // Education Sub Topics
   static const String educationSubTopics = "educationSubTopics";
@@ -52,9 +53,11 @@ class AppRouterConstants {
 
   // Per OP
   static const String preOP = "preOP";
+  static const String doctorPreOp = "doctorPreOp";
 
   // Post OP
   static const String postOP = "postOP";
+  static const String doctorPostOP = "doctorPostOP";
 
   // Status
   static const String status = "status";
@@ -65,6 +68,6 @@ class AppRouterConstants {
   // Survey Form
   static const String surveyForm = "surveyForm";
 
-  // Doctor Bottom Nav
-  static const String doctorBottomNav = "doctorBottomNav";
+  // Operative summary
+  static const String doctorOperativeSummary = "doctorPreOpSummary";
 }

@@ -172,7 +172,7 @@ class _AuthRegisterState extends State<AuthRegister> {
                 Future.delayed(const Duration(milliseconds: 400), () {
                   GoRouter.of(
                     context,
-                  ).pushReplacementNamed(AppRouterConstants.bottomNav);
+                  ).pushReplacementNamed(AppRouterConstants.patientBottomNav);
                 });
 
                 clearAllController();

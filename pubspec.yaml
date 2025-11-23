@@ -73,13 +73,18 @@ dependencies:
   # badges
   badges: ^3.1.2
 
+  # image picker
+  image_picker: ^1.2.1
 
+  # flutter image compress
+  flutter_image_compress: ^2.4.0
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+
 
 flutter:
   generate: true

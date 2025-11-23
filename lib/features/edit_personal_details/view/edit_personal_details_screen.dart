@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_app_bar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_date_picker_text_form_field.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_drop_down_text_form_field.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_filled_btn.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/k_profile_avatar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_skeleton_text_form_field.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_snack_bar.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text_form_field.dart';
 import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
+import 'package:meshal_doctor_booking_app/core/constants/app_assets_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
 import 'package:meshal_doctor_booking_app/core/service/hive_service.dart';
@@ -17,6 +21,8 @@ import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
 import 'package:meshal_doctor_booking_app/features/auth/view_model/bloc/user_auth/user_auth_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/edit_personal_details/model/update_user_profile_details_model.dart';
 import 'package:meshal_doctor_booking_app/features/edit_personal_details/view_model/bloc/update_user_profile_details_bloc.dart';
+import 'package:meshal_doctor_booking_app/features/edit_personal_details/view_model/cubit/profile_image/profile_image_cubit.dart';
+import 'package:meshal_doctor_booking_app/features/edit_personal_details/widgets/edit_profile_image_picker_options_bottom_sheet.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 
 class EditPersonalDetailsScreen extends StatefulWidget {
@@ -30,6 +36,7 @@ class EditPersonalDetailsScreen extends StatefulWidget {
 class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
   // User Id
   String? userId;
+  String? profileImg;
 
   //  Dropdown Flags
   String? selectedGender;
@@ -138,6 +145,10 @@ class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
           if (state is GetUserAuthSuccess) {
             final user = state.user;
 
+            // Image
+            profileImg = user.profileImage;
+
+            // Controllers
             firstNameController.text = user.firstName;
             lastNameController.text = user.lastName;
             dobController.text = user.age;
@@ -199,6 +210,94 @@ class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 spacing: 20,
                 children: [
+                  // Profil Img
+                  Column(
+                    spacing: 10,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      KText(
+                        textAlign: TextAlign.start,
+                        text: appLoc.profileImage,
+                        fontSize: isMobile
+                            ? 16
+                            : isTablet
+                            ? 18
+                            : 20,
+                        fontWeight: FontWeight.w600,
+                        color: AppColorConstants.titleColor,
+                      ),
+
+                      Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          BlocBuilder<ProfileImageCubit, ProfileImageState>(
+                            builder: (context, state) {
+                              return KProfileAvatar(
+                                personImageUrl: state.pickedImage != null
+                                    ? state.pickedImage!.path
+                                    : profileImg!.isEmpty
+                                    ? AppAssetsConstants.personPlaceholder
+                                    : profileImg!,
+                                width: isMobile
+                                    ? 90
+                                    : isTablet
+                                    ? 100
+                                    : 110,
+                                height: isMobile
+                                    ? 90
+                                    : isTablet
+                                    ? 100
+                                    : 110,
+                              );
+                            },
+                          ),
+
+                          // Edit Icon
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: GestureDetector(
+                              onTap: () {
+                                // Haptics
+                                HapticFeedback.heavyImpact();
+
+                                showModalBottomSheet(
+                                  context: context,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(20),
+                                    ),
+                                  ),
+                                  builder: (context) {
+                                    return EditProfileImagePickerOptionsBottomSheet();
+                                  },
+                                );
+                              },
+                              child: CircleAvatar(
+                                radius: isMobile
+                                    ? 18
+                                    : isTablet
+                                    ? 20
+                                    : 22,
+                                backgroundColor: AppColorConstants.primaryColor,
+                                child: Icon(
+                                  Icons.edit,
+                                  size: isMobile
+                                      ? 18
+                                      : isTablet
+                                      ? 20
+                                      : 22,
+                                  color: AppColorConstants.secondaryColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+
                   // First Name
                   KTextFormField(
                     controller: firstNameController,
@@ -306,16 +405,16 @@ class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
                   >(
                     listener: (context, state) {
                       if (state is UpdateUserProfileDetailsSuccess) {
+                        // 1️⃣ Refresh user data on Profile Screen
+                        context.read<UserAuthBloc>().add(
+                          GetUserAuthEvent(id: userId!, token: ""),
+                        );
+
                         // Success Snackbar
                         KSnackBar.success(
                           context,
                           "Updated Profile Successfully",
                         );
-
-                        // Delay pop so snackbar can show
-                        Future.delayed(const Duration(milliseconds: 400), () {
-                          GoRouter.of(context).pop();
-                        });
                       }
 
                       if (state is UpdateUserProfileDetailsFailure) {
@@ -328,7 +427,7 @@ class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
                     builder: (context, state) {
                       return KFilledBtn(
                         isLoading: state is UpdateUserProfileDetailsLoading,
-                        btnTitle: appLoc.backToLogin,
+                        btnTitle: appLoc.editProfile,
                         btnBgColor: AppColorConstants.primaryColor,
                         btnTitleColor: AppColorConstants.secondaryColor,
                         onTap: () {
@@ -347,10 +446,21 @@ class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
                             return;
                           }
 
+                          // Image
+                          final base64ImageString = context
+                              .read<ProfileImageCubit>()
+                              .state
+                              .base64Image;
+
+                          AppLoggerHelper.logInfo(
+                            "Base 64 img: $base64ImageString",
+                          );
+
                           // Update Profile Event
                           context.read<UpdateUserProfileDetailsBloc>().add(
                             UpdateUserProfileDetailsFormEvent(
                               model: UpdateUserProfileDetailsModel(
+                                profileImage: base64ImageString,
                                 fistName: firstNameController.text.trim(),
                                 lastName: lastNameController.text.trim(),
                                 age: dobController.text.trim(),

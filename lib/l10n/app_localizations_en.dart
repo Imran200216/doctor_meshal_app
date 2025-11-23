@@ -406,4 +406,88 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get retry => 'Retry';
+
+  @override
+  String get viewForm => 'View Form';
+
+  @override
+  String get patientName => 'Patient Name';
+
+  @override
+  String get formStatus => 'Form Status';
+
+  @override
+  String get submittedDate => 'Submitted Date';
+
+  @override
+  String get profileImage => 'Profile Image';
+
+  @override
+  String get takePhoto => 'Take Photo';
+
+  @override
+  String get chooseFromGallery => 'Choose from Gallery';
+
+  @override
+  String get preOperativeSummary => 'Pre Operative Summary';
+
+  @override
+  String get postOperativeSummary => 'Post Operative Summary';
+
+  @override
+  String get dashboardSummary => 'Dashboard Summary';
+
+  @override
+  String get operativeSummary => 'Operative Summary';
+
+  @override
+  String get formSerialNo => 'Form Serial No';
+
+  @override
+  String get formTitle => 'Form Title';
+
+  @override
+  String get formType => 'Form Type';
+
+  @override
+  String get formStatusSubmitted => 'Form Status Submitted';
+
+  @override
+  String get formSubmittedDate => 'Form Submitted Date';
+
+  @override
+  String get formTotalPoints => 'Form Total Points';
+
+  @override
+  String get formCreatedAt => 'Form Created At';
+
+  @override
+  String get searchPeriOperativeForms => 'Search Peri Operative Forms...';
+
+  @override
+  String get searchPostOperativeForms => 'Search Post Operative Forms...';
+
+  @override
+  String get form => 'Form';
+
+  @override
+  String get submittedCounts => 'Submitted Counts';
+
+  @override
+  String get reSubmittedCounts => 'ReSubmitted Counts';
+
+  @override
+  String get reviewedCounts => 'Reviewed Counts';
+
+  @override
+  String get approvedCounts => 'Approved Counts';
+
+  @override
+  String get rejectedCounts => 'Rejected Counts';
+
+  @override
+  String get totalPatient => 'Total Patient';
+
+  @override
+  String get totalEducationArticles => 'Total Education Articles';
 }

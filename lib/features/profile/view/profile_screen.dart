@@ -5,6 +5,7 @@ import 'package:meshal_doctor_booking_app/commons/widgets/k_no_internet_found.da
 import 'package:meshal_doctor_booking_app/commons/widgets/k_snack_bar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
 import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
+import 'package:meshal_doctor_booking_app/core/constants/app_assets_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
@@ -77,10 +78,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // App Localization
     final appLoc = AppLocalizations.of(context)!;
 
-    // Person Placeholder Image
-    const String personPlaceholder =
-        "https://i.pinimg.com/736x/e1/e1/af/e1e1af3435004e297bc6067d2448f8e5.jpg";
-
     return Scaffold(
       backgroundColor: AppColorConstants.secondaryColor,
       body: SafeArea(
@@ -115,6 +112,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: AppColorConstants.secondaryColor,
                       backgroundColor: AppColorConstants.primaryColor,
                       onRefresh: () async {
+                        // Fetch User Auth
                         _fetchUserAuth();
                       },
                       child: SingleChildScrollView(
@@ -152,7 +150,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ProfileDetailsContainer(
                                   profileImageUrl: user.profileImage.isNotEmpty
                                       ? user.profileImage
-                                      : personPlaceholder,
+                                      : "https://e-quester.com/wp-content/uploads/2021/11/placeholder-image-person-jpg.jpg",
                                   name: "${user.firstName} ${user.lastName}",
                                   email: user.email,
                                 ),

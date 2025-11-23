@@ -312,9 +312,16 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     );
   }
 
-  // Build message list widget
+  // // Build message list widget
   Widget _buildMessageList(List<ChatMessage> messages) {
     AppLoggerHelper.logInfo('💬 Building messages - Count: ${messages.length}');
+
+    // Debug: Print each message
+    for (var message in messages) {
+      AppLoggerHelper.logInfo(
+        '📝 Message: ${message.message}, Type: ${message.type}, Time: ${message.time}',
+      );
+    }
 
     if (messages.isEmpty) {
       return const Center(
@@ -337,12 +344,17 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     }
 
     return ListView.builder(
-      reverse: true,
+      reverse: true, // This might be causing issues
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
       itemCount: messages.length,
       itemBuilder: (context, index) {
-        final message = messages[index];
+        // When reverse is true, index 0 is the last message
+        final message = messages[messages.length - 1 - index];
         final isMe = message.type == "SEND";
+
+        AppLoggerHelper.logInfo(
+          '🎯 Rendering message: ${message.message}, isMe: $isMe',
+        );
 
         return Container(
           margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),

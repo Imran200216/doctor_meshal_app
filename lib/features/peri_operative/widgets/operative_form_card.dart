@@ -10,12 +10,14 @@ class OperativeFormCard extends StatelessWidget {
   final String icon;
   final VoidCallback onTap;
   final String title;
+  final String operationCardStartFormOrViewFormText;
 
   const OperativeFormCard({
     super.key,
     required this.icon,
     required this.onTap,
     required this.title,
+    required this.operationCardStartFormOrViewFormText,
   });
 
   @override
@@ -28,7 +30,7 @@ class OperativeFormCard extends StatelessWidget {
     final appLoc = AppLocalizations.of(context)!;
 
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         HapticFeedback.heavyImpact();
 
         onTap();
@@ -50,7 +52,7 @@ class OperativeFormCard extends StatelessWidget {
           children: [
             // Icon
             SvgPicture.asset(
-             icon,
+              icon,
               color: AppColorConstants.primaryColor,
               height: isMobile
                   ? 36
@@ -85,7 +87,7 @@ class OperativeFormCard extends StatelessWidget {
               children: [
                 KText(
                   textAlign: TextAlign.start,
-                  text: appLoc.startForm,
+                  text: operationCardStartFormOrViewFormText,
                   fontSize: isMobile
                       ? 13
                       : isTablet

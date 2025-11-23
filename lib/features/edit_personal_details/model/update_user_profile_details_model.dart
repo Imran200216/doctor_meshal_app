@@ -7,6 +7,7 @@ class UpdateUserProfileDetailsModel {
   final String weight;
   final String bloodGroup;
   final String userId;
+  final String profileImage;
 
   UpdateUserProfileDetailsModel({
     required this.fistName,
@@ -17,5 +18,6 @@ class UpdateUserProfileDetailsModel {
     required this.weight,
     required this.bloodGroup,
     required this.userId,
+    required this.profileImage,
   });
 }

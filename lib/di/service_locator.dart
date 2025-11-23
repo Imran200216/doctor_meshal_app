@@ -7,6 +7,7 @@ import 'package:meshal_doctor_booking_app/features/auth/auth_injection.dart';
 import 'package:meshal_doctor_booking_app/features/bottom_nav/bottom_nav_injection.dart';
 import 'package:meshal_doctor_booking_app/features/change_password/change_password_injection.dart';
 import 'package:meshal_doctor_booking_app/features/chat/chat_injection.dart';
+import 'package:meshal_doctor_booking_app/features/doctor_peri_operative/doctor_peri_operative_injection.dart';
 import 'package:meshal_doctor_booking_app/features/edit_personal_details/edit_profile_details_injection.dart';
 import 'package:meshal_doctor_booking_app/features/education/education_injection.dart';
 import 'package:meshal_doctor_booking_app/features/home/home_injection.dart';
@@ -47,8 +48,11 @@ void setUpServiceLocators() {
   // Bottom Nav Injection
   initBottomNavInjection();
 
-  // Peri Operative Injection
+  // Patient Peri Operative Injection
   initPeriOperativeInjection();
+
+  // Doctor Peri Operative Injection
+  initDoctorPeriOperativeInjection();
 
   // Education Injection
   initEducationInjection();

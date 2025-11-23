@@ -235,14 +235,8 @@ class _HomeScreenState extends State<HomeScreen> {
             color: AppColorConstants.secondaryColor,
             backgroundColor: AppColorConstants.primaryColor,
             onRefresh: () async {
-              // Fetch Use Id And Load Education
-              _fetchUserIdAndLoadEducation();
-
-              // Fetch Education Articles
-              _fetchUserAuth();
-
-              // Fetch Operative Summary Counts
-              _fetchOperativeSummaryCounts();
+              // Fetch All Data
+              _fetchAllData();
             },
 
             child: CustomScrollView(
@@ -256,10 +250,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     child: BlocBuilder<UserAuthBloc, UserAuthState>(
                       builder: (context, state) {
-                        final isLoading =
-                            state is GetUserAuthLoading ||
-                            state is UserAuthInitial;
-
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

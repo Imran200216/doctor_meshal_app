@@ -5,12 +5,15 @@ import 'package:meshal_doctor_booking_app/features/auth/view/auth_change_passwor
 import 'package:meshal_doctor_booking_app/features/auth/view/auth_forget_password_screen.dart';
 import 'package:meshal_doctor_booking_app/features/auth/view/auth_otp_screen.dart';
 import 'package:meshal_doctor_booking_app/features/auth/view/auth_screen.dart';
-import 'package:meshal_doctor_booking_app/features/bottom_nav/view/bottom_nav.dart';
 import 'package:meshal_doctor_booking_app/features/bottom_nav/view/doctor_bottom_nav.dart';
+import 'package:meshal_doctor_booking_app/features/bottom_nav/view/patient_bottom_nav.dart';
 import 'package:meshal_doctor_booking_app/features/change_password/view/change_password_screen.dart';
 import 'package:meshal_doctor_booking_app/features/chat/view/chat_list_screen.dart';
 import 'package:meshal_doctor_booking_app/features/chat/view/chat_screen.dart';
 import 'package:meshal_doctor_booking_app/features/chat/view/doctor_list_screen.dart';
+import 'package:meshal_doctor_booking_app/features/doctor_peri_operative/view/doctor_operative_summary_screen.dart';
+import 'package:meshal_doctor_booking_app/features/doctor_peri_operative/view/doctor_post_op_screen.dart';
+import 'package:meshal_doctor_booking_app/features/doctor_peri_operative/view/doctor_pre_op_screen.dart';
 import 'package:meshal_doctor_booking_app/features/edit_personal_details/view/edit_personal_details_screen.dart';
 import 'package:meshal_doctor_booking_app/features/education/view/education_article_view_screen.dart';
 import 'package:meshal_doctor_booking_app/features/education/view/education_articles_screen.dart';
@@ -108,12 +111,21 @@ GoRouter appRouter = GoRouter(
       },
     ),
 
-    // Bottom Nav
+    // Patient Bottom Nav
     GoRoute(
-      path: '/bottomNav',
-      name: AppRouterConstants.bottomNav,
+      path: '/patientBottomNav',
+      name: AppRouterConstants.patientBottomNav,
       builder: (context, state) {
-        return BottomNav();
+        return PatientBottomNav();
+      },
+    ),
+
+    // Doctor Bottom Nav
+    GoRoute(
+      path: '/doctorBottomNav',
+      name: AppRouterConstants.doctorBottomNav,
+      builder: (context, state) {
+        return DoctorBottomNav();
       },
     ),
 
@@ -225,6 +237,24 @@ GoRouter appRouter = GoRouter(
       },
     ),
 
+    // Doctor Per Op Screen
+    GoRoute(
+      path: '/doctorPreOP',
+      name: AppRouterConstants.doctorPreOp,
+      builder: (context, state) {
+        return DoctorPreOpScreen();
+      },
+    ),
+
+    // Doctor Post Op Screen
+    GoRoute(
+      path: '/doctorPostOP',
+      name: AppRouterConstants.doctorPostOP,
+      builder: (context, state) {
+        return DoctorPostOpScreen();
+      },
+    ),
+
     // Status Screen
     GoRoute(
       path: '/status',
@@ -254,12 +284,14 @@ GoRouter appRouter = GoRouter(
       },
     ),
 
-    // Doctor Bottom Nav
+    // Doctor Pre Op Summary Screen
     GoRoute(
-      path: '/doctorBottomNav',
-      name: AppRouterConstants.doctorBottomNav,
+      path: '/doctorOperativeSummary',
+      name: AppRouterConstants.doctorOperativeSummary,
       builder: (context, state) {
-        return DoctorBottomNav();
+        // Get the passed id from extra
+        final operativeFormId = state.extra as String? ?? '';
+        return DoctorOperativeSummaryScreen(operativeFormId: operativeFormId);
       },
     ),
   ],

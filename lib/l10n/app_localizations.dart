@@ -892,6 +892,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry'**
   String get retry;
+
+  /// No description provided for @viewForm.
+  ///
+  /// In en, this message translates to:
+  /// **'View Form'**
+  String get viewForm;
+
+  /// No description provided for @patientName.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient Name'**
+  String get patientName;
+
+  /// No description provided for @formStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Form Status'**
+  String get formStatus;
+
+  /// No description provided for @submittedDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted Date'**
+  String get submittedDate;
+
+  /// No description provided for @profileImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile Image'**
+  String get profileImage;
+
+  /// No description provided for @takePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take Photo'**
+  String get takePhoto;
+
+  /// No description provided for @chooseFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from Gallery'**
+  String get chooseFromGallery;
+
+  /// No description provided for @preOperativeSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Pre Operative Summary'**
+  String get preOperativeSummary;
+
+  /// No description provided for @postOperativeSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Post Operative Summary'**
+  String get postOperativeSummary;
+
+  /// No description provided for @dashboardSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard Summary'**
+  String get dashboardSummary;
+
+  /// No description provided for @operativeSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Operative Summary'**
+  String get operativeSummary;
+
+  /// No description provided for @formSerialNo.
+  ///
+  /// In en, this message translates to:
+  /// **'Form Serial No'**
+  String get formSerialNo;
+
+  /// No description provided for @formTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Form Title'**
+  String get formTitle;
+
+  /// No description provided for @formType.
+  ///
+  /// In en, this message translates to:
+  /// **'Form Type'**
+  String get formType;
+
+  /// No description provided for @formStatusSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Form Status Submitted'**
+  String get formStatusSubmitted;
+
+  /// No description provided for @formSubmittedDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Form Submitted Date'**
+  String get formSubmittedDate;
+
+  /// No description provided for @formTotalPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Form Total Points'**
+  String get formTotalPoints;
+
+  /// No description provided for @formCreatedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Form Created At'**
+  String get formCreatedAt;
+
+  /// No description provided for @searchPeriOperativeForms.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Peri Operative Forms...'**
+  String get searchPeriOperativeForms;
+
+  /// No description provided for @searchPostOperativeForms.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Post Operative Forms...'**
+  String get searchPostOperativeForms;
+
+  /// No description provided for @form.
+  ///
+  /// In en, this message translates to:
+  /// **'Form'**
+  String get form;
+
+  /// No description provided for @submittedCounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted Counts'**
+  String get submittedCounts;
+
+  /// No description provided for @reSubmittedCounts.
+  ///
+  /// In en, this message translates to:
+  /// **'ReSubmitted Counts'**
+  String get reSubmittedCounts;
+
+  /// No description provided for @reviewedCounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviewed Counts'**
+  String get reviewedCounts;
+
+  /// No description provided for @approvedCounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved Counts'**
+  String get approvedCounts;
+
+  /// No description provided for @rejectedCounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected Counts'**
+  String get rejectedCounts;
+
+  /// No description provided for @totalPatient.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Patient'**
+  String get totalPatient;
+
+  /// No description provided for @totalEducationArticles.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Education Articles'**
+  String get totalEducationArticles;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

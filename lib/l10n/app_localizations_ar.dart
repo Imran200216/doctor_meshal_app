@@ -406,4 +406,88 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get retry => 'إعادة المحاولة';
+
+  @override
+  String get viewForm => 'عرض النموذج';
+
+  @override
+  String get patientName => 'اسم المريض';
+
+  @override
+  String get formStatus => 'حالة النموذج';
+
+  @override
+  String get submittedDate => 'تاريخ التقديم';
+
+  @override
+  String get profileImage => 'صورة الملف الشخصي';
+
+  @override
+  String get takePhoto => 'التقاط صورة';
+
+  @override
+  String get chooseFromGallery => 'اختيار من المعرض';
+
+  @override
+  String get preOperativeSummary => 'ملخص ما قبل العملية';
+
+  @override
+  String get postOperativeSummary => 'ملخص ما بعد العملية';
+
+  @override
+  String get dashboardSummary => 'ملخص لوحة التحكم';
+
+  @override
+  String get operativeSummary => 'ملخص العملية';
+
+  @override
+  String get formSerialNo => 'الرقم التسلسلي للنموذج';
+
+  @override
+  String get formTitle => 'عنوان النموذج';
+
+  @override
+  String get formType => 'نوع النموذج';
+
+  @override
+  String get formStatusSubmitted => 'حالة النموذج المرسل';
+
+  @override
+  String get formSubmittedDate => 'تاريخ إرسال النموذج';
+
+  @override
+  String get formTotalPoints => 'إجمالي نقاط النموذج,,,';
+
+  @override
+  String get formCreatedAt => 'تاريخ إنشاء النموذج';
+
+  @override
+  String get searchPeriOperativeForms => 'ابحث عن نماذج ما قبل العملية...';
+
+  @override
+  String get searchPostOperativeForms => 'ابحث عن نماذج ما بعد العملية...';
+
+  @override
+  String get form => 'النموذج';
+
+  @override
+  String get submittedCounts => 'عدد المقدَّم';
+
+  @override
+  String get reSubmittedCounts => 'عدد المُعاد تقديمه';
+
+  @override
+  String get reviewedCounts => 'عدد المُراجَع';
+
+  @override
+  String get approvedCounts => 'عدد الموافق عليه';
+
+  @override
+  String get rejectedCounts => 'عدد المرفوض';
+
+  @override
+  String get totalPatient => 'إجمالي المرضى';
+
+  @override
+  String get totalEducationArticles => 'إجمالي المقالات التعليمية';
 }

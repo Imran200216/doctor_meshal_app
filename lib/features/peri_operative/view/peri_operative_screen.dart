@@ -92,6 +92,8 @@ class PeriOperativeScreen extends StatelessWidget {
                           onTap: () => GoRouter.of(
                             context,
                           ).pushNamed(item['route'] as String),
+                          operationCardStartFormOrViewFormText:
+                              appLoc.startForm,
                         );
                       },
                     )
@@ -102,6 +104,8 @@ class PeriOperativeScreen extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final item = formItems[index];
                         return OperativeFormCard(
+                          operationCardStartFormOrViewFormText:
+                          appLoc.startForm,
                           icon: item['icon'] as String,
                           title: item['title'] as String,
                           onTap: () => GoRouter.of(

@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_app_bar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_date_picker_text_form_field.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/k_profile_avatar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_skeleton_text_form_field.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text_form_field.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
@@ -26,6 +28,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
 
   // Phone Code
   String? phoneCode;
+
+  // Phone Number
+  String? profileImage;
 
   // Controllers
   final TextEditingController firstNameController = TextEditingController();
@@ -164,6 +169,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
               bloodGroupController.text = user.bloodGroup;
               civilIdController.text = user.cid;
               phoneCode = user.phoneCode;
+              profileImage = user.profileImage;
             }
 
             if (state is GetUserAuthFailure) {
@@ -199,6 +205,39 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   spacing: 20,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Column(
+                      spacing: 10,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        KText(
+                          textAlign: TextAlign.start,
+                          text: appLoc.profileImage,
+                          fontSize: isMobile
+                              ? 16
+                              : isTablet
+                              ? 18
+                              : 20,
+                          fontWeight: FontWeight.w600,
+                          color: AppColorConstants.titleColor,
+                        ),
+
+                        KProfileAvatar(
+                          personImageUrl: profileImage!,
+                          width: isMobile
+                              ? 90
+                              : isTablet
+                              ? 100
+                              : 110,
+                          height: isMobile
+                              ? 90
+                              : isTablet
+                              ? 100
+                              : 110,
+                        ),
+                      ],
+                    ),
+
                     // First Name
                     KTextFormField(
                       readOnly: true,

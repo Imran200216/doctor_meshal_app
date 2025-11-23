@@ -131,5 +131,36 @@
   "logoutFailed": "Logout Failed",
   "consultDoctor": "Consult Doctor",
   "noInternet": "No internet connection. Please check your network settings.",
-  "retry": "Retry"
+  "retry": "Retry",
+  "viewForm": "View Form",
+   "patientName" : "Patient Name",
+  "formStatus" : "Form Status",
+  "submittedDate" : "Submitted Date",
+  "profileImage" : "Profile Image",
+  "takePhoto": "Take Photo",
+  "chooseFromGallery": "Choose from Gallery",
+  "preOperativeSummary" : "Pre Operative Summary",
+  "postOperativeSummary" : "Post Operative Summary",
+  "dashboardSummary": "Dashboard Summary",
+  "operativeSummary": "Operative Summary",
+  "formSerialNo": "Form Serial No",
+  "formTitle": "Form Title",
+  "formType": "Form Type",
+  "formStatusSubmitted": "Form Status Submitted",
+  "formSubmittedDate": "Form Submitted Date",
+  "formTotalPoints": "Form Total Points",
+  "formCreatedAt": "Form Created At",
+  "searchPeriOperativeForms" : "Search Peri Operative Forms...",
+  "searchPostOperativeForms" : "Search Post Operative Forms...",
+  "form": "Form",
+  "submittedCounts": "Submitted Counts",
+  "reSubmittedCounts": "ReSubmitted Counts",
+  "reviewedCounts": "Reviewed Counts",
+  "approvedCounts": "Approved Counts",
+  "rejectedCounts": "Rejected Counts",
+  "totalPatient": "Total Patient",
+  "totalEducationArticles": "Total Education Articles"
+
+
+
 }

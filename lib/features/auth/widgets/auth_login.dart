@@ -214,9 +214,9 @@ class _AuthLoginState extends State<AuthLogin> {
                           );
 
                           router.pushReplacementNamed(
-                            AppRouterConstants.bottomNav,
+                            AppRouterConstants.patientBottomNav,
                           );
-                        } else if (userType == 'doctor') {
+                        } else if (userType == 'doctor' || userType == 'admin') {
                           // User Logged Type - FIX: Should be 'doctor' not 'patient'
                           AppLoggerHelper.logInfo(
                             "Saving User Logged Type: doctor",
@@ -241,7 +241,7 @@ class _AuthLoginState extends State<AuthLogin> {
                             "Unknown user type, navigating to default Bottom Nav",
                           );
                           router.pushReplacementNamed(
-                            AppRouterConstants.bottomNav,
+                            AppRouterConstants.patientBottomNav,
                           );
                         }
                       } catch (e) {

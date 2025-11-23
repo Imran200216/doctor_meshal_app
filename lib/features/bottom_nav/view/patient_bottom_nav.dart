@@ -10,14 +10,14 @@ import 'package:meshal_doctor_booking_app/features/peri_operative/view/peri_oper
 import 'package:meshal_doctor_booking_app/features/profile/view/profile_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class BottomNav extends StatefulWidget {
-  const BottomNav({super.key});
+class PatientBottomNav extends StatefulWidget {
+  const PatientBottomNav({super.key});
 
   @override
-  State<BottomNav> createState() => _BottomNavState();
+  State<PatientBottomNav> createState() => _PatientBottomNavState();
 }
 
-class _BottomNavState extends State<BottomNav> {
+class _PatientBottomNavState extends State<PatientBottomNav> {
   @override
   Widget build(BuildContext context) {
     // Screens

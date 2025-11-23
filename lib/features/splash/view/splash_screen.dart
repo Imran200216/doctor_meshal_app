@@ -55,7 +55,7 @@ class _SplashScreenState extends State<SplashScreen> {
         AppLoggerHelper.logInfo("User type: $userType");
 
         // Navigate based on user type
-        if (userType == 'doctor') {
+        if (userType == 'doctor' || userType == 'admin') {
           AppLoggerHelper.logInfo("Navigating to Doctor Bottom Nav");
           GoRouter.of(
             context,
@@ -65,7 +65,7 @@ class _SplashScreenState extends State<SplashScreen> {
           AppLoggerHelper.logInfo("Navigating to Patient Bottom Nav");
           GoRouter.of(
             context,
-          ).pushReplacementNamed(AppRouterConstants.bottomNav);
+          ).pushReplacementNamed(AppRouterConstants.patientBottomNav);
         }
       } else {
         // User not logged in, navigate to localization
@@ -101,10 +101,10 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Image.asset(
           AppAssetsConstants.splashLogo,
           height: isMobile
-              ? 150
-              : isTablet
               ? 180
-              : 200,
+              : isTablet
+              ? 200
+              : 220,
           fit: BoxFit.cover,
         ),
       ),

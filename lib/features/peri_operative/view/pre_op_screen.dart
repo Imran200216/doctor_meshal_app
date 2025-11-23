@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_app_bar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_no_internet_found.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/k_no_items_found.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_snack_bar.dart';
 import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
@@ -171,49 +172,57 @@ class _PreOpScreenState extends State<PreOpScreen> {
                     final operativeFormEvents = state.operativeForm;
 
                     return isTablet
-                        ? GridView.builder(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.vertical,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: isMobile
-                                  ? 20
-                                  : isTablet
-                                  ? 30
-                                  : 40,
-                              vertical: isMobile
-                                  ? 20
-                                  : isTablet
-                                  ? 30
-                                  : 40,
-                            ),
-                            itemCount: operativeFormEvents.length,
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 18,
-                                  mainAxisSpacing: 18,
-                                  childAspectRatio: 1.8,
-                                ),
-                            itemBuilder: (context, index) {
-                              final item = operativeFormEvents[index];
+                        ? operativeFormEvents.isEmpty
+                              ? KNoItemsFound()
+                              : GridView.builder(
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.vertical,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: isMobile
+                                        ? 20
+                                        : isTablet
+                                        ? 30
+                                        : 40,
+                                    vertical: isMobile
+                                        ? 20
+                                        : isTablet
+                                        ? 30
+                                        : 40,
+                                  ),
+                                  itemCount: operativeFormEvents.length,
+                                  gridDelegate:
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                        crossAxisSpacing: 18,
+                                        mainAxisSpacing: 18,
+                                        childAspectRatio: 1.8,
+                                      ),
+                                  itemBuilder: (context, index) {
+                                    final item = operativeFormEvents[index];
 
-                              return OperativeFormSurveyCard(
-                                isFormEnabled: item.formEnableStatus,
-                                title: item.title,
-                                onSurveyTap: () {
-                                  if (item.formEnableStatus == false) {
-                                    KSnackBar.error(context, "Survey Locked!");
-                                  } else if (item.formEnableStatus == true) {
-                                    // Survey Form Screen
-                                    GoRouter.of(context).pushNamed(
-                                      AppRouterConstants.surveyForm,
-                                      extra: item.id,
+                                    return OperativeFormSurveyCard(
+                                      isFormEnabled: item.formEnableStatus,
+                                      title: item.title,
+                                      onSurveyTap: () {
+                                        if (item.formEnableStatus == false) {
+                                          KSnackBar.error(
+                                            context,
+                                            "Survey Locked!",
+                                          );
+                                        } else if (item.formEnableStatus ==
+                                            true) {
+                                          // Survey Form Screen
+                                          GoRouter.of(context).pushNamed(
+                                            AppRouterConstants.surveyForm,
+                                            extra: item.id,
+                                          );
+                                        }
+                                      },
                                     );
-                                  }
-                                },
-                              );
-                            },
-                          )
+                                  },
+                                )
+                        : operativeFormEvents.isEmpty
+                        ? KNoItemsFound()
                         : ListView.separated(
                             scrollDirection: Axis.vertical,
                             shrinkWrap: true,
@@ -255,7 +264,7 @@ class _PreOpScreenState extends State<PreOpScreen> {
                   }
 
                   if (state is OperativeFormFailure) {
-                    return Center(child: Text(state.message));
+                    AppLoggerHelper.logError("Error: ${state.message}");
                   }
 
                   return const SizedBox.shrink();
