@@ -86,7 +86,7 @@ class SubscribeChatMessageBloc
     try {
       final subscriptionQuery =
           '''
-subscription View_User_Chat_Message_ {
+subscription Subscription {
   View_User_Chat_Message_(
     sender_room_id: "${event.senderRoomId}"
     reciever_room_id: "${event.recieverRoomId}"

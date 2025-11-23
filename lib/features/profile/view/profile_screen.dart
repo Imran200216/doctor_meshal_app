@@ -5,7 +5,6 @@ import 'package:meshal_doctor_booking_app/commons/widgets/k_no_internet_found.da
 import 'package:meshal_doctor_booking_app/commons/widgets/k_snack_bar.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
 import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_assets_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
@@ -81,8 +80,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       backgroundColor: AppColorConstants.secondaryColor,
       body: SafeArea(
-        top: true,
-        bottom: true,
         child: BlocBuilder<ConnectivityBloc, ConnectivityState>(
           builder: (context, connectivityState) {
             if (connectivityState is ConnectivityFailure) {

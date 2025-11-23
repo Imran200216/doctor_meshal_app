@@ -22,7 +22,7 @@ class ViewUserChatRoomMessageBloc
         final query =
             '''
           query Query {
-            View_User_Chat_Message_(
+            View_User_Chatroom_Message_(
               sender_room_id: "${event.senderRoomId}"
               reciever_room_id: "${event.recieverRoomId}"
               user_id: "${event.userId}"
@@ -44,7 +44,7 @@ class ViewUserChatRoomMessageBloc
         }
 
         // ✅ FIX: Use the same key as subscription (without "room")
-        final json = result.data?["View_User_Chat_Message_"];
+        final json = result.data?["View_User_Chatroom_Message_"];
 
         if (json == null) {
           emit(

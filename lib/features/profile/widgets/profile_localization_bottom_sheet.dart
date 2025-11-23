@@ -18,6 +18,7 @@ class ProfileLocalizationBottomSheet extends StatelessWidget {
     // Responsive
     final isTablet = Responsive.isTablet(context);
     final isMobile = Responsive.isMobile(context);
+    final height = MediaQuery.of(context).size.height;
 
     // App Localization
     final appLoc = AppLocalizations.of(context)!;
@@ -29,6 +30,7 @@ class ProfileLocalizationBottomSheet extends StatelessWidget {
         color: AppColorConstants.secondaryColor,
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [

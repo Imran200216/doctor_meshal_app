@@ -150,112 +150,122 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           // Combined Messages Display
           Expanded(
             flex: 10,
-            child:
-                BlocConsumer<
-                  ViewUserChatRoomMessageBloc,
-                  ViewUserChatRoomMessageState
+            child: BlocConsumer<ViewUserChatRoomMessageBloc, ViewUserChatRoomMessageState>(
+              listener: (context, state) {
+                AppLoggerHelper.logInfo(
+                  "🔄 Listener State: ${state.runtimeType}",
+                );
+
+                if (state is GetViewUserChatRoomMessageSuccess) {
+                  AppLoggerHelper.logInfo(
+                    "✅ Success State - Messages count: ${state.chatMessage.messages.length}",
+                  );
+                  // Update messages from query
+                  setState(() {
+                    _currentMessages = state.chatMessage.messages;
+                    AppLoggerHelper.logInfo(
+                      "📱 Updated _currentMessages count: ${_currentMessages.length}",
+                    );
+                  });
+                }
+
+                if (state is GetViewUserChatRoomMessageFailure) {
+                  AppLoggerHelper.logError("The Chat Error: ${state.message}");
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Query Error: ${state.message}'),
+                      backgroundColor: Colors.orange,
+                      duration: const Duration(seconds: 3),
+                    ),
+                  );
+                }
+              },
+              builder: (context, queryState) {
+                AppLoggerHelper.logInfo(
+                  "🎨 Builder Query State: ${queryState.runtimeType}",
+                );
+                AppLoggerHelper.logInfo(
+                  "🎨 Current Messages in UI: ${_currentMessages.length}",
+                );
+
+                return BlocBuilder<
+                  SubscribeChatMessageBloc,
+                  SubscribeChatMessageState
                 >(
-                  listener: (context, state) {
-                    if (state is GetViewUserChatRoomMessageSuccess) {
-                      // Update messages from query
-                      setState(() {
-                        _currentMessages = state.chatMessage.messages;
-                      });
+                  builder: (context, subscriptionState) {
+                    AppLoggerHelper.logInfo(
+                      "📡 Subscription State: ${subscriptionState.runtimeType}",
+                    );
+
+                    // Your existing state handling code...
+                    if (subscriptionState is GetSubscribeChatMessageLoading &&
+                        queryState is GetViewUserChatRoomMessageLoading) {
+                      return _buildLoadingState('Establishing connection...');
                     }
 
-                    if (state is GetViewUserChatRoomMessageFailure) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Query Error: ${state.message}'),
-                          backgroundColor: Colors.orange,
-                          duration: const Duration(seconds: 3),
-                        ),
+                    if (subscriptionState is GetSubscribeChatMessageLoading) {
+                      return _buildLoadingState(
+                        'Connecting to real-time chat...',
                       );
                     }
-                  },
-                  builder: (context, queryState) {
-                    return BlocBuilder<
-                      SubscribeChatMessageBloc,
-                      SubscribeChatMessageState
-                    >(
-                      builder: (context, subscriptionState) {
-                        // Show loading if both are loading
-                        if (subscriptionState
-                                is GetSubscribeChatMessageLoading &&
-                            queryState is GetViewUserChatRoomMessageLoading) {
-                          return _buildLoadingState(
-                            'Establishing connection...',
-                          );
-                        }
 
-                        // Show subscription loading
-                        if (subscriptionState
-                            is GetSubscribeChatMessageLoading) {
-                          return _buildLoadingState(
-                            'Connecting to real-time chat...',
-                          );
-                        }
+                    if (queryState is GetViewUserChatRoomMessageLoading) {
+                      return _buildLoadingState('Loading chat history...');
+                    }
 
-                        // Show query loading
-                        if (queryState is GetViewUserChatRoomMessageLoading) {
-                          return _buildLoadingState('Loading chat history...');
-                        }
+                    if (subscriptionState is GetSubscribeChatMessageError) {
+                      return _buildErrorState(
+                        'Connection Error: ${subscriptionState.message}',
+                        true,
+                      );
+                    }
 
-                        // Show subscription error
-                        if (subscriptionState is GetSubscribeChatMessageError) {
-                          return _buildErrorState(
-                            'Connection Error: ${subscriptionState.message}',
-                            true,
-                          );
-                        }
-
-                        // Show query error (but still show messages if we have any)
-                        if (queryState is GetViewUserChatRoomMessageFailure) {
-                          if (_currentMessages.isEmpty) {
-                            return _buildErrorState(
-                              'Failed to load chat: ${queryState.message}',
-                              false,
-                            );
-                          }
-                          // If we have messages, show them with a warning
-                          return Column(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                color: Colors.orange.shade100,
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.warning,
-                                      color: Colors.orange.shade800,
-                                      size: 16,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: Text(
-                                        'Using cached messages - ${queryState.message}',
-                                        style: TextStyle(
-                                          color: Colors.orange.shade800,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                    if (queryState is GetViewUserChatRoomMessageFailure) {
+                      if (_currentMessages.isEmpty) {
+                        return _buildErrorState(
+                          'Failed to load chat: ${queryState.message}',
+                          false,
+                        );
+                      }
+                      return Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            color: Colors.orange.shade100,
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.warning,
+                                  color: Colors.orange.shade800,
+                                  size: 16,
                                 ),
-                              ),
-                              Expanded(
-                                child: _buildMessageList(_currentMessages),
-                              ),
-                            ],
-                          );
-                        }
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'Using cached messages - ${queryState.message}',
+                                    style: TextStyle(
+                                      color: Colors.orange.shade800,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(child: _buildMessageList(_currentMessages)),
+                        ],
+                      );
+                    }
 
-                        // Show messages (from either source)
-                        return _buildMessageList(_currentMessages);
-                      },
+                    // Show messages (from either source)
+                    AppLoggerHelper.logInfo(
+                      "🎯 Building message list with ${_currentMessages.length} messages",
                     );
+                    return _buildMessageList(_currentMessages);
                   },
-                ),
+                );
+              },
+            ),
           ),
 
           // Message Input Area
