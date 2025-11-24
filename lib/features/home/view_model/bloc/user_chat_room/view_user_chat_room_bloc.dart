@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:meshal_doctor_booking_app/core/service/chat_graphql_service.dart';
 import 'package:meshal_doctor_booking_app/core/service/graphql_service.dart';
 import 'package:meshal_doctor_booking_app/core/utils/app_logger_helper.dart';
 
@@ -9,9 +10,9 @@ part 'view_user_chat_room_state.dart';
 
 class ViewUserChatRoomBloc
     extends Bloc<ViewUserChatRoomEvent, ViewUserChatRoomState> {
-  final GraphQLService graphQLService;
+  final ChatGraphQLHttpService chatGraphQLHttpService;
 
-  ViewUserChatRoomBloc({required this.graphQLService})
+  ViewUserChatRoomBloc({required this.chatGraphQLHttpService})
     : super(ViewUserChatRoomInitial()) {
     on<GetViewChatRoomEvent>((event, emit) async {
       emit(GetViewUserChatRoomLoading());
@@ -29,7 +30,7 @@ class ViewUserChatRoomBloc
 
         AppLoggerHelper.logInfo("GraphQL Query: $query");
 
-        final result = await graphQLService.performQuery(query);
+        final result = await chatGraphQLHttpService.performQuery(query);
 
         final raw = result.data?["View_User_Chatroom_"];
         AppLoggerHelper.logInfo("GraphQL RAW Response: $raw");

@@ -7,7 +7,9 @@ import 'package:meshal_doctor_booking_app/features/auth/view_model/cubit/auth_se
 import 'package:meshal_doctor_booking_app/features/bottom_nav/view_model/cubit/bottom_nav_cubit.dart';
 import 'package:meshal_doctor_booking_app/features/change_password/view_model/bloc/change_password/change_password_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/chat/view_model/bloc/doctor_list/doctor_list_bloc.dart';
+import 'package:meshal_doctor_booking_app/features/chat/view_model/bloc/send_chat_message/send_chat_message_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/chat/view_model/bloc/subscribe_chat_message/subscribe_chat_message_bloc.dart';
+import 'package:meshal_doctor_booking_app/features/chat/view_model/bloc/view_user_chat_home/view_user_chat_home_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/chat/view_model/bloc/view_user_chat_room_message/view_user_chat_room_message_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/doctor_peri_operative/view_model/bloc/operative_form/view_doctor_operative_form_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/doctor_peri_operative/view_model/bloc/submitted_patient_form_details_section/submitted_patient_form_details_section_bloc.dart';
@@ -144,5 +146,15 @@ List<BlocProvider> appBlocProviders = [
   // Doctor Dashboard summary Counts Bloc
   BlocProvider<DoctorDashboardSummaryCountsBloc>(
     create: (context) => getIt<DoctorDashboardSummaryCountsBloc>(),
+  ),
+
+  // Send Chat Message Bloc
+  BlocProvider<SendChatMessageBloc>(
+    create: (context) => getIt<SendChatMessageBloc>(),
+  ),
+
+  // View User Chat Bloc
+  BlocProvider<ViewUserChatHomeBloc>(
+    create: (context) => getIt<ViewUserChatHomeBloc>(),
   ),
 ];

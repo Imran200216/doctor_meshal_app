@@ -28,7 +28,6 @@ dependencies:
 
   # graphql flutter
   graphql_flutter: ^5.2.1
-  graphql: ^5.2.3
 
   # logger
   logger: ^2.6.2

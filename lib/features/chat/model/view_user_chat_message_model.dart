@@ -57,58 +57,30 @@ class UserProfile extends Equatable {
   List<Object?> get props => [firstName, lastName, profileImage];
 }
 
-class ChatData extends Equatable {
-  final bool isReceiverOnline;
-  final UserProfile receiverProfile;
+class ChatData {
   final List<ChatMessage> messages;
+  final bool isReceiverOnline;
+  final String? senderFirstName;
+  final String? senderLastName;
+  final String? senderProfileImage;
 
-  const ChatData({
-    required this.isReceiverOnline,
-    required this.receiverProfile,
+  ChatData({
     required this.messages,
+    required this.isReceiverOnline,
+    this.senderFirstName,
+    this.senderLastName,
+    this.senderProfileImage,
   });
 
   factory ChatData.fromJson(Map<String, dynamic> json) {
-    // Handle different response structures for subscription vs query
-    final chatMessages =
-        (json['chat_data_'] as List<dynamic>?)
-            ?.map((e) => ChatMessage.fromJson(e as Map<String, dynamic>))
-            .toList() ??
-        [];
-
-    // Try to get receiver profile from different possible locations
-    UserProfile? receiverProfile;
-
-    // Try subscription format first
-    final recRoom = json['reciever_room_id'] as Map<String, dynamic>?;
-    if (recRoom != null) {
-      final userProfileJson = recRoom['user_id'] as Map<String, dynamic>?;
-      if (userProfileJson != null) {
-        receiverProfile = UserProfile.fromJson(userProfileJson);
-      }
-    }
-
-    // Try query format if subscription format didn't work
-    if (receiverProfile == null) {
-      final senderRoom = json['sender_room_id'] as Map<String, dynamic>?;
-      if (senderRoom != null) {
-        final userProfileJson = senderRoom['user_id'] as Map<String, dynamic>?;
-        if (userProfileJson != null) {
-          receiverProfile = UserProfile.fromJson(userProfileJson);
-        }
-      }
-    }
-
-    // Fallback to empty profile if still null
-    receiverProfile ??= const UserProfile(firstName: "User", lastName: "");
+    final chatDataList = json['chat_data_'] as List? ?? [];
 
     return ChatData(
+      messages: chatDataList.map((item) => ChatMessage.fromJson(item)).toList(),
       isReceiverOnline: json['is_receiver_online'] as bool? ?? false,
-      receiverProfile: receiverProfile,
-      messages: chatMessages,
+      senderFirstName: json['sender_room_id']?['user_id']?['first_name'],
+      senderLastName: json['sender_room_id']?['user_id']?['last_name'],
+      senderProfileImage: json['sender_room_id']?['user_id']?['profile_image'],
     );
   }
-
-  @override
-  List<Object?> get props => [isReceiverOnline, receiverProfile, messages];
 }
