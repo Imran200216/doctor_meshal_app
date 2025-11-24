@@ -80,9 +80,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    context.read<SubscribeChatMessageBloc>().add(
-      const StopSubscribeChatMessageEvent(),
-    );
+    // context.read<SubscribeChatMessageBloc>().add(
+    //   const StopSubscribeChatMessageEvent(),
+    // );
     super.dispose();
   }
 
