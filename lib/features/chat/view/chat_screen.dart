@@ -28,9 +28,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   bool _isSubscriptionEstablished = false;
-  bool _isInitialQueryCalled = false; // Track if initial query was called
-  ChatData? _currentChatData;
-  List<ChatMessage> _currentMessages = [];
+  bool _isInitialQueryCalled = false;
 
   // Message controller and focus node
   final TextEditingController _messageController = TextEditingController();
@@ -81,17 +79,15 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     );
   }
 
-  // Send message function
   void _sendMessage() {
     final message = _messageController.text.trim();
 
     if (message.isEmpty) {
-      return; // Don't send empty messages
+      return;
     }
 
     AppLoggerHelper.logInfo('📤 Sending message: $message');
 
-    // Send Chat Message
     context.read<SendChatMessageBloc>().add(
       SendChatMessageFuncEvent(
         senderRoomId: widget.senderRoomId,
@@ -100,14 +96,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       ),
     );
 
-    // Clear the input field after sending
     _messageController.clear();
-
-    // Optionally refocus on the input field
     _messageFocusNode.requestFocus();
   }
 
-  // Handle keyboard submit
   void _handleSubmitted(String value) {
     _sendMessage();
   }
@@ -116,17 +108,13 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
-      AppLoggerHelper.logInfo(
-        '📱 App resumed - restarting subscription (maintaining connection)',
-      );
+      AppLoggerHelper.logInfo('📱 App resumed - restarting subscription');
       _isSubscriptionEstablished = false;
-      // Only restart subscription, not the query
       _startSubscription();
     } else if (state == AppLifecycleState.paused) {
       AppLoggerHelper.logInfo(
         '📱 App paused - maintaining subscription connection',
       );
-      // Don't stop subscription, let it run in background
     }
   }
 
@@ -134,12 +122,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
 
-    // Only stop subscription when screen is completely disposed
     context.read<SubscribeChatMessageBloc>().add(
       const StopSubscribeChatMessageEvent(),
     );
 
-    // Dispose controllers
     _messageController.dispose();
     _messageFocusNode.dispose();
 
@@ -151,60 +137,39 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
-        child:
-            BlocListener<SubscribeChatMessageBloc, SubscribeChatMessageState>(
-              listener: (context, state) {
-                if (state is GetSubscribeChatMessageSuccess &&
-                    !_isSubscriptionEstablished) {
-                  _isSubscriptionEstablished = true;
-                  AppLoggerHelper.logInfo(
-                    '✅ Subscription established and ready!',
-                  );
-                }
+        child: BlocBuilder<SubscribeChatMessageBloc, SubscribeChatMessageState>(
+          builder: (context, state) {
+            // REMOVED: BlocListener wrapper - no setState needed
 
-                // Update messages from subscription
-                if (state is GetSubscribeChatMessageSuccess) {
-                  setState(() {
-                    _currentMessages = state.chatMessage.messages;
-                    _currentChatData = state.chatMessage;
-                  });
-                }
+            if (state is GetSubscribeChatMessageSuccess &&
+                !_isSubscriptionEstablished) {
+              _isSubscriptionEstablished = true;
+              AppLoggerHelper.logInfo('✅ Subscription established and ready!');
+            }
+
+            String title = "Chat";
+            String status = "Connecting...";
+            Color statusColor = Colors.grey;
+
+            if (state is GetSubscribeChatMessageSuccess) {
+              final isReceiverOnline = state.chatMessage.isReceiverOnline;
+              final receiverName = _getReceiverName(state.chatMessage);
+              title = receiverName;
+              status = isReceiverOnline ? "Online" : "Offline";
+              statusColor = isReceiverOnline ? Colors.green : Colors.grey;
+            }
+
+            return KAppBar(
+              centerTitle: false,
+              backgroundColor: AppColorConstants.primaryColor,
+              title: title,
+              description: status,
+              onBack: () {
+                GoRouter.of(context).pop();
               },
-              child:
-                  BlocBuilder<
-                    SubscribeChatMessageBloc,
-                    SubscribeChatMessageState
-                  >(
-                    builder: (context, state) {
-                      String title = "Chat";
-                      String status = "Connecting...";
-                      Color statusColor = Colors.grey;
-
-                      if (state is GetSubscribeChatMessageSuccess) {
-                        final isReceiverOnline =
-                            state.chatMessage.isReceiverOnline;
-                        final receiverName = _getReceiverName(
-                          state.chatMessage,
-                        );
-                        title = receiverName;
-                        status = isReceiverOnline ? "Online" : "Offline";
-                        statusColor = isReceiverOnline
-                            ? Colors.green
-                            : Colors.grey;
-                      }
-
-                      return KAppBar(
-                        centerTitle: false,
-                        backgroundColor: AppColorConstants.primaryColor,
-                        title: title,
-                        description: status,
-                        onBack: () {
-                          GoRouter.of(context).pop();
-                        },
-                      );
-                    },
-                  ),
-            ),
+            );
+          },
+        ),
       ),
       body: Column(
         children: [
@@ -213,11 +178,29 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
             flex: 10,
             child: BlocConsumer<SubscribeChatMessageBloc, SubscribeChatMessageState>(
               listenWhen: (previous, current) {
-                // Only listen to state changes, not build
+                AppLoggerHelper.logInfo(
+                  "👂 Listen When - Previous: ${previous.runtimeType}, Current: ${current.runtimeType}",
+                );
+                return true;
+              },
+              buildWhen: (previous, current) {
+                AppLoggerHelper.logInfo(
+                  "🏗️ Build When - Previous: ${previous.runtimeType}, Current: ${current.runtimeType}",
+                );
+
+                if (previous is GetSubscribeChatMessageSuccess &&
+                    current is GetSubscribeChatMessageSuccess) {
+                  final prevCount = previous.chatMessage.messages.length;
+                  final currCount = current.chatMessage.messages.length;
+                  AppLoggerHelper.logInfo(
+                    "📊 Message count: $prevCount -> $currCount",
+                  );
+                  return prevCount !=
+                      currCount; // Only rebuild if count changed
+                }
                 return true;
               },
               listener: (context, state) {
-                // Additional listener for subscription state changes
                 if (state is GetSubscribeChatMessageSuccess) {
                   AppLoggerHelper.logInfo(
                     "📥 Subscription updated with ${state.chatMessage.messages.length} messages",
@@ -229,79 +212,30 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                 }
               },
               builder: (context, subscriptionState) {
+                final timestamp = DateTime.now().millisecondsSinceEpoch;
                 AppLoggerHelper.logInfo(
-                  "🎨 BUILDER - State: ${subscriptionState.runtimeType}",
+                  "🎨 Builder called at $timestamp - State: ${subscriptionState.runtimeType}",
                 );
 
-                // Loading state
                 if (subscriptionState is GetSubscribeChatMessageLoading) {
-                  AppLoggerHelper.logInfo("⏳ Showing loading state");
                   return _buildLoadingState('Connecting to chat...');
                 }
 
-                // Success state - Primary data source
                 if (subscriptionState is GetSubscribeChatMessageSuccess) {
                   final chatData = subscriptionState.chatMessage;
                   AppLoggerHelper.logInfo(
-                    "✅ SUCCESS - Rendering ${chatData.messages.length} messages from subscription",
+                    "✅ Rendering ${chatData.messages.length} messages",
                   );
-
                   return _buildMessageList(chatData);
                 }
 
-                // Error state
                 if (subscriptionState is GetSubscribeChatMessageError) {
-                  AppLoggerHelper.logInfo("❌ Showing error state");
-
-                  // If we have cached chat data, show it with error banner
-                  if (_currentChatData != null &&
-                      _currentChatData!.messages.isNotEmpty) {
-                    return Column(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          color: Colors.orange.shade100,
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.warning_amber,
-                                color: Colors.orange.shade800,
-                                size: 16,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  'Connection issue - showing cached messages',
-                                  style: TextStyle(
-                                    color: Colors.orange.shade800,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                              IconButton(
-                                icon: Icon(
-                                  Icons.refresh,
-                                  color: Colors.orange.shade800,
-                                  size: 16,
-                                ),
-                                onPressed:
-                                    _startSubscription, // Only restart subscription
-                              ),
-                            ],
-                          ),
-                        ),
-                        Expanded(child: _buildMessageList(_currentChatData!)),
-                      ],
-                    );
-                  }
-
                   return _buildErrorState(
                     'Connection Error: ${subscriptionState.message}',
                     true,
                   );
                 }
 
-                // Initial/Unknown state
                 return _buildLoadingState('Initializing chat...');
               },
             ),
@@ -359,7 +293,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                   'Failed to send message: ${state.message}',
                 );
               }
-              // Success is handled by subscription updates
+              // Success is handled by subscription updates automatically
             },
             child: CircleAvatar(
               backgroundColor: AppColorConstants.primaryColor,
@@ -374,10 +308,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     );
   }
 
-  // Build message list widget
   Widget _buildMessageList(ChatData chatData) {
     final messages = chatData.messages;
-    AppLoggerHelper.logInfo('💬 Building ${messages.length} messages');
+    AppLoggerHelper.logInfo('💬 Building messages - Count: ${messages.length}');
 
     if (messages.isEmpty) {
       return const Center(
@@ -463,7 +396,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     );
   }
 
-  // Build loading state
   Widget _buildLoadingState(String message) {
     return Center(
       child: Column(
@@ -477,7 +409,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     );
   }
 
-  // Build error state
   Widget _buildErrorState(String errorMessage, bool isSubscriptionError) {
     return Center(
       child: Column(
@@ -507,7 +438,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: _startSubscription,
-            // Only restart subscription, not query
             icon: const Icon(Icons.refresh),
             label: const Text('Retry Connection'),
           ),
@@ -516,7 +446,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     );
   }
 
-  // Helper method to safely get receiver name
   String _getReceiverName(ChatData chatMessage) {
     try {
       if (chatMessage.senderFirstName != null &&
@@ -529,7 +458,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     }
   }
 
-  // Helper method to format time
   String _formatTime(String timeString) {
     try {
       final dateTime = DateTime.parse(timeString);
