@@ -17,13 +17,11 @@ final class GetSubscribeChatMessageLoading extends SubscribeChatMessageState {
 final class GetSubscribeChatMessageSuccess extends SubscribeChatMessageState {
   final ChatData chatMessage;
 
-  const GetSubscribeChatMessageSuccess({
-    required this.chatMessage,
-  });
+  const GetSubscribeChatMessageSuccess({required this.chatMessage});
 
   @override
   // TODO: implement props
-  List<Object?> get props => [chatMessage];
+  List<Object> get props => [chatMessage];
 }
 
 final class GetSubscribeChatMessageError extends SubscribeChatMessageState {
@@ -33,5 +31,5 @@ final class GetSubscribeChatMessageError extends SubscribeChatMessageState {
 
   @override
   // TODO: implement props
-  List<Object?> get props => [message];
+  List<Object> get props => [message];
 }

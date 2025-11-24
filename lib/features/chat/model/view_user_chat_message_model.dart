@@ -57,14 +57,16 @@ class UserProfile extends Equatable {
   List<Object?> get props => [firstName, lastName, profileImage];
 }
 
-class ChatData {
+// ✅ FIXED: Now extends Equatable!
+class ChatData extends Equatable {
   final List<ChatMessage> messages;
   final bool isReceiverOnline;
   final String? senderFirstName;
   final String? senderLastName;
   final String? senderProfileImage;
 
-  ChatData({
+  const ChatData({
+    // ✅ Added const constructor
     required this.messages,
     required this.isReceiverOnline,
     this.senderFirstName,
@@ -83,4 +85,40 @@ class ChatData {
       senderProfileImage: json['sender_room_id']?['user_id']?['profile_image'],
     );
   }
+
+  // ✅ CRITICAL: This makes BlocBuilder rebuild when data changes!
+  @override
+  List<Object?> get props => [
+    messages.length,
+    // Rebuild when message count changes
+    messages.isNotEmpty ? messages.last.id : null,
+    // Rebuild when last message changes
+    isReceiverOnline,
+    // Rebuild when online status changes
+    senderFirstName,
+    senderLastName,
+    senderProfileImage,
+  ];
+
+  // ✅ Optional: Add copyWith for easier state updates
+  ChatData copyWith({
+    List<ChatMessage>? messages,
+    bool? isReceiverOnline,
+    String? senderFirstName,
+    String? senderLastName,
+    String? senderProfileImage,
+  }) {
+    return ChatData(
+      messages: messages ?? this.messages,
+      isReceiverOnline: isReceiverOnline ?? this.isReceiverOnline,
+      senderFirstName: senderFirstName ?? this.senderFirstName,
+      senderLastName: senderLastName ?? this.senderLastName,
+      senderProfileImage: senderProfileImage ?? this.senderProfileImage,
+    );
+  }
+
+  // ✅ Optional: Add toString for debugging
+  @override
+  String toString() =>
+      'ChatData(messages: ${messages.length}, online: $isReceiverOnline, sender: $senderFirstName $senderLastName)';
 }
