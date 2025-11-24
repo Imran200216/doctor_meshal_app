@@ -27,9 +27,10 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
-  bool _isInitialQueryCalled = false;
   bool _isSubscriptionEstablished = false;
-  bool _isInitialQueryCalled = false;
+  bool _isInitialQueryCalled = false; // Track if initial query was called
+  ChatData? _currentChatData;
+  List<ChatMessage> _currentMessages = [];
 
   // Message controller and focus node
   final TextEditingController _messageController = TextEditingController();
