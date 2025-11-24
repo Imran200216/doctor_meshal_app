@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
@@ -26,15 +27,14 @@ class SubscribeChatMessageBloc
 
   // Reconnection logic
   Timer? _reconnectTimer;
+  Timer? _healthCheckTimer;
   int _reconnectAttempts = 0;
-  static const int maxReconnectAttempts = 5;
-  static const Duration reconnectDelay = Duration(seconds: 3);
+  static const int _maxReconnectAttempts = 5;
 
   SubscribeChatMessageBloc({required this.chatGraphQLHttpService})
     : super(SubscribeChatMessageInitial()) {
     on<StartSubscribeChatMessageEvent>(_onStartSubscription);
     on<StopSubscribeChatMessageEvent>(_onStopSubscription);
-    on<EnsureSubscriptionActiveEvent>(_onEnsureSubscriptionActive);
     on<ReconnectSubscriptionEvent>(_onReconnectSubscription);
   }
 
@@ -118,27 +118,32 @@ subscription Subscription {
       final stream = chatGraphQLHttpService.performSubscribe(subscriptionQuery);
       AppLoggerHelper.logInfo('📡 Stream created, setting up listener...');
 
+      // Use a Completer to handle the first data without blocking
+      final completer = Completer<void>();
+
       _messageSubscription = stream.listen(
         (result) {
           AppLoggerHelper.logInfo("🔥 SUBSCRIPTION DATA RECEIVED!");
-          AppLoggerHelper.logInfo("📦 Full result: $result");
-          AppLoggerHelper.logInfo("📦 Has exception: ${result.hasException}");
-          AppLoggerHelper.logInfo("📦 Exception: ${result.exception}");
-          AppLoggerHelper.logInfo("📦 Data: ${result.data}");
-          AppLoggerHelper.logInfo("📦 Data type: ${result.data.runtimeType}");
-          AppLoggerHelper.logInfo("📦 Source: ${result.source}");
+
+          // Complete the completer on first successful data
+          if (!completer.isCompleted) {
+            completer.complete();
+            AppLoggerHelper.logInfo(
+              '✅ First data received, subscription active',
+            );
+          }
 
           // Reset reconnect attempts on successful data
           _reconnectAttempts = 0;
 
           if (result.hasException) {
             AppLoggerHelper.logError(
-              '❌ Subscription exception: ${result.exception.toString()}',
+              '❌ Subscription exception: ${result.exception}',
             );
             if (!emit.isDone) {
               emit(
                 GetSubscribeChatMessageError(
-                  message: result.exception.toString(),
+                  message: 'Subscription error: ${result.exception}',
                 ),
               );
             }
@@ -150,49 +155,28 @@ subscription Subscription {
             return;
           }
 
-          // Print the entire data structure to understand the format
-          AppLoggerHelper.logInfo('📊 Complete data structure:');
-          result.data?.forEach((key, value) {
-            AppLoggerHelper.logInfo(
-              '   Key: $key, Value: $value, Type: ${value.runtimeType}',
-            );
-          });
-
           final data = result.data?['View_User_Chat_Message_'];
-          AppLoggerHelper.logInfo('🔍 View_User_Chat_Message_ data: $data');
-          AppLoggerHelper.logInfo(
-            '🔍 View_User_Chat_Message_ type: ${data.runtimeType}',
-          );
+          AppLoggerHelper.logInfo('🔍 View_User_Chat_Message_ data received');
 
           if (data == null) {
-            AppLoggerHelper.logWarning(
-              '⚠️ View_User_Chat_Message_ is null in result',
-            );
+            AppLoggerHelper.logWarning('⚠️ View_User_Chat_Message_ is null');
             return;
           }
 
           try {
             AppLoggerHelper.logInfo('🔄 Attempting to parse chat data...');
-            AppLoggerHelper.logInfo('📋 Data to parse: $data');
-
             final chatData = ChatData.fromJson(data);
             AppLoggerHelper.logInfo('✅ Chat data parsed successfully');
             AppLoggerHelper.logInfo(
               '💬 Messages count: ${chatData.messages.length}',
             );
-            AppLoggerHelper.logInfo('💬 Messages: ${chatData.messages}');
-            AppLoggerHelper.logInfo(
-              '📱 Is receiver online: ${chatData.isReceiverOnline}',
-            );
 
             if (!emit.isDone) {
               emit(GetSubscribeChatMessageSuccess(chatMessage: chatData));
+              AppLoggerHelper.logInfo('🎯 Success state emitted to UI');
             }
           } catch (parseError, stackTrace) {
             AppLoggerHelper.logError('❌ Error parsing chat data: $parseError');
-            AppLoggerHelper.logError('📋 Data that failed to parse: $data');
-            AppLoggerHelper.logError('🔍 Stack trace: $stackTrace');
-
             if (!emit.isDone) {
               emit(
                 GetSubscribeChatMessageError(
@@ -204,15 +188,19 @@ subscription Subscription {
         },
         onError: (error, stackTrace) {
           AppLoggerHelper.logError("❌ SUBSCRIPTION STREAM ERROR: $error");
-          AppLoggerHelper.logError("📋 Error type: ${error.runtimeType}");
-          AppLoggerHelper.logError("🔍 Stack trace: $stackTrace");
+          AppLoggerHelper.logError("📋 Stack trace: $stackTrace");
           _isSubscriptionActive = false;
 
-          if (!emit.isDone) {
-            emit(GetSubscribeChatMessageError(message: error.toString()));
+          // Complete the completer on error too
+          if (!completer.isCompleted) {
+            completer.completeError(error);
           }
 
-          // Only attempt reconnection if we should maintain connection
+          if (!emit.isDone) {
+            emit(GetSubscribeChatMessageError(message: 'Stream error: $error'));
+          }
+
+          // Always attempt reconnection on stream errors
           if (_shouldMaintainConnection) {
             _scheduleReconnection();
           }
@@ -221,27 +209,57 @@ subscription Subscription {
           AppLoggerHelper.logInfo("🔚 SUBSCRIPTION STREAM COMPLETED");
           _isSubscriptionActive = false;
 
-          // Only attempt reconnection if we should maintain connection
+          // Complete the completer if stream completes before first data
+          if (!completer.isCompleted) {
+            completer.complete();
+          }
+
+          // Always attempt reconnection when stream completes
           if (_shouldMaintainConnection) {
-            AppLoggerHelper.logInfo("🔄 Scheduling reconnection...");
+            AppLoggerHelper.logInfo(
+              "🔄 Stream completed, scheduling reconnection...",
+            );
             _scheduleReconnection();
           }
         },
         cancelOnError: false,
       );
 
+      // Wait for first data or timeout with proper error handling
+      try {
+        await completer.future.timeout(
+          const Duration(seconds: 10),
+          onTimeout: () {
+            AppLoggerHelper.logWarning(
+              "⏰ Timeout waiting for first subscription data",
+            );
+            // Return a completed future instead of null
+            return Future.value();
+          },
+        );
+      } catch (e) {
+        AppLoggerHelper.logError('❌ Error waiting for first data: $e');
+        // Don't rethrow, continue with subscription setup
+      }
+
       _isSubscriptionActive = true;
       AppLoggerHelper.logInfo(
         "✅ Subscription listener established successfully",
       );
+
+      // Start health checks
+      _startHealthChecks();
     } catch (e, stackTrace) {
       AppLoggerHelper.logError('💥 FAILED TO ESTABLISH SUBSCRIPTION: $e');
-      AppLoggerHelper.logError('📋 Error type: ${e.runtimeType}');
       AppLoggerHelper.logError('🔍 Stack trace: $stackTrace');
       _isSubscriptionActive = false;
 
       if (!emit.isDone) {
-        emit(GetSubscribeChatMessageError(message: e.toString()));
+        emit(
+          GetSubscribeChatMessageError(
+            message: 'Failed to establish subscription: $e',
+          ),
+        );
       }
 
       if (_shouldMaintainConnection) {
@@ -257,32 +275,6 @@ subscription Subscription {
     AppLoggerHelper.logInfo('🛑 Stopping chat subscription...');
     _shouldMaintainConnection = false;
     await _closeSubscription();
-  }
-
-  Future<void> _onEnsureSubscriptionActive(
-    EnsureSubscriptionActiveEvent event,
-    Emitter<SubscribeChatMessageState> emit,
-  ) async {
-    AppLoggerHelper.logInfo('🔍 Ensuring subscription is active...');
-    _shouldMaintainConnection = true;
-    if (!_isSubscriptionActiveForRoom(
-      event.senderRoomId,
-      event.recieverRoomId,
-      event.userId,
-    )) {
-      AppLoggerHelper.logInfo(
-        '🔄 Subscription not active, starting new one...',
-      );
-      add(
-        StartSubscribeChatMessageEvent(
-          senderRoomId: event.senderRoomId,
-          recieverRoomId: event.recieverRoomId,
-          userId: event.userId,
-        ),
-      );
-    } else {
-      AppLoggerHelper.logInfo('✅ Subscription already active');
-    }
   }
 
   Future<void> _onReconnectSubscription(
@@ -303,11 +295,33 @@ subscription Subscription {
     }
   }
 
-  // Enhanced reconnection logic
+  void _startHealthChecks() {
+    _healthCheckTimer?.cancel();
+    _healthCheckTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
+      if (!_isSubscriptionActive && _shouldMaintainConnection) {
+        AppLoggerHelper.logInfo(
+          '❤️ Health check: Subscription inactive, reconnecting...',
+        );
+        _scheduleReconnection();
+      } else if (_isSubscriptionActive) {
+        AppLoggerHelper.logInfo(
+          '❤️ Health check: Subscription active and healthy',
+        );
+      }
+    });
+  }
+
   void _scheduleReconnection() {
-    if (_reconnectAttempts >= maxReconnectAttempts) {
+    if (!_shouldMaintainConnection) {
+      AppLoggerHelper.logInfo(
+        '🛑 Reconnection cancelled: should not maintain connection',
+      );
+      return;
+    }
+
+    if (_reconnectAttempts >= _maxReconnectAttempts) {
       AppLoggerHelper.logError(
-        "🚫 Max reconnection attempts ($maxReconnectAttempts) reached. Stopping reconnection.",
+        "🚫 Max reconnection attempts ($_maxReconnectAttempts) reached",
       );
       return;
     }
@@ -315,11 +329,11 @@ subscription Subscription {
     _reconnectTimer?.cancel();
     _reconnectAttempts++;
 
-    final delay = Duration(
-      seconds: reconnectDelay.inSeconds * _reconnectAttempts,
-    );
+    // Exponential backoff: 2, 4, 8, 16, 32 seconds
+    final delay = Duration(seconds: pow(2, _reconnectAttempts).toInt());
+
     AppLoggerHelper.logInfo(
-      "⏰ Scheduling reconnection attempt $_reconnectAttempts/$maxReconnectAttempts in ${delay.inSeconds} seconds",
+      "⏰ Scheduling reconnection attempt $_reconnectAttempts/$_maxReconnectAttempts in ${delay.inSeconds}s",
     );
 
     _reconnectTimer = Timer(delay, () {
@@ -328,16 +342,25 @@ subscription Subscription {
           _currentReceiverRoomId != null &&
           _currentUserId != null) {
         AppLoggerHelper.logInfo(
-          "🔄 Attempting reconnection $_reconnectAttempts...",
+          "🔄 Executing reconnection attempt $_reconnectAttempts",
         );
-        add(const ReconnectSubscriptionEvent());
+        add(
+          StartSubscribeChatMessageEvent(
+            senderRoomId: _currentSenderRoomId!,
+            recieverRoomId: _currentReceiverRoomId!,
+            userId: _currentUserId!,
+          ),
+        );
+      } else {
+        AppLoggerHelper.logInfo('🛑 Reconnection cancelled: missing room data');
       }
     });
   }
 
-  // Enhanced subscription cleanup
   Future<void> _closeSubscription() async {
+    _healthCheckTimer?.cancel();
     _reconnectTimer?.cancel();
+
     if (_messageSubscription != null) {
       try {
         await _messageSubscription!.cancel();
@@ -350,19 +373,12 @@ subscription Subscription {
     }
   }
 
-  // Check if subscription is active for current room
-  bool _isSubscriptionActiveForRoom(String sID, String rID, String userId) {
-    return _isSubscriptionActive &&
-        _currentSenderRoomId == sID &&
-        _currentReceiverRoomId == rID &&
-        _currentUserId == userId &&
-        _messageSubscription != null;
-  }
-
   @override
   Future<void> close() async {
     AppLoggerHelper.logInfo('🔒 Closing SubscribeChatMessageBloc');
     _shouldMaintainConnection = false;
+    _healthCheckTimer?.cancel();
+    _reconnectTimer?.cancel();
     await _closeSubscription();
     return super.close();
   }
