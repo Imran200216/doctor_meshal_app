@@ -187,6 +187,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                     children: [
                       KFloatingActionBtn(
                         onTap: () {
+                          // Chat List
                           GoRouter.of(
                             context,
                           ).pushNamed(AppRouterConstants.chatList);

@@ -31,3 +31,12 @@ final class ReconnectHomeSubscriptionEvent extends ViewUserChatHomeEvent {
   @override
   List<Object> get props => [];
 }
+
+class GetViewUserChatRoomEvent extends ViewUserChatHomeEvent {
+  final String userId;
+
+  const GetViewUserChatRoomEvent({required this.userId});
+
+  @override
+  List<Object> get props => [userId];
+}

@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:meshal_doctor_booking_app/core/bloc/core_injection.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_api_constants.dart';
 import 'package:meshal_doctor_booking_app/core/service/chat_graphql_service.dart';
+import 'package:meshal_doctor_booking_app/core/service/chat_graphql_web_socket_service.dart';
 import 'package:meshal_doctor_booking_app/core/service/graphql_service.dart';
 import 'package:meshal_doctor_booking_app/features/auth/auth_injection.dart';
 import 'package:meshal_doctor_booking_app/features/bottom_nav/bottom_nav_injection.dart';
@@ -32,6 +33,15 @@ void setUpServiceLocators() {
       httpEndpoint: AppApiConstants.chatBaseUrl,
       websocketEndpoint: AppApiConstants.webSocketUrl,
     );
+
+    return service;
+  });
+
+  // chat Graphql Web Socket Service
+  getIt.registerSingletonAsync<ChatGraphQLWebSocketService>(() async {
+    final service = ChatGraphQLWebSocketService();
+
+    await service.init(websocketEndpoint: AppApiConstants.webSocketUrl);
 
     return service;
   });

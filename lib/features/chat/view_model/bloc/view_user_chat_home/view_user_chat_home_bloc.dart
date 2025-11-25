@@ -20,49 +20,34 @@ class ViewUserChatHomeBloc
   bool _isSubscriptionActive = false;
   bool _shouldMaintainConnection = false;
 
+  // Data storage
+  ViewUserChatHomeModel? _lastSuccessfulData;
+  String? _currentNotificationCount;
+
   // Current user tracking
   String? _currentUserId;
 
-  // Reconnection logic
+  // Reconnection & query timers
   Timer? _reconnectTimer;
   Timer? _healthCheckTimer;
+  Timer? _queryTimer;
   int _reconnectAttempts = 0;
   static const int _maxReconnectAttempts = 5;
 
+  // My Chat Subscription Status
+  bool _myChatSubscriptionStatus = false;
+
   ViewUserChatHomeBloc({required this.chatGraphQLHttpService})
     : super(ViewUserChatHomeInitial()) {
-    on<GetViewUserChatHomeEvent>(_onGetViewUserChatHome);
-    on<StopViewUserChatHomeSubscriptionEvent>(_onStopSubscription);
-    on<ReconnectHomeSubscriptionEvent>(_onReconnectSubscription);
-  }
+    // ------------------------ Get View User Chat Home Event -----------------------
+    on<GetViewUserChatHomeEvent>((event, emit) async {
+      try {
+        AppLoggerHelper.logInfo(
+          "🎯 Starting GetViewUserChatHomeEvent for user: ${event.userId}",
+        );
 
-  Future<void> _onGetViewUserChatHome(
-    GetViewUserChatHomeEvent event,
-    Emitter<ViewUserChatHomeState> emit,
-  ) async {
-    AppLoggerHelper.logInfo(
-      '🚀 Starting home subscription for user: ${event.userId}',
-    );
-
-    // Validate user ID
-    if (event.userId.isEmpty || event.userId == 'undefined') {
-      AppLoggerHelper.logError('❌ Invalid user ID');
-      emit(GetViewUserChatHomeFailure(message: 'Invalid user ID provided'));
-      return;
-    }
-
-    // Close existing subscription first
-    await _closeSubscription();
-
-    _currentUserId = event.userId;
-    _shouldMaintainConnection = true;
-
-    emit(GetViewUserChatHomeLoading());
-    AppLoggerHelper.logInfo('⏳ Emitted home loading state');
-
-    try {
-      final subscriptionQuery =
-          '''   
+        String subscription =
+            '''
       subscription Subscription {
         View_User_Chat_Home_(user_id: "${event.userId}") {
           data {
@@ -84,212 +69,331 @@ class ViewUserChatHomeBloc
       }
     ''';
 
-      AppLoggerHelper.logInfo('📝 Home subscription query prepared');
+        AppLoggerHelper.logInfo("📡 GraphQL Subscription Query: $subscription");
 
-      final stream = chatGraphQLHttpService.performSubscribe(subscriptionQuery);
-      AppLoggerHelper.logInfo('📡 Home stream created');
 
-      bool hasReceivedData = false;
+        AppLoggerHelper.logInfo(
+          "🚀 Immediately dispatching GetViewUserChatRoomEvent",
+        );
+        add(GetViewUserChatRoomEvent(userId: event.userId));
 
-      _homeSubscription = stream.listen(
-        (result) {
-          AppLoggerHelper.logInfo("🔥 HOME SUBSCRIPTION DATA RECEIVED!");
-          hasReceivedData = true;
-          _reconnectAttempts = 0; // Reset on successful data
+        final stream = chatGraphQLHttpService.performSubscribe(subscription);
 
-          if (result.hasException) {
-            AppLoggerHelper.logError(
-              '❌ Home subscription exception: ${result.exception}',
-            );
-            if (!emit.isDone) {
-              emit(
-                GetViewUserChatHomeFailure(
-                  message: 'Home subscription error: ${result.exception}',
-                ),
-              );
-            }
-            return;
-          }
-
-          if (result.data == null) {
-            AppLoggerHelper.logWarning('⚠️ Home result data is null');
-            return;
-          }
-
-          // 🎯 ENHANCED LOGGING - Log the complete raw data
-          AppLoggerHelper.logInfo('📊 COMPLETE RAW RESULT DATA:');
-          AppLoggerHelper.logInfo('${result.data}');
-
-          AppLoggerHelper.logInfo(
-            '🔍 Checking View_User_Chat_Home_ structure...',
-          );
-
-          final viewUserChatHomeData = result.data?['View_User_Chat_Home_'];
-          AppLoggerHelper.logInfo(
-            '📋 View_User_Chat_Home_ object: $viewUserChatHomeData',
-          );
-
-          if (viewUserChatHomeData == null) {
-            AppLoggerHelper.logWarning('⚠️ View_User_Chat_Home_ is null');
-            return;
-          }
-
-          // 🎯 SPECIFIC LOGGING FOR THE DATA ARRAY
-          final dataArray = viewUserChatHomeData['data'];
-          AppLoggerHelper.logInfo(
-            '🎯 View_User_Chat_Home_.data array: $dataArray',
-          );
-
-          if (dataArray == null) {
-            AppLoggerHelper.logWarning('⚠️ View_User_Chat_Home_.data is null');
-            return;
-          }
-
-          if (dataArray is List) {
+        await emit.forEach(
+          stream,
+          onData: (result) {
             AppLoggerHelper.logInfo(
-              '📈 Number of chat rooms: ${dataArray.length}',
+              "📨 Received data from subscription stream",
+            );
+            AppLoggerHelper.logInfo("📊 Raw result data: ${result.data}");
+            AppLoggerHelper.logInfo(
+              "🔧 Result hasException: ${result.hasException}",
             );
 
-            // Log each chat room item
-            for (int i = 0; i < dataArray.length; i++) {
-              final chatRoom = dataArray[i];
-              AppLoggerHelper.logInfo('💬 Chat Room $i:');
-              AppLoggerHelper.logInfo('   - ID: ${chatRoom['id']}');
+            // 🚀 First time connection established
+            if (!_myChatSubscriptionStatus) {
+              _myChatSubscriptionStatus = true;
               AppLoggerHelper.logInfo(
-                '   - Last Message: ${chatRoom['last_message']}',
-              );
-              AppLoggerHelper.logInfo(
-                '   - Last Message Time: ${chatRoom['last_message_time']}',
-              );
-              AppLoggerHelper.logInfo(
-                '   - Unread Count: ${chatRoom['un_read_count']}',
+                "🚀 First time subscription connection established!",
               );
 
-              final receiver = chatRoom['reciever_id'];
-              if (receiver != null) {
+              // 🔹 Schedule a one-time delayed event
+              Future.delayed(const Duration(seconds: 3), () {
                 AppLoggerHelper.logInfo(
-                  '   - Receiver: ${receiver['first_name']} ${receiver['last_name']}',
+                  "⏳ 3 sec delay → Dispatching GetViewUserChatHomeEvent again after subscription ready",
                 );
-              }
-
-              final chatRoomId = chatRoom['chat_room_id'];
-              if (chatRoomId != null) {
-                AppLoggerHelper.logInfo(
-                  '   - Chat Room ID: ${chatRoomId['id']}',
-                );
-              }
-            }
-          } else {
-            AppLoggerHelper.logError(
-              '❌ Expected List but got: ${dataArray.runtimeType}',
-            );
-          }
-
-          try {
-            AppLoggerHelper.logInfo(
-              '🔄 Attempting to parse with ViewUserChatHomeModel...',
-            );
-            final chatHomeData = ViewUserChatHomeModel.fromJson(
-              viewUserChatHomeData,
-            );
-            AppLoggerHelper.logInfo('✅ Home chat data parsed successfully');
-            AppLoggerHelper.logInfo(
-              '💬 Final parsed chat rooms count: ${chatHomeData.data.length}',
-            );
-
-            if (!emit.isDone) {
-              emit(
-                GetViewUserChatHomeSuccess(viewUserChatHomeModel: chatHomeData),
-              );
-              AppLoggerHelper.logInfo(
-                '🎉 Success state emitted with chat data',
-              );
-            }
-          } catch (parseError, stackTrace) {
-            AppLoggerHelper.logError(
-              '❌ Error parsing home chat data: $parseError',
-            );
-            AppLoggerHelper.logError('📝 Stack trace: $stackTrace');
-
-            // 🎯 ADDITIONAL DEBUGGING - Check what fields are available
-            AppLoggerHelper.logInfo(
-              '🔍 Available keys in viewUserChatHomeData:',
-            );
-            if (viewUserChatHomeData is Map) {
-              viewUserChatHomeData.keys.forEach((key) {
-                AppLoggerHelper.logInfo(
-                  '   - $key: ${viewUserChatHomeData[key]}',
-                );
+                add(GetViewUserChatHomeEvent(userId: event.userId));
               });
             }
 
-            if (!emit.isDone) {
-              emit(
-                GetViewUserChatHomeFailure(
-                  message: 'Failed to parse home chat data: $parseError',
-                ),
+            // ❌ Exception check
+            if (result.hasException) {
+              AppLoggerHelper.logError(
+                "❌ Subscription GraphQL Exception: ${result.exception}",
+              );
+              AppLoggerHelper.logError(
+                "❌ GraphQL Errors: ${result.exception?.graphqlErrors}",
+              );
+              return GetViewUserChatHomeFailure(
+                message: "Subscription error: ${result.exception}",
               );
             }
-          }
-        },
-        onError: (error, stackTrace) {
-          AppLoggerHelper.logError("❌ HOME SUBSCRIPTION STREAM ERROR: $error");
-          _isSubscriptionActive = false;
 
-          if (!emit.isDone) {
-            emit(
-              GetViewUserChatHomeFailure(message: 'Home stream error: $error'),
+            // Check data structure step by step
+            AppLoggerHelper.logInfo("🔍 Checking data structure...");
+
+            final homeData = result.data?['View_User_Chat_Home_'];
+            AppLoggerHelper.logInfo(
+              "🏠 Home data (View_User_Chat_Home_): $homeData",
             );
-          }
 
-          if (_shouldMaintainConnection) {
-            _scheduleReconnection();
-          }
-        },
-        onDone: () {
-          AppLoggerHelper.logInfo("🔚 HOME SUBSCRIPTION STREAM COMPLETED");
-          _isSubscriptionActive = false;
+            if (homeData == null) {
+              AppLoggerHelper.logError(
+                "⚠️ homeData is null - Check GraphQL response structure",
+              );
+              AppLoggerHelper.logInfo(
+                "🔍 Available keys in result.data: ${result.data?.keys.toList()}",
+              );
+              return GetViewUserChatHomeLoading();
+            }
 
-          if (_shouldMaintainConnection) {
-            AppLoggerHelper.logInfo("🔄 Stream completed, reconnecting...");
-            _scheduleReconnection();
-          }
-        },
-        cancelOnError: true,
-      );
+            final dataArray = homeData['data'];
+            AppLoggerHelper.logInfo("📋 Data array from homeData: $dataArray");
+            AppLoggerHelper.logInfo(
+              "📊 Data array type: ${dataArray.runtimeType}",
+            );
+            AppLoggerHelper.logInfo(
+              "🔢 Data array length: ${dataArray is List ? dataArray.length : 'N/A'}",
+            );
 
-      // Set a timer to check if we receive data within a reasonable time
-      Timer(const Duration(seconds: 15), () {
-        if (!hasReceivedData && _isSubscriptionActive) {
-          AppLoggerHelper.logWarning(
-            "⏰ No data received after 15 seconds, triggering reconnection",
-          );
-          if (_shouldMaintainConnection) {
-            _scheduleReconnection();
+            if (dataArray == null) {
+              AppLoggerHelper.logError(
+                "⚠️ dataArray is null - No chat data found",
+              );
+              return GetViewUserChatHomeLoading();
+            }
+
+            try {
+              final chatData = <ChatHomeData>[];
+
+              if (dataArray is List) {
+                AppLoggerHelper.logInfo(
+                  "✅ Data array is a List, processing ${dataArray.length} items",
+                );
+
+                for (var i = 0; i < dataArray.length; i++) {
+                  var item = dataArray[i];
+                  AppLoggerHelper.logInfo("🔍 Processing item $i: $item");
+                  AppLoggerHelper.logInfo(
+                    "📝 Item $i type: ${item.runtimeType}",
+                  );
+
+                  if (item is Map<String, dynamic>) {
+                    AppLoggerHelper.logInfo(
+                      "✅ Item $i is Map, attempting to parse...",
+                    );
+                    try {
+                      var parsedItem = ChatHomeData.fromJson(item);
+                      chatData.add(parsedItem);
+                      AppLoggerHelper.logInfo(
+                        "✅ Successfully parsed item $i: ${parsedItem.reciever.firstName}",
+                      );
+                    } catch (parseError) {
+                      AppLoggerHelper.logError(
+                        "❌ Failed to parse item $i: $parseError",
+                      );
+                    }
+                  } else {
+                    AppLoggerHelper.logError(
+                      "❌ Item $i is not a Map<String, dynamic>, it's: ${item.runtimeType}",
+                    );
+                  }
+                }
+              } else {
+                AppLoggerHelper.logError(
+                  "❌ dataArray is not a List, it's: ${dataArray.runtimeType}",
+                );
+              }
+
+              AppLoggerHelper.logInfo(
+                "📊 Final chatData list has ${chatData.length} items",
+              );
+
+              final parsed = ViewUserChatHomeModel(data: chatData);
+
+              AppLoggerHelper.logInfo(
+                "✅ Subscription data successfully parsed with ${chatData.length} chat items",
+              );
+
+              if (chatData.isEmpty) {
+                AppLoggerHelper.logInfo(
+                  "ℹ️ No chat items found for user ${event.userId}",
+                );
+              } else {
+                AppLoggerHelper.logInfo(
+                  "🎉 Success! Ready to display ${chatData.length} chat items",
+                );
+              }
+
+              return GetViewUserChatHomeSuccess(viewUserChatHomeModel: parsed);
+            } catch (e) {
+              AppLoggerHelper.logError("❌ Critical parsing error: $e");
+              return GetViewUserChatHomeFailure(message: "Parse error: $e");
+            }
+          },
+
+          // ❌ Stream error handling
+          onError: (e, stackTrace) {
+            AppLoggerHelper.logError("❌ Stream subscription error: $e");
+            return GetViewUserChatHomeFailure(message: "Stream error: $e");
+          },
+        );
+      } catch (e, stackTrace) {
+        AppLoggerHelper.logError("💥 Top-level bloc error: $e");
+        emit(GetViewUserChatHomeFailure(message: e.toString()));
+      }
+    });
+
+    // Stop View User Chat Home Subsctiption Event
+    on<StopViewUserChatHomeSubscriptionEvent>(_onStopSubscription);
+    on<ReconnectHomeSubscriptionEvent>(_onReconnectSubscription);
+
+
+    // Get View User Chat Room Event Query
+    on<GetViewUserChatRoomEvent>((event, emit) async {
+
+
+      emit(GetViewUserChatRoomLoading());
+
+      try {
+        final query =
+        '''
+        query View_User_Chatroom_ {
+          View_User_Chatroom_(user_id: "${event.userId}") {
+            id
+            notification_count
           }
         }
-      });
+        ''';
 
-      _isSubscriptionActive = true;
-      AppLoggerHelper.logInfo("✅ Home subscription setup completed");
+        AppLoggerHelper.logInfo("GraphQL Query: $query");
 
-      _startHealthChecks();
-    } catch (e, stackTrace) {
-      AppLoggerHelper.logError('💥 FAILED TO ESTABLISH HOME SUBSCRIPTION: $e');
-      _isSubscriptionActive = false;
+        final result = await chatGraphQLHttpService.performQuery(query);
 
-      if (!emit.isDone) {
+        final raw = result.data?["View_User_Chatroom_"];
+        AppLoggerHelper.logInfo("GraphQL RAW Response: $raw");
+
+        // Convert raw into a usable Map
+        Map<String, dynamic>? viewUserChatRoom;
+
+        if (raw is List && raw.isNotEmpty) {
+          viewUserChatRoom = Map<String, dynamic>.from(raw.first);
+        } else if (raw is Map<String, dynamic>) {
+          viewUserChatRoom = Map<String, dynamic>.from(raw);
+        }
+
+        if (viewUserChatRoom == null) {
+          emit(GetViewUserChatHomeFailure(message: "No data found"));
+          return;
+        }
+
+        final id = viewUserChatRoom['id']?.toString() ?? "";
+        final notification =
+            viewUserChatRoom['notification_count']?.toString() ?? "0";
+
+        AppLoggerHelper.logInfo("Parsed Notification Count: $notification");
+
         emit(
-          GetViewUserChatHomeFailure(
-            message: 'Failed to establish home subscription: $e',
+          GetViewUserChatRoomSuccess(
+            id: id,
+            notificationCount: notification,
           ),
         );
+      } catch (e) {
+        emit(GetViewUserChatRoomFailure(message: e.toString()));
       }
 
-      if (_shouldMaintainConnection) {
-        _scheduleReconnection();
+    },);
+  }
+
+  // Future<void> _onGetViewUserChatRoom(
+  //   GetViewUserChatRoomEvent event,
+  //   Emitter<ViewUserChatHomeState> emit,
+  // ) async {
+  //   AppLoggerHelper.logInfo('📊 Starting ViewUserChatRoom query...');
+  //
+  //   // If we have subscription data, emit loading with current data
+  //   if (_lastSuccessfulData != null) {
+  //     emit(
+  //       GetViewUserChatHomeSuccess(
+  //         viewUserChatHomeModel: _lastSuccessfulData!,
+  //         notificationCount: _currentNotificationCount,
+  //       ),
+  //     );
+  //   }
+  //
+  //   try {
+  //     final query =
+  //         '''
+  //       query View_User_Chatroom_ {
+  //         View_User_Chatroom_(user_id: "${event.userId}") {
+  //           id
+  //           notification_count
+  //         }
+  //       }
+  //       ''';
+  //
+  //     AppLoggerHelper.logInfo("GraphQL Query: $query");
+  //
+  //     final result = await chatGraphQLHttpService.performQuery(query);
+  //
+  //     final raw = result.data?["View_User_Chatroom_"];
+  //     AppLoggerHelper.logInfo("GraphQL RAW Response: $raw");
+  //
+  //     // Convert raw into a usable Map
+  //     Map<String, dynamic>? viewUserChatRoom;
+  //
+  //     if (raw is List && raw.isNotEmpty) {
+  //       viewUserChatRoom = Map<String, dynamic>.from(raw.first);
+  //     } else if (raw is Map<String, dynamic>) {
+  //       viewUserChatRoom = Map<String, dynamic>.from(raw);
+  //     }
+  //
+  //     if (viewUserChatRoom == null) {
+  //       AppLoggerHelper.logError("❌ No ViewUserChatRoom data found");
+  //       return;
+  //     }
+  //
+  //     final id = viewUserChatRoom['id']?.toString() ?? "";
+  //     final notification =
+  //         viewUserChatRoom['notification_count']?.toString() ?? "0";
+  //
+  //     AppLoggerHelper.logInfo("✅ Parsed Notification Count: $notification");
+  //
+  //     // Store the notification count
+  //     _currentNotificationCount = notification;
+  //
+  //     // 🎯 KEY FIX: Emit success with BOTH subscription data and query data
+  //     if (_lastSuccessfulData != null) {
+  //       emit(
+  //         GetViewUserChatHomeSuccess(
+  //           viewUserChatHomeModel: _lastSuccessfulData!,
+  //           notificationCount: notification,
+  //         ),
+  //       );
+  //     } else {
+  //       emit(
+  //         GetViewUserChatRoomSuccess(id: id, notificationCount: notification),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     AppLoggerHelper.logError('❌ ViewUserChatRoom query failed: $e');
+  //
+  //     // Even if query fails, keep the subscription data
+  //     if (_lastSuccessfulData != null) {
+  //       emit(
+  //         GetViewUserChatHomeSuccess(
+  //           viewUserChatHomeModel: _lastSuccessfulData!,
+  //           notificationCount: _currentNotificationCount,
+  //         ),
+  //       );
+  //     } else {
+  //       emit(GetViewUserChatRoomFailure(message: e.toString()));
+  //     }
+  //   }
+  // }
+
+  // 🎯 NEW METHOD: Schedule query call after subscription success
+  void _scheduleQueryCall(String userId) {
+    _queryTimer?.cancel();
+
+    AppLoggerHelper.logInfo('⏰ Scheduling query in 2 seconds...');
+    _queryTimer = Timer(const Duration(seconds: 2), () {
+      if (_shouldMaintainConnection && userId.isNotEmpty) {
+        AppLoggerHelper.logInfo('📡 Executing query now...');
+        add(GetViewUserChatRoomEvent(userId: userId));
       }
-    }
+    });
   }
 
   Future<void> _onStopSubscription(
@@ -298,6 +402,7 @@ class ViewUserChatHomeBloc
   ) async {
     AppLoggerHelper.logInfo('🛑 Stopping home chat subscription...');
     _shouldMaintainConnection = false;
+    _queryTimer?.cancel();
     await _closeSubscription();
   }
 
@@ -369,6 +474,7 @@ class ViewUserChatHomeBloc
   Future<void> _closeSubscription() async {
     _healthCheckTimer?.cancel();
     _reconnectTimer?.cancel();
+    _queryTimer?.cancel();
 
     if (_homeSubscription != null) {
       try {
@@ -388,6 +494,7 @@ class ViewUserChatHomeBloc
     _shouldMaintainConnection = false;
     _healthCheckTimer?.cancel();
     _reconnectTimer?.cancel();
+    _queryTimer?.cancel();
     await _closeSubscription();
     return super.close();
   }

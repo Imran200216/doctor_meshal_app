@@ -3,18 +3,19 @@ import 'package:equatable/equatable.dart';
 import 'package:meshal_doctor_booking_app/core/service/chat_graphql_service.dart';
 import 'package:meshal_doctor_booking_app/core/utils/app_logger_helper.dart';
 
-part 'view_user_chat_room_event.dart';
+part 'query_view_user_chat_home_event.dart';
 
-part 'view_user_chat_room_state.dart';
+part 'query_view_user_chat_home_state.dart';
 
-class ViewUserChatRoomBloc
-    extends Bloc<ViewUserChatRoomEvent, ViewUserChatRoomState> {
+class QueryViewUserChatHomeBloc
+    extends Bloc<QueryViewUserChatHomeEvent, QueryViewUserChatHomeState> {
   final ChatGraphQLHttpService chatGraphQLHttpService;
 
-  ViewUserChatRoomBloc({required this.chatGraphQLHttpService})
-    : super(ViewUserChatRoomInitial()) {
-    on<GetViewChatRoomEvent>((event, emit) async {
-      emit(GetViewUserChatRoomLoading());
+  QueryViewUserChatHomeBloc({required this.chatGraphQLHttpService})
+    : super(QueryViewUserChatHomeInitial()) {
+    // Get Query View User Chat Home Event
+    on<GetQueryViewUserChatHomeEvent>((event, emit) async {
+      emit(GetQueryViewUserChatHomeLoading());
 
       try {
         final query =
@@ -44,7 +45,7 @@ class ViewUserChatRoomBloc
         }
 
         if (viewUserChatRoom == null) {
-          emit(GetViewUserChatRoomFailure(message: "No data found"));
+          emit(GetQueryViewUserChatHomeFailure(message: "No data found"));
           return;
         }
 
@@ -55,10 +56,13 @@ class ViewUserChatRoomBloc
         AppLoggerHelper.logInfo("Parsed Notification Count: $notification");
 
         emit(
-          GetViewUserChatRoomSuccess(id: id, notificationCount: notification),
+          GetQueryViewUserChatHomeSuccess(
+            id: id,
+            notificationCount: notification,
+          ),
         );
       } catch (e) {
-        emit(GetViewUserChatRoomFailure(message: e.toString()));
+        emit(GetQueryViewUserChatHomeFailure(message: e.toString()));
       }
     });
   }

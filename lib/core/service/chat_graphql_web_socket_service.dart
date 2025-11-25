@@ -12,16 +12,11 @@ class ChatGraphQLWebSocketService {
 
     websocketLink = WebSocketLink(
       websocketEndpoint,
-      subProtocol: GraphQLProtocol.graphqlWs,
+      subProtocol: GraphQLProtocol.graphqlTransportWs,
       config: SocketClientConfig(
         autoReconnect: true,
         inactivityTimeout: const Duration(seconds: 30),
-        delayBetweenReconnectionAttempts: const Duration(seconds: 5),
-        onConnectionLost: (code, reason) {
-          AppLoggerHelper.logError(
-            '❌ Chat WebSocket connection lost: Code=$code, Reason=$reason',
-          );
-        },
+        delayBetweenReconnectionAttempts: const Duration(seconds: 2),
       ),
     );
 
