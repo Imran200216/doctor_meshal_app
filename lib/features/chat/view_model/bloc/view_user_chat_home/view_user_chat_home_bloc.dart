@@ -34,9 +34,6 @@ class ViewUserChatHomeBloc
   int _reconnectAttempts = 0;
   static const int _maxReconnectAttempts = 5;
 
-  // My Chat Subscription Status
-  bool _myChatSubscriptionStatus = false;
-
   ViewUserChatHomeBloc({required this.chatGraphQLHttpService})
     : super(ViewUserChatHomeInitial()) {
     // ------------------------ Get View User Chat Home Event -----------------------
@@ -71,12 +68,6 @@ class ViewUserChatHomeBloc
 
         AppLoggerHelper.logInfo("📡 GraphQL Subscription Query: $subscription");
 
-
-        AppLoggerHelper.logInfo(
-          "🚀 Immediately dispatching GetViewUserChatRoomEvent",
-        );
-        add(GetViewUserChatRoomEvent(userId: event.userId));
-
         final stream = chatGraphQLHttpService.performSubscribe(subscription);
 
         await emit.forEach(
@@ -89,22 +80,6 @@ class ViewUserChatHomeBloc
             AppLoggerHelper.logInfo(
               "🔧 Result hasException: ${result.hasException}",
             );
-
-            // 🚀 First time connection established
-            if (!_myChatSubscriptionStatus) {
-              _myChatSubscriptionStatus = true;
-              AppLoggerHelper.logInfo(
-                "🚀 First time subscription connection established!",
-              );
-
-              // 🔹 Schedule a one-time delayed event
-              Future.delayed(const Duration(seconds: 3), () {
-                AppLoggerHelper.logInfo(
-                  "⏳ 3 sec delay → Dispatching GetViewUserChatHomeEvent again after subscription ready",
-                );
-                add(GetViewUserChatHomeEvent(userId: event.userId));
-              });
-            }
 
             // ❌ Exception check
             if (result.hasException) {
@@ -228,7 +203,7 @@ class ViewUserChatHomeBloc
             return GetViewUserChatHomeFailure(message: "Stream error: $e");
           },
         );
-      } catch (e, stackTrace) {
+      } catch (e) {
         AppLoggerHelper.logError("💥 Top-level bloc error: $e");
         emit(GetViewUserChatHomeFailure(message: e.toString()));
       }
@@ -238,16 +213,13 @@ class ViewUserChatHomeBloc
     on<StopViewUserChatHomeSubscriptionEvent>(_onStopSubscription);
     on<ReconnectHomeSubscriptionEvent>(_onReconnectSubscription);
 
-
     // Get View User Chat Room Event Query
     on<GetViewUserChatRoomEvent>((event, emit) async {
-
-
       emit(GetViewUserChatRoomLoading());
 
       try {
         final query =
-        '''
+            '''
         query View_User_Chatroom_ {
           View_User_Chatroom_(user_id: "${event.userId}") {
             id
@@ -284,16 +256,12 @@ class ViewUserChatHomeBloc
         AppLoggerHelper.logInfo("Parsed Notification Count: $notification");
 
         emit(
-          GetViewUserChatRoomSuccess(
-            id: id,
-            notificationCount: notification,
-          ),
+          GetViewUserChatRoomSuccess(id: id, notificationCount: notification),
         );
       } catch (e) {
         emit(GetViewUserChatRoomFailure(message: e.toString()));
       }
-
-    },);
+    });
   }
 
   // Future<void> _onGetViewUserChatRoom(

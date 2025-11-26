@@ -1060,6 +1060,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Total Education Articles'**
   String get totalEducationArticles;
+
+  /// No description provided for @patients.
+  ///
+  /// In en, this message translates to:
+  /// **'Patients'**
+  String get patients;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

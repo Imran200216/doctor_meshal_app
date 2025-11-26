@@ -13,8 +13,8 @@ class ChatMessageTextFormField extends StatelessWidget {
   final TextInputType keyboardType;
   final Iterable<String>? autofillHints;
   final int? maxLines;
-
   final Widget? prefixIcon;
+  final void Function(String)? onSubmitted;
 
   const ChatMessageTextFormField({
     super.key,
@@ -28,6 +28,7 @@ class ChatMessageTextFormField extends StatelessWidget {
     this.maxLines,
     this.readOnly = false,
     this.prefixIcon,
+    this.onSubmitted,
   });
 
   @override
@@ -35,69 +36,82 @@ class ChatMessageTextFormField extends StatelessWidget {
     final isTablet = Responsive.isTablet(context);
     final isMobile = Responsive.isMobile(context);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (labelText != null && labelText!.isNotEmpty) ...[
-          KText(
-            textAlign: TextAlign.start,
-            text: labelText!,
-            fontSize: isMobile
-                ? 16
-                : isTablet
-                ? 18
-                : 20,
-            fontWeight: FontWeight.w600,
-            color: AppColorConstants.titleColor,
+    // FIX: Use IntrinsicHeight to prevent overflow in Column
+    return IntrinsicHeight(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (labelText != null && labelText!.isNotEmpty) ...[
+            KText(
+              textAlign: TextAlign.start,
+              text: labelText!,
+              fontSize: isMobile
+                  ? 16
+                  : isTablet
+                  ? 18
+                  : 20,
+              fontWeight: FontWeight.w600,
+              color: AppColorConstants.titleColor,
+            ),
+            const SizedBox(height: 10),
+          ],
+
+          // FIX: Expanded text field that fits within constraints
+          Expanded(
+            child: TextFormField(
+              readOnly: readOnly,
+              controller: controller,
+              validator: validator,
+              obscureText: obscureText,
+              keyboardType: keyboardType,
+              autofillHints: autofillHints,
+              maxLines: maxLines ?? 1,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+              onFieldSubmitted: onSubmitted,
+              decoration: InputDecoration(
+                prefixIcon: prefixIcon,
+                filled: true,
+                fillColor: AppColorConstants.subTitleColor.withOpacity(0.1),
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 14,
+                  horizontal: 16,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide(
+                    color: AppColorConstants.primaryColor,
+                    width: 1,
+                  ),
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide(
+                    color: AppColorConstants.errorBorderColor,
+                    width: 1,
+                  ),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide(
+                    color: AppColorConstants.primaryColor,
+                    width: 1,
+                  ),
+                ),
+                hintText: hintText,
+                isDense: true, // FIX: Reduces the height
+              ),
+            ),
           ),
-          const SizedBox(height: 10),
         ],
-
-        TextFormField(
-          readOnly: readOnly,
-          controller: controller,
-          validator: validator,
-          obscureText: obscureText,
-          keyboardType: keyboardType,
-          autofillHints: autofillHints,
-          maxLines: maxLines ?? 1,
-          style: const TextStyle(fontWeight: FontWeight.w600),
-          decoration: InputDecoration(
-            prefixIcon: prefixIcon,
-
-            // 👈 Optional prefix icon
-            filled: true,
-            fillColor: AppColorConstants.subTitleColor.withOpacity(0.1),
-
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30),
-              borderSide: BorderSide(
-                color: AppColorConstants.primaryColor,
-                width: 1,
-              ),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30),
-              borderSide: BorderSide(
-                color: AppColorConstants.errorBorderColor,
-                width: 1,
-              ),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30),
-              borderSide: BorderSide(
-                color: AppColorConstants.primaryColor,
-                width: 1,
-              ),
-            ),
-            hintText: hintText,
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

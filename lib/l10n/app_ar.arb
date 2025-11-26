@@ -159,5 +159,6 @@
   "approvedCounts": "عدد الموافق عليه",
   "rejectedCounts": "عدد المرفوض",
   "totalPatient": "إجمالي المرضى",
-  "totalEducationArticles": "إجمالي المقالات التعليمية"
+  "totalEducationArticles": "إجمالي المقالات التعليمية",
+  "patients": "المرضى"
 }

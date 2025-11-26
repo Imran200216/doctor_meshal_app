@@ -10,11 +10,12 @@ import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 class ProfileLogOutBottomSheet extends StatelessWidget {
   final VoidCallback onCancelTap;
   final VoidCallback onSubmitTap;
+  final bool onSubmitLoading;
 
   const ProfileLogOutBottomSheet({
     super.key,
     required this.onCancelTap,
-    required this.onSubmitTap,
+    required this.onSubmitTap, required this.onSubmitLoading,
   });
 
   @override
@@ -123,6 +124,7 @@ class ProfileLogOutBottomSheet extends StatelessWidget {
                     // Logout Btn
                     Expanded(
                       child: KFilledBtn(
+                        isLoading: onSubmitLoading,
                         btnTitle: appLoc.logout,
                         btnBgColor: AppColorConstants.primaryColor,
                         btnTitleColor: AppColorConstants.secondaryColor,

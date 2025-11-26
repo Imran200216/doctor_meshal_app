@@ -15,6 +15,7 @@ import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
 import 'package:meshal_doctor_booking_app/core/utils/url_launcher_helper.dart';
 import 'package:meshal_doctor_booking_app/features/auth/view_model/bloc/email_auth/email_auth_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/auth/view_model/bloc/user_auth/user_auth_bloc.dart';
+import 'package:meshal_doctor_booking_app/features/chat/view_model/bloc/view_user_chat_home/view_user_chat_home_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/localization/view_model/cubit/localization_cubit.dart';
 import 'package:meshal_doctor_booking_app/features/profile/widgets/profile_details_container.dart';
 import 'package:meshal_doctor_booking_app/features/profile/widgets/profile_list_tile.dart';
@@ -36,6 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   void initState() {
+    // Fetch User Auth
     _fetchUserAuth();
 
     super.initState();
@@ -338,6 +340,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             listener: (context, state) {
               if (state is EmailAuthLogoutSuccess) {
                 if (state.status == true) {
+                  // 🛑 STOP ALL ACTIVE SUBSCRIPTIONS FIRST
+                  context.read<ViewUserChatHomeBloc>().add(
+                    StopViewUserChatHomeSubscriptionEvent(),
+                  );
+
                   // Success Snack Bar
                   KSnackBar.success(context, appLoc.logoutSuccess);
 
@@ -351,7 +358,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   try {
                     HiveService.clearBox(AppDBConstants.userBox);
                     HiveService.clearBox(AppDBConstants.surveyForm);
-
                     AppLoggerHelper.logInfo(
                       "Hive Box Cleared: ${AppDBConstants.userBox}, ${AppDBConstants.surveyForm}",
                     );
@@ -371,6 +377,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       "Failed to clear Hive Box surveyForm: $e",
                     );
                   }
+
+                  try {
+                    HiveService.clearBox(AppDBConstants.chatRoom);
+                    AppLoggerHelper.logInfo(
+                      "Hive Box Cleared: ${AppDBConstants.chatRoom}",
+                    );
+                  } catch (e) {
+                    AppLoggerHelper.logError(
+                      "Failed to clear Hive Box chatRoom: $e",
+                    );
+                  }
                 } else {
                   // Failure Snack Bar
                   KSnackBar.error(context, appLoc.logoutFailed);
@@ -380,7 +397,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 KSnackBar.error(context, state.message);
               }
             },
-
             child: ProfileListTile(
               prefixIcon: Icons.logout,
               title: appLoc.logout,
@@ -390,6 +406,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   builder: (_) {
                     return ProfileLogOutBottomSheet(
                       onCancelTap: () => GoRouter.of(context).pop(),
+                      onSubmitLoading:
+                          context.watch<EmailAuthBloc>().state
+                              is EmailAuthLogoutLoading,
                       onSubmitTap: () {
                         // Logout Functionality
                         context.read<EmailAuthBloc>().add(

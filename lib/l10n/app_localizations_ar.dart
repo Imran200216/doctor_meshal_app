@@ -490,4 +490,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get totalEducationArticles => 'إجمالي المقالات التعليمية';
+
+  @override
+  String get patients => 'المرضى';
 }

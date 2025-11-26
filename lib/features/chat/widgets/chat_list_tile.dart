@@ -37,51 +37,18 @@ class ChatListTile extends StatelessWidget {
         onTap();
       },
       contentPadding: EdgeInsets.zero,
-      leading: Stack(
-        children: [
-          KProfileAvatar(
-            personImageUrl: profileImageUrl,
-            width: isMobile
-                ? 60
-                : isTablet
-                ? 65
-                : 70,
-            height: isMobile
-                ? 60
-                : isTablet
-                ? 65
-                : 70,
-          ),
-          if (unreadCount > 0)
-            Positioned(
-              top: 0,
-              right: 0,
-              child: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: AppColorConstants.primaryColor,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: AppColorConstants.secondaryColor,
-                    width: 2,
-                  ),
-                ),
-                child: Text(
-                  unreadCount > 9 ? '9+' : unreadCount.toString(),
-                  style: TextStyle(
-                    color: AppColorConstants.secondaryColor,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: "OpenSans",
-                    fontSize: isMobile
-                        ? 10
-                        : isTablet
-                        ? 11
-                        : 12,
-                  ),
-                ),
-              ),
-            ),
-        ],
+      leading: KProfileAvatar(
+        personImageUrl: profileImageUrl,
+        width: isMobile
+            ? 60
+            : isTablet
+            ? 65
+            : 70,
+        height: isMobile
+            ? 60
+            : isTablet
+            ? 65
+            : 70,
       ),
 
       title: Text(
@@ -114,18 +81,50 @@ class ChatListTile extends StatelessWidget {
         ),
       ),
 
-      trailing: Text(
-        time,
-        style: TextStyle(
-          color: AppColorConstants.subTitleColor,
-          fontWeight: FontWeight.w600,
-          fontFamily: "OpenSans",
-          fontSize: isMobile
-              ? 12
-              : isTablet
-              ? 14
-              : 16,
-        ),
+      trailing: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          // Time
+          Text(
+            time,
+            style: TextStyle(
+              color: AppColorConstants.subTitleColor,
+              fontWeight: FontWeight.w600,
+              fontFamily: "OpenSans",
+              fontSize: isMobile
+                  ? 12
+                  : isTablet
+                  ? 14
+                  : 16,
+            ),
+          ),
+
+          const SizedBox(height: 4),
+
+          // Unread Count Badge
+          if (unreadCount > 0)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColorConstants.primaryColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                unreadCount > 9 ? '9+' : unreadCount.toString(),
+                style: TextStyle(
+                  color: AppColorConstants.secondaryColor,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: "OpenSans",
+                  fontSize: isMobile
+                      ? 10
+                      : isTablet
+                      ? 11
+                      : 12,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
