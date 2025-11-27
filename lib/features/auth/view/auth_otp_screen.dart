@@ -2,16 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_alert_dialog.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_snack_bar.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
-import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
-import 'package:meshal_doctor_booking_app/features/auth/view_model/bloc/email_auth/email_auth_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/auth/widgets/auth_app_bar.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 import 'package:pinput/pinput.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
+import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
+import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
+import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
 
 class AuthOtpScreen extends StatefulWidget {
   final String message;

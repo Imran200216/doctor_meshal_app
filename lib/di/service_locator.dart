@@ -4,16 +4,16 @@ import 'package:meshal_doctor_booking_app/core/constants/app_api_constants.dart'
 import 'package:meshal_doctor_booking_app/core/service/chat_graphql_service.dart';
 import 'package:meshal_doctor_booking_app/core/service/chat_graphql_web_socket_service.dart';
 import 'package:meshal_doctor_booking_app/core/service/graphql_service.dart';
-import 'package:meshal_doctor_booking_app/features/auth/auth_injection.dart';
-import 'package:meshal_doctor_booking_app/features/bottom_nav/bottom_nav_injection.dart';
-import 'package:meshal_doctor_booking_app/features/change_password/change_password_injection.dart';
-import 'package:meshal_doctor_booking_app/features/chat/chat_injection.dart';
-import 'package:meshal_doctor_booking_app/features/doctor_peri_operative/doctor_peri_operative_injection.dart';
-import 'package:meshal_doctor_booking_app/features/edit_personal_details/edit_profile_details_injection.dart';
-import 'package:meshal_doctor_booking_app/features/education/education_injection.dart';
-import 'package:meshal_doctor_booking_app/features/home/home_injection.dart';
-import 'package:meshal_doctor_booking_app/features/localization/localization_injection.dart';
-import 'package:meshal_doctor_booking_app/features/peri_operative/peri_operative_injection.dart';
+import 'package:meshal_doctor_booking_app/features/auth/injection/auth_injection.dart';
+import 'package:meshal_doctor_booking_app/features/bottom_nav/injection/bottom_nav_injection.dart';
+import 'package:meshal_doctor_booking_app/features/change_password/injection/change_password_injection.dart';
+import 'package:meshal_doctor_booking_app/features/chat/injection/chat_injection.dart';
+import 'package:meshal_doctor_booking_app/features/doctor_peri_operative/injection/doctor_peri_operative_injection.dart';
+import 'package:meshal_doctor_booking_app/features/edit_personal_details/injection/edit_profile_details_injection.dart';
+import 'package:meshal_doctor_booking_app/features/education/injection/education_injection.dart';
+import 'package:meshal_doctor_booking_app/features/home/injection/home_injection.dart';
+import 'package:meshal_doctor_booking_app/features/localization/injection/localization_injection.dart';
+import 'package:meshal_doctor_booking_app/features/peri_operative/injection/peri_operative_injection.dart';
 
 final GetIt getIt = GetIt.instance;
 

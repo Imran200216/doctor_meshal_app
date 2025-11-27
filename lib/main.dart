@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hive_flutter/adapters.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
-import 'package:meshal_doctor_booking_app/core/router/app_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:meshal_doctor_booking_app/core/router/app_router.dart';
 import 'package:meshal_doctor_booking_app/di/service_locator.dart';
-import 'package:meshal_doctor_booking_app/features/localization/view_model/cubit/localization_cubit.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 import 'package:meshal_doctor_booking_app/providers/app_bloc_providers.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+
+import 'core/constants/constants.dart';
+import 'features/localization/localization.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

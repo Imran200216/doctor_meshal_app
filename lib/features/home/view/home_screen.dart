@@ -1,26 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_floating_action_btn.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_no_items_found.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_assets_constants.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
-import 'package:meshal_doctor_booking_app/core/service/hive_service.dart';
-import 'package:meshal_doctor_booking_app/core/utils/app_greeting_helper.dart';
-import 'package:meshal_doctor_booking_app/core/utils/app_logger_helper.dart';
-import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
-import 'package:meshal_doctor_booking_app/features/auth/view_model/bloc/user_auth/user_auth_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/education/view_model/education/education_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/education/widgets/patient_corner_card.dart';
-import 'package:meshal_doctor_booking_app/features/home/view_model/bloc/operative_summary_counts/operative_summary_counts_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/home/view_model/bloc/user_chat_room/view_user_chat_room_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/home/widgets/home_skeleton.dart';
-import 'package:meshal_doctor_booking_app/features/home/widgets/peri_operative_score_card.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
+import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
+import 'package:meshal_doctor_booking_app/core/service/service.dart';
+import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
+import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
+import 'package:meshal_doctor_booking_app/features/home/home.dart';
+import 'package:meshal_doctor_booking_app/features/education/education.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

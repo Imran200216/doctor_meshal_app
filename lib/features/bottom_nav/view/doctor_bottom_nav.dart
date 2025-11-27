@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_assets_constants.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
-import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
-import 'package:meshal_doctor_booking_app/features/bottom_nav/view_model/cubit/bottom_nav_cubit.dart';
-import 'package:meshal_doctor_booking_app/features/doctor_peri_operative/view/doctor_peri_operative_screen.dart';
-import 'package:meshal_doctor_booking_app/features/education/view/education_screen.dart';
-import 'package:meshal_doctor_booking_app/features/home/view/doctor_home_screen.dart';
-import 'package:meshal_doctor_booking_app/features/profile/view/profile_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
+import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
+import 'package:meshal_doctor_booking_app/features/doctor_peri_operative/doctor_peri_operative.dart';
+import 'package:meshal_doctor_booking_app/features/education/education.dart';
+import 'package:meshal_doctor_booking_app/features/home/home.dart';
+import 'package:meshal_doctor_booking_app/features/profile/profile.dart';
+import 'package:meshal_doctor_booking_app/features/bottom_nav/bottom_nav.dart';
 
 class DoctorBottomNav extends StatefulWidget {
   const DoctorBottomNav({super.key});
