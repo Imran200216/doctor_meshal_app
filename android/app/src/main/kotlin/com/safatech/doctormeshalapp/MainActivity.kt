@@ -1,4 +1,4 @@
-package com.example.meshal_doctor_booking_app
+package com.safatech.doctormeshalapp
 
 import io.flutter.embedding.android.FlutterActivity
 
