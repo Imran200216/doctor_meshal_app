@@ -163,6 +163,7 @@
   "patients": "المرضى",
   "patientStatus": "حالة المريض",
   "doctorStatus": "حالة الطبيب",
-  "somethingWentWrong": "حدث خطأ ما"
+  "somethingWentWrong": "حدث خطأ ما",
+  "localization": "اللغة"
 
 }

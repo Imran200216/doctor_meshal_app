@@ -12,6 +12,7 @@ import 'package:meshal_doctor_booking_app/features/localization/localization.dar
 import 'package:meshal_doctor_booking_app/features/peri_operative/peri_operative.dart';
 import 'package:meshal_doctor_booking_app/features/personal_details/personal_details.dart';
 import 'package:meshal_doctor_booking_app/features/splash/splash.dart';
+import 'package:meshal_doctor_booking_app/features/profile/profile.dart';
 
 GoRouter appRouter = GoRouter(
   initialLocation: "/splash",
@@ -289,6 +290,15 @@ GoRouter appRouter = GoRouter(
         // Get the passed id from extra
         final patientFormId = state.extra as String? ?? '';
         return StatusSummaryScreen(patientFormId: patientFormId);
+      },
+    ),
+
+    // Profile Localization Screen
+    GoRoute(
+      path: '/profileLocalization',
+      name: AppRouterConstants.profileLocalization,
+      builder: (context, state) {
+        return ProfileLocalizationScreen();
       },
     ),
   ],

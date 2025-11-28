@@ -163,5 +163,6 @@
   "patients": "Patients",
   "patientStatus": "Patient Status",
   "doctorStatus": "Doctor Status",
-  "somethingWentWrong": "Something went wrong"
+  "somethingWentWrong": "Something went wrong",
+  "localization": "Localization"
 }

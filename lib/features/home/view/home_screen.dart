@@ -251,54 +251,60 @@ class _HomeScreenState extends State<HomeScreen> {
                                 color: AppColorConstants.primaryColor,
                               ),
                               child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      KText(
-                                        textAlign: TextAlign.start,
-                                        text: "${getGreetingMessage(appLoc)},",
-                                        fontSize: isMobile
-                                            ? 22
-                                            : isTablet
-                                            ? 24
-                                            : 26,
-                                        fontWeight: FontWeight.w700,
-                                        color: AppColorConstants.secondaryColor,
-                                      ),
-
-                                      const SizedBox(height: 5),
-
-                                      if (state is GetUserAuthSuccess)
+                                  /// LEFT SIDE (Text) - Should expand depending on screen size
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
                                         KText(
                                           textAlign: TextAlign.start,
                                           text:
-                                              "${state.user.firstName} ${state.user.lastName}",
+                                              "${getGreetingMessage(appLoc)},",
                                           fontSize: isMobile
-                                              ? 20
-                                              : isTablet
                                               ? 22
-                                              : 24,
+                                              : isTablet
+                                              ? 24
+                                              : 26,
                                           fontWeight: FontWeight.w700,
                                           color:
                                               AppColorConstants.secondaryColor,
                                         ),
-                                    ],
+
+                                        const SizedBox(height: 5),
+
+                                        if (state is GetUserAuthSuccess)
+                                          KText(
+                                            textAlign: TextAlign.start,
+                                            text:
+                                                "${state.user.firstName} ${state.user.lastName}",
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            fontSize: isMobile
+                                                ? 20
+                                                : isTablet
+                                                ? 22
+                                                : 24,
+                                            fontWeight: FontWeight.w700,
+                                            color: AppColorConstants
+                                                .secondaryColor,
+                                          ),
+                                      ],
+                                    ),
                                   ),
 
-                                  Image.asset(
-                                    AppAssetsConstants.doctorIntro,
-                                    height: isMobile
-                                        ? 160
-                                        : isTablet
-                                        ? 160
-                                        : 180,
-                                    fit: BoxFit.cover,
+                                  /// RIGHT SIDE (Image)
+                                  Flexible(
+                                    child: Image.asset(
+                                      AppAssetsConstants.doctorIntro,
+                                      height: isMobile
+                                          ? 140
+                                          : isTablet
+                                          ? 150
+                                          : 160,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ],
                               ),

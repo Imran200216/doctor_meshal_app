@@ -1084,6 +1084,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Something went wrong'**
   String get somethingWentWrong;
+
+  /// No description provided for @localization.
+  ///
+  /// In en, this message translates to:
+  /// **'Localization'**
+  String get localization;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

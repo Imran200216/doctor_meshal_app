@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
 import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
@@ -129,7 +130,8 @@ class _DoctorOperativeSummaryScreenState
                           // Reject Button
                           KFilledBtn(
                             btnTitle: "Reject",
-                            onTap: () => _openRemarksDialog(context, "reject"),
+                            onTap: () =>
+                                _openRemarksDialog(context, "reject", appLoc),
                             btnBgColor: AppColorConstants.notificationBgColor,
                             btnTitleColor: AppColorConstants.secondaryColor,
                             borderRadius: 12,
@@ -149,7 +151,8 @@ class _DoctorOperativeSummaryScreenState
                           // Submit Button
                           KFilledBtn(
                             btnTitle: "Submit",
-                            onTap: () => _openRemarksDialog(context, "submit"),
+                            onTap: () =>
+                                _openRemarksDialog(context, "submit", appLoc),
                             btnBgColor: AppColorConstants.primaryColor,
                             btnTitleColor: AppColorConstants.secondaryColor,
                             borderRadius: 12,
@@ -285,7 +288,11 @@ class _DoctorOperativeSummaryScreenState
     );
   }
 
-  void _openRemarksDialog(BuildContext context, String status) {
+  void _openRemarksDialog(
+    BuildContext context,
+    String status,
+    AppLocalizations appLoc,
+  ) {
     final state = context.read<SubmittedPatientFormDetailsSectionBloc>().state;
     if (state is! GetSubmittedPatientFormDetailsSectionSuccess) return;
     final submittedForm = state.data;
@@ -335,12 +342,26 @@ class _DoctorOperativeSummaryScreenState
                     AppValidators.empty(context, value, "Enter Remarks"),
                 onCancelTap: () => Navigator.of(dialogContext).pop(),
                 onSubmitTap: () {
+                  // Step 1: Check internet
+                  final connectivityState = context
+                      .read<ConnectivityBloc>()
+                      .state;
+
+                  if (connectivityState is ConnectivityFailure) {
+                    AppLoggerHelper.logError("No internet connection");
+                    KSnackBar.error(context, appLoc.internetConnection);
+                    return;
+                  }
+
+                  // Step 2: Validate form
                   if (_formKey.currentState!.validate()) {
-                    // Show loading state in dialog if needed
+                    // Step 3: Prevent duplicate submissions if loading
                     if (reviewState
                         is DoctorReviewPatientSubmittedOperationFormsLoading) {
-                      return; // Prevent multiple submissions
+                      return;
                     }
+
+                    // Step 4: Submit event
                     context
                         .read<DoctorReviewPatientSubmittedOperationFormsBloc>()
                         .add(

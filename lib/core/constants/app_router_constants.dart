@@ -73,4 +73,7 @@ class AppRouterConstants {
 
   // Status Summary
   static const String statusSummary = "statusSummary";
+
+  // Profile Localization
+  static const String profileLocalization = "profileLocalization";
 }

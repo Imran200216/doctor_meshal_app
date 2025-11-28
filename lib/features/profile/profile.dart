@@ -1,5 +1,6 @@
 // View
 export 'view/profile_screen.dart';
+export 'view/profile_localization_screen.dart';
 
 // Widgets
 export 'widgets/profile_details_container.dart';

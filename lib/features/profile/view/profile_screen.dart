@@ -231,10 +231,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 prefixIcon: Icons.language_outlined,
                 title: appLoc.language,
                 onTap: () {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (_) => ProfileLocalizationBottomSheet(),
-                  );
+                  //  Profile Localization Screen
+                  GoRouter.of(
+                    context,
+                  ).pushNamed(AppRouterConstants.profileLocalization);
                 },
               ),
 

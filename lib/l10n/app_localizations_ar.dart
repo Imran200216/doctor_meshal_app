@@ -502,4 +502,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get somethingWentWrong => 'حدث خطأ ما';
+
+  @override
+  String get localization => 'اللغة';
 }
