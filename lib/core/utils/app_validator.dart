@@ -70,4 +70,16 @@ class AppValidators {
 
     return null;
   }
+
+  static String? empty(
+      BuildContext context,
+      String? value,
+      String errorMessage,
+      ) {
+    if (value == null || value.trim().isEmpty) {
+      return errorMessage;
+    }
+    return null;
+  }
+
 }

@@ -493,4 +493,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get patients => 'المرضى';
+
+  @override
+  String get patientStatus => 'حالة المريض';
+
+  @override
+  String get doctorStatus => 'حالة الطبيب';
+
+  @override
+  String get somethingWentWrong => 'حدث خطأ ما';
 }

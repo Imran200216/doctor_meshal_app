@@ -280,5 +280,16 @@ GoRouter appRouter = GoRouter(
         return DoctorOperativeSummaryScreen(operativeFormId: operativeFormId);
       },
     ),
+
+    // Status Summary Screen
+    GoRoute(
+      path: '/statusSummary',
+      name: AppRouterConstants.statusSummary,
+      builder: (context, state) {
+        // Get the passed id from extra
+        final patientFormId = state.extra as String? ?? '';
+        return StatusSummaryScreen(patientFormId: patientFormId);
+      },
+    ),
   ],
 );

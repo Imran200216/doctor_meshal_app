@@ -117,9 +117,11 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 final userType = state.user.userType;
 
                 if (userType == 'doctor' || userType == 'admin') {
-                  title = appLoc.consultDoctor;
-                } else {
+                  // Doctor App Bar Title
                   title = appLoc.patients;
+                } else {
+                  // Patient App Bar Title
+                  title = appLoc.consultDoctor;
                 }
               } else if (state is GetUserAuthLoading) {
                 title = appLoc.consultDoctor;

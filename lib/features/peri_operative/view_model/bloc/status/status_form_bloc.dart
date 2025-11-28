@@ -29,6 +29,10 @@ class StatusFormBloc extends Bloc<StatusFormEvent, StatusFormState> {
             form_status
             id
             title
+            form_no
+            form_type
+            patient_status_form
+            status
           }
         }
         ''';

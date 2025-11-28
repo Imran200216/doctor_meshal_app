@@ -7,6 +7,7 @@ import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:meshal_doctor_booking_app/core/service/service.dart';
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/peri_operative.dart';
+import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
 
 class SurveyFormScreen extends StatefulWidget {
   final String operativeId;
@@ -67,7 +68,23 @@ class _SurveyFormScreenState extends State<SurveyFormScreen> {
           if (state is AddSurveyOperativeFormSuccess) {
             KSnackBar.success(context, "Form Submitted Successfully");
             context.read<SurveyFormSelectionCubit>().clearOptions();
-            GoRouter.of(context).pop();
+            // GoRouter.of(context).pop();
+
+            final userAuthState = context.read<UserAuthBloc>().state;
+
+            if (userAuthState is GetUserAuthSuccess) {
+              final userType = userAuthState.user.userType;
+
+              if (userType == 'doctor' || userType == 'admin') {
+                GoRouter.of(
+                  context,
+                ).pushReplacementNamed(AppRouterConstants.doctorBottomNav);
+              } else {
+                GoRouter.of(
+                  context,
+                ).pushReplacementNamed(AppRouterConstants.patientBottomNav);
+              }
+            }
           } else if (state is AddSurveyOperativeFormError) {
             KSnackBar.error(context, state.message);
           }

@@ -69,4 +69,6 @@ class AppAssetsConstants {
   static const String zoomOut = "assets/icons/svg/zoom-out.svg";
 
   static const String reset = "assets/icons/svg/reset.svg";
+
+  static const String failure = "assets/icons/svg/failure.svg";
 }

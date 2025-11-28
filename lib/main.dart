@@ -6,10 +6,9 @@ import 'package:meshal_doctor_booking_app/core/router/app_router.dart';
 import 'package:meshal_doctor_booking_app/di/service_locator.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 import 'package:meshal_doctor_booking_app/providers/app_bloc_providers.dart';
+import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
+import 'package:meshal_doctor_booking_app/features/localization/localization.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
-import 'core/constants/constants.dart';
-import 'features/localization/localization.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

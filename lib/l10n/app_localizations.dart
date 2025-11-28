@@ -1066,6 +1066,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Patients'**
   String get patients;
+
+  /// No description provided for @patientStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient Status'**
+  String get patientStatus;
+
+  /// No description provided for @doctorStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor Status'**
+  String get doctorStatus;
+
+  /// No description provided for @somethingWentWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong'**
+  String get somethingWentWrong;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

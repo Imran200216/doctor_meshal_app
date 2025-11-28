@@ -26,10 +26,15 @@ class _DoctorOperativeSummaryScreenState
   // User Id
   String? userId;
 
+  // Form Key
+  final _formKey = GlobalKey<FormState>();
+
+  // Controller
+  final TextEditingController remarksController = TextEditingController();
+
   @override
   void initState() {
     _fetchDoctorOperativeSummary();
-
     super.initState();
   }
 
@@ -65,12 +70,113 @@ class _DoctorOperativeSummaryScreenState
   }
 
   @override
+  void dispose() {
+    remarksController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     // App Localization
     final appLoc = AppLocalizations.of(context)!;
 
+    // Responsive
+    final isTablet = Responsive.isTablet(context);
+    final isMobile = Responsive.isMobile(context);
+
+    // Screen Height
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: AppColorConstants.secondaryColor,
+
+      bottomNavigationBar:
+          BlocBuilder<
+            SubmittedPatientFormDetailsSectionBloc,
+            SubmittedPatientFormDetailsSectionState
+          >(
+            builder: (context, state) {
+              if (state is GetSubmittedPatientFormDetailsSectionSuccess) {
+                final submittedForm = state.data;
+
+                // Check if form status is pending (case-insensitive)
+                if (submittedForm.formStatus == "Pending") {
+                  return Container(
+                    height: isMobile
+                        ? screenHeight * 0.18
+                        : isTablet
+                        ? screenHeight * 0.22
+                        : screenHeight * 0.3,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: AppColorConstants.secondaryColor,
+                      border: Border(
+                        top: BorderSide(
+                          color: AppColorConstants.subTitleColor.withOpacity(
+                            0.3,
+                          ),
+                          width: 0.8,
+                        ),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        spacing: 20,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Reject Button
+                          KFilledBtn(
+                            btnTitle: "Reject",
+                            onTap: () => _openRemarksDialog(context, "reject"),
+                            btnBgColor: AppColorConstants.notificationBgColor,
+                            btnTitleColor: AppColorConstants.secondaryColor,
+                            borderRadius: 12,
+                            btnHeight: isMobile
+                                ? 50
+                                : isTablet
+                                ? 52
+                                : 54,
+                            btnWidth: double.maxFinite,
+                            fontSize: isMobile
+                                ? 16
+                                : isTablet
+                                ? 18
+                                : 20,
+                          ),
+
+                          // Submit Button
+                          KFilledBtn(
+                            btnTitle: "Submit",
+                            onTap: () => _openRemarksDialog(context, "submit"),
+                            btnBgColor: AppColorConstants.primaryColor,
+                            btnTitleColor: AppColorConstants.secondaryColor,
+                            borderRadius: 12,
+                            btnHeight: isMobile
+                                ? 50
+                                : isTablet
+                                ? 52
+                                : 54,
+                            btnWidth: double.maxFinite,
+                            fontSize: isMobile
+                                ? 16
+                                : isTablet
+                                ? 18
+                                : 20,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+              }
+
+              // Return null to hide bottom navigation bar if status is not pending
+              return const SizedBox.shrink();
+            },
+          ),
+
       appBar: KAppBar(
         title: appLoc.operativeSummary,
         onBack: () {
@@ -176,6 +282,83 @@ class _DoctorOperativeSummaryScreenState
           ),
         ),
       ),
+    );
+  }
+
+  void _openRemarksDialog(BuildContext context, String status) {
+    final state = context.read<SubmittedPatientFormDetailsSectionBloc>().state;
+    if (state is! GetSubmittedPatientFormDetailsSectionSuccess) return;
+    final submittedForm = state.data;
+    final String patientId = submittedForm.user.id;
+
+    // Store the router context before opening dialog
+    final parentContext = context;
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return BlocConsumer<
+          DoctorReviewPatientSubmittedOperationFormsBloc,
+          DoctorReviewPatientSubmittedOperationFormsState
+        >(
+          listener: (context, reviewState) {
+            if (reviewState
+                is DoctorReviewPatientSubmittedOperationFormsSuccess) {
+              // Close the dialog using dialogContext
+              Navigator.of(dialogContext).pop();
+
+              // Use the stable parent context for navigation
+              GoRouter.of(parentContext).go(AppRouterConstants.doctorBottomNav);
+
+              // Show success snackbar
+              KSnackBar.success(
+                parentContext,
+                status == "reject"
+                    ? "Form rejected successfully!"
+                    : "Form submitted successfully!",
+              );
+            } else if (reviewState
+                is DoctorReviewPatientSubmittedOperationFormsFailure) {
+              // Close the dialog using dialogContext
+              Navigator.of(dialogContext).pop();
+
+              // Use the parent context for snackbar
+              KSnackBar.error(parentContext, reviewState.message);
+            }
+          },
+          builder: (context, reviewState) {
+            return Form(
+              key: _formKey,
+              child: RemarksAlertDialog(
+                remarksController: remarksController,
+                validator: (value) =>
+                    AppValidators.empty(context, value, "Enter Remarks"),
+                onCancelTap: () => Navigator.of(dialogContext).pop(),
+                onSubmitTap: () {
+                  if (_formKey.currentState!.validate()) {
+                    // Show loading state in dialog if needed
+                    if (reviewState
+                        is DoctorReviewPatientSubmittedOperationFormsLoading) {
+                      return; // Prevent multiple submissions
+                    }
+                    context
+                        .read<DoctorReviewPatientSubmittedOperationFormsBloc>()
+                        .add(
+                          AddDoctorReviewPatientSubmittedOperationFormsEvent(
+                            userId: userId!,
+                            patientId: patientId,
+                            operativeFormId: widget.operativeFormId,
+                            status: status,
+                            remarks: remarksController.text.trim(),
+                          ),
+                        );
+                  }
+                },
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

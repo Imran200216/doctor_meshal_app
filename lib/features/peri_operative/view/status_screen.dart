@@ -22,6 +22,7 @@ class _StatusScreenState extends State<StatusScreen> {
 
   @override
   void initState() {
+    // Fetch Status Form
     _fetchStatusForm();
     super.initState();
   }
@@ -59,6 +60,7 @@ class _StatusScreenState extends State<StatusScreen> {
     // App Localization
     final appLoc = AppLocalizations.of(context)!;
 
+
     return Scaffold(
       backgroundColor: AppColorConstants.secondaryColor,
       appBar: KAppBar(
@@ -68,11 +70,14 @@ class _StatusScreenState extends State<StatusScreen> {
           GoRouter.of(context).pop();
         },
       ),
+
+
+
       body: RefreshIndicator.adaptive(
         color: AppColorConstants.secondaryColor,
         backgroundColor: AppColorConstants.primaryColor,
         onRefresh: () async {
-          // Fetch Status Datas
+          // Fetch Status Data
           _fetchStatusForm();
         },
         child: BlocBuilder<ConnectivityBloc, ConnectivityState>(
@@ -117,7 +122,13 @@ class _StatusScreenState extends State<StatusScreen> {
                                 enabled: true,
                                 child: StatusCard(
                                   formTitle: "",
-                                  formStatus: "",
+                                  formNo: '',
+                                  formSerialNo: '',
+                                  formType: '',
+                                  formPatientStatus: '',
+                                  doctorStatus: '',
+                                  status: '',
+                                  onTap: () {},
                                 ),
                               );
                             },
@@ -142,8 +153,14 @@ class _StatusScreenState extends State<StatusScreen> {
                                 effect: ShimmerEffect(),
                                 enabled: true,
                                 child: StatusCard(
+                                  onTap: () {},
                                   formTitle: "",
-                                  formStatus: "",
+                                  formNo: '',
+                                  formSerialNo: '',
+                                  formType: '',
+                                  formPatientStatus: '',
+                                  doctorStatus: '',
+                                  status: '',
                                 ),
                               );
                             },
@@ -186,8 +203,19 @@ class _StatusScreenState extends State<StatusScreen> {
                               final statusItem = state.status[index];
 
                               return StatusCard(
+                                onTap: () {
+                                  // Status Summary Screen
+                                  GoRouter.of(
+                                    context,
+                                  ).pushNamed(AppRouterConstants.statusSummary);
+                                },
                                 formTitle: statusItem.title,
-                                formStatus: statusItem.formStatus,
+                                formNo: statusItem.formNo,
+                                formSerialNo: statusItem.formSerialNo,
+                                formType: statusItem.formType,
+                                formPatientStatus: statusItem.patientStatusForm,
+                                doctorStatus: statusItem.formStatus,
+                                status: statusItem.status,
                               );
                             },
                           )
@@ -212,8 +240,20 @@ class _StatusScreenState extends State<StatusScreen> {
                               final statusItem = state.status[index];
 
                               return StatusCard(
+                                onTap: () {
+                                  // Status Summary Screen
+                                  GoRouter.of(context).pushNamed(
+                                    AppRouterConstants.statusSummary,
+                                    extra: statusItem.id,
+                                  );
+                                },
                                 formTitle: statusItem.title,
-                                formStatus: statusItem.formStatus,
+                                formNo: statusItem.formNo,
+                                formSerialNo: statusItem.formSerialNo,
+                                formType: statusItem.formType,
+                                formPatientStatus: statusItem.patientStatusForm,
+                                doctorStatus: statusItem.formStatus,
+                                status: statusItem.status,
                               );
                             },
                             separatorBuilder: (context, index) {
@@ -226,6 +266,13 @@ class _StatusScreenState extends State<StatusScreen> {
 
                   if (state is StatusFormFailure) {
                     AppLoggerHelper.logError("Status Error: ${state.message}");
+
+                    return Center(
+                      child: KNoItemsFound(
+                        noItemsFoundText: appLoc.somethingWentWrong,
+                        noItemsSvg: AppAssetsConstants.failure,
+                      ),
+                    );
                   }
 
                   return SizedBox.shrink();

@@ -493,4 +493,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get patients => 'Patients';
+
+  @override
+  String get patientStatus => 'Patient Status';
+
+  @override
+  String get doctorStatus => 'Doctor Status';
+
+  @override
+  String get somethingWentWrong => 'Something went wrong';
 }

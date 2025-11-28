@@ -160,5 +160,9 @@
   "rejectedCounts": "عدد المرفوض",
   "totalPatient": "إجمالي المرضى",
   "totalEducationArticles": "إجمالي المقالات التعليمية",
-  "patients": "المرضى"
+  "patients": "المرضى",
+  "patientStatus": "حالة المريض",
+  "doctorStatus": "حالة الطبيب",
+  "somethingWentWrong": "حدث خطأ ما"
+
 }

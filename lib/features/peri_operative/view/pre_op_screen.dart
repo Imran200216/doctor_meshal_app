@@ -8,7 +8,7 @@ import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
 import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:meshal_doctor_booking_app/core/service/service.dart';
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
-import 'package:meshal_doctor_booking_app/features/peri_operative//peri_operative.dart';
+import 'package:meshal_doctor_booking_app/features/peri_operative/peri_operative.dart';
 
 class PreOpScreen extends StatefulWidget {
   const PreOpScreen({super.key});

@@ -70,4 +70,7 @@ class AppRouterConstants {
 
   // Operative summary
   static const String doctorOperativeSummary = "doctorPreOpSummary";
+
+  // Status Summary
+  static const String statusSummary = "statusSummary";
 }

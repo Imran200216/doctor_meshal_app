@@ -4,6 +4,7 @@ export 'view/post_op_screen.dart';
 export 'view/pre_op_screen.dart';
 export 'view/status_screen.dart';
 export 'view/survey_form_screen.dart';
+export 'view/status_summary_screen.dart';
 
 // View Model
 export 'view_model/bloc/operative_form/operative_form_bloc.dart';
@@ -11,6 +12,7 @@ export 'view_model/bloc/status/status_form_bloc.dart';
 export 'view_model/bloc/survey_operative_form/survey_operative_form_bloc.dart';
 export 'view_model/cubit/operation_selected_chip/operative_selected_chip_cubit.dart';
 export 'view_model/cubit/survey_form/survey_form_selection_cubit.dart';
+export 'view_model/bloc/view_submitted_form_details_section/view_submitted_form_details_section_bloc.dart';
 
 // Model
 export 'model/operative_form_model.dart';

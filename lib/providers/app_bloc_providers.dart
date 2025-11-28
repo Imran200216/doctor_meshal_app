@@ -1,34 +1,18 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
-import 'package:meshal_doctor_booking_app/di/service_locator.dart';
-import 'package:meshal_doctor_booking_app/features/auth/view_model/bloc/email_auth/email_auth_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/auth/view_model/bloc/user_auth/user_auth_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/auth/view_model/cubit/auth_selected_type_cubit.dart';
-import 'package:meshal_doctor_booking_app/features/bottom_nav/view_model/cubit/bottom_nav_cubit.dart';
-import 'package:meshal_doctor_booking_app/features/change_password/view_model/bloc/change_password/change_password_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/chat/view_model/bloc/doctor_list/doctor_list_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/chat/view_model/bloc/query_view_user_chat_home/query_view_user_chat_home_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/chat/view_model/bloc/send_chat_message/send_chat_message_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/chat/view_model/bloc/subscribe_chat_message/subscribe_chat_message_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/chat/view_model/bloc/view_user_chat_home/view_user_chat_home_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/chat/view_model/bloc/view_user_chat_room_message/view_user_chat_room_message_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/doctor_peri_operative/view_model/bloc/operative_form/view_doctor_operative_form_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/doctor_peri_operative/view_model/bloc/submitted_patient_form_details_section/submitted_patient_form_details_section_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/edit_personal_details/view_model/bloc/update_user_profile_details_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/edit_personal_details/view_model/cubit/profile_image/profile_image_cubit.dart';
-import 'package:meshal_doctor_booking_app/features/education/view_model/education/education_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/education/view_model/education_articles/education_articles_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/education/view_model/education_full_view_article/education_full_view_article_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/education/view_model/education_sub_title/education_sub_title_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/home/view_model/bloc/doctor_dashboard_summary_counts/doctor_dashboard_summary_counts_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/home/view_model/bloc/operative_summary_counts/operative_summary_counts_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/home/view_model/bloc/user_chat_room/view_user_chat_room_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/localization/view_model/cubit/localization_cubit.dart';
-import 'package:meshal_doctor_booking_app/features/peri_operative/view_model/bloc/operative_form/operative_form_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/peri_operative/view_model/bloc/status/status_form_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/peri_operative/view_model/bloc/survey_operative_form/survey_operative_form_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/peri_operative/view_model/cubit/operation_selected_chip/operative_selected_chip_cubit.dart';
-import 'package:meshal_doctor_booking_app/features/peri_operative/view_model/cubit/survey_form/survey_form_selection_cubit.dart';
+import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
+import 'package:meshal_doctor_booking_app/features/bottom_nav/bottom_nav.dart';
+import 'package:meshal_doctor_booking_app/features/change_password/change_password.dart';
+import 'package:meshal_doctor_booking_app/features/chat/chat.dart';
+import 'package:meshal_doctor_booking_app/features/doctor_peri_operative/doctor_peri_operative.dart';
+import 'package:meshal_doctor_booking_app/features/edit_personal_details/edit_personal_details.dart';
+import 'package:meshal_doctor_booking_app/features/education/education.dart';
+import 'package:meshal_doctor_booking_app/features/home/home.dart';
+import 'package:meshal_doctor_booking_app/features/localization/localization.dart';
+import 'package:meshal_doctor_booking_app/features/peri_operative/peri_operative.dart';
+
+final GetIt getIt = GetIt.instance;
 
 List<BlocProvider> appBlocProviders = [
   // Localization Cubit
@@ -162,5 +146,16 @@ List<BlocProvider> appBlocProviders = [
   // Query View User Chat Home Bloc
   BlocProvider<QueryViewUserChatHomeBloc>(
     create: (context) => getIt<QueryViewUserChatHomeBloc>(),
+  ),
+
+  // View Submitted Form Details Section Bloc
+  BlocProvider<ViewSubmittedFormDetailsSectionBloc>(
+    create: (context) => getIt<ViewSubmittedFormDetailsSectionBloc>(),
+  ),
+
+  // Doctor Review Patient Submitted Operation Forms Bloc
+  BlocProvider<DoctorReviewPatientSubmittedOperationFormsBloc>(
+    create: (context) =>
+        getIt<DoctorReviewPatientSubmittedOperationFormsBloc>(),
   ),
 ];
