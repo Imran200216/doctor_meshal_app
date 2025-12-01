@@ -2,11 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_assets_constants.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
-import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
+import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
+import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 
 class EducationSubTopicsCard extends StatelessWidget {
   final String imageUrl;

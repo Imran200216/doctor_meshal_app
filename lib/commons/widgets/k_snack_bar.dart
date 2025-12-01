@@ -11,7 +11,7 @@ class KSnackBar {
       autoDismiss: true,
       snackbarDuration: const Duration(seconds: 2),
       builder: (context) => Directionality(
-        textDirection: TextDirection.ltr,   // 👈 APPLY HERE
+        textDirection: TextDirection.ltr, // 👈 APPLY HERE
         child: ToastCard(
           color: Colors.green,
           leading: const Icon(
@@ -32,7 +32,6 @@ class KSnackBar {
     ).show(context);
   }
 
-
   // ERROR SNACKBAR
   static void error(BuildContext context, String message) {
     DelightToastBar(
@@ -43,11 +42,7 @@ class KSnackBar {
         textDirection: TextDirection.ltr,
         child: ToastCard(
           color: Colors.red,
-          leading: const Icon(
-            Icons.error,
-            color: Colors.white,
-            size: 26,
-          ),
+          leading: const Icon(Icons.error, color: Colors.white, size: 26),
           title: Text(
             message,
             style: const TextStyle(
@@ -60,5 +55,4 @@ class KSnackBar {
       ),
     ).show(context);
   }
-
 }

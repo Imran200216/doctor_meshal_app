@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../core/utils/utils.dart';
+
 class ChatMessage extends Equatable {
   final String id;
   final String? image;
@@ -19,13 +21,24 @@ class ChatMessage extends Equatable {
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
     return ChatMessage(
-      id: json['id'] as String,
-      image: json['image'] as String?,
-      message: json['message'] as String,
-      status: json['status'] as String,
-      time: json['time'] as String,
-      type: json['type'] as String,
+      id: _parseString(json['id']),
+      image: _parseNullableString(json['image']),
+      message: _parseString(json['message']),
+      status: _parseString(json['status']),
+      time: _parseString(json['time']),
+      type: _parseString(json['type']),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'image': image,
+      'message': message,
+      'status': status,
+      'time': time,
+      'type': type,
+    };
   }
 
   @override
@@ -33,92 +46,217 @@ class ChatMessage extends Equatable {
 }
 
 class UserProfile extends Equatable {
+  final String id;
   final String firstName;
   final String lastName;
   final String? profileImage;
 
   const UserProfile({
+    required this.id,
     required this.firstName,
     required this.lastName,
     this.profileImage,
   });
 
-  factory UserProfile.fromJson(Map<String, dynamic> json) {
+  factory UserProfile.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return const UserProfile(
+        id: 'unknown',
+        firstName: 'Unknown',
+        lastName: 'User',
+        profileImage: null,
+      );
+    }
+
     return UserProfile(
-      firstName: json['first_name'] as String,
-      lastName: json['last_name'] as String,
-      profileImage: json['profile_image'] as String?,
+      id: _parseString(json['id'], fallback: 'unknown'),
+      firstName: _parseString(json['first_name'], fallback: 'Unknown'),
+      lastName: _parseString(json['last_name'], fallback: 'User'),
+      profileImage: _parseNullableString(json['profile_image']),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'first_name': firstName,
+      'last_name': lastName,
+      'profile_image': profileImage,
+    };
   }
 
   String get fullName => '$firstName $lastName';
 
   @override
-  List<Object?> get props => [firstName, lastName, profileImage];
+  List<Object?> get props => [id, firstName, lastName, profileImage];
 }
 
-// ✅ FIXED: Now extends Equatable!
-class ChatData extends Equatable {
-  final List<ChatMessage> messages;
-  final bool isReceiverOnline;
-  final String? senderFirstName;
-  final String? senderLastName;
-  final String? senderProfileImage;
+class ChatRoom extends Equatable {
+  final String id;
+  final UserProfile user;
 
-  const ChatData({
-    // ✅ Added const constructor
-    required this.messages,
-    required this.isReceiverOnline,
-    this.senderFirstName,
-    this.senderLastName,
-    this.senderProfileImage,
-  });
+  const ChatRoom({required this.id, required this.user});
 
-  factory ChatData.fromJson(Map<String, dynamic> json) {
-    final chatDataList = json['chat_data_'] as List? ?? [];
+  factory ChatRoom.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return ChatRoom(
+        id: 'unknown',
+        user: const UserProfile(
+          id: 'unknown',
+          firstName: 'Unknown',
+          lastName: 'User',
+        ),
+      );
+    }
 
-    return ChatData(
-      messages: chatDataList.map((item) => ChatMessage.fromJson(item)).toList(),
-      isReceiverOnline: json['is_receiver_online'] as bool? ?? false,
-      senderFirstName: json['sender_room_id']?['user_id']?['first_name'],
-      senderLastName: json['sender_room_id']?['user_id']?['last_name'],
-      senderProfileImage: json['sender_room_id']?['user_id']?['profile_image'],
+    return ChatRoom(
+      id: _parseString(json['id'], fallback: 'unknown'),
+      user: UserProfile.fromJson(json['user_id'] as Map<String, dynamic>?),
     );
   }
 
-  // ✅ CRITICAL: This makes BlocBuilder rebuild when data changes!
+  Map<String, dynamic> toJson() {
+    return {'id': id, 'user_id': user.toJson()};
+  }
+
+  @override
+  List<Object?> get props => [id, user];
+}
+
+class ChatData extends Equatable {
+  final List<ChatMessage> messages;
+  final bool isReceiverOnline;
+  final ChatRoom senderRoom;
+  final ChatRoom receiverRoom;
+
+  const ChatData({
+    required this.messages,
+    required this.isReceiverOnline,
+    required this.senderRoom,
+    required this.receiverRoom,
+  });
+
+  factory ChatData.fromJson(Map<String, dynamic> json) {
+    try {
+      AppLoggerHelper.logInfo('🔄 Parsing ChatData from JSON');
+
+      final chatDataList = json['chat_data_'];
+      List<ChatMessage> messages = [];
+
+      if (chatDataList is List) {
+        messages = chatDataList.map((item) {
+          try {
+            return ChatMessage.fromJson(item as Map<String, dynamic>);
+          } catch (e) {
+            AppLoggerHelper.logError('❌ Failed to parse chat message: $e');
+            return const ChatMessage(
+              id: 'error',
+              message: 'Failed to load message',
+              status: 'error',
+              time: '1970-01-01T00:00:00Z',
+              type: 'error',
+            );
+          }
+        }).toList();
+      } else {
+        AppLoggerHelper.logWarning(
+          '⚠️ chat_data_ is not a List: $chatDataList',
+        );
+      }
+
+      final isReceiverOnline = json['is_receiver_online'] as bool? ?? false;
+
+      final senderRoom = ChatRoom.fromJson(
+        json['sender_room_id'] as Map<String, dynamic>?,
+      );
+      final receiverRoom = ChatRoom.fromJson(
+        json['reciever_room_id'] as Map<String, dynamic>?,
+      );
+
+      AppLoggerHelper.logInfo(
+        '✅ Successfully parsed ChatData with ${messages.length} messages',
+      );
+
+      return ChatData(
+        messages: messages,
+        isReceiverOnline: isReceiverOnline,
+        senderRoom: senderRoom,
+        receiverRoom: receiverRoom,
+      );
+    } catch (e) {
+      AppLoggerHelper.logError('💥 Failed to parse ChatData: $e');
+      AppLoggerHelper.logError('💥 JSON data: $json');
+
+      return ChatData(
+        messages: [],
+        isReceiverOnline: false,
+        senderRoom: const ChatRoom(
+          id: 'error',
+          user: UserProfile(id: 'error', firstName: 'Error', lastName: 'User'),
+        ),
+        receiverRoom: const ChatRoom(
+          id: 'error',
+          user: UserProfile(id: 'error', firstName: 'Error', lastName: 'User'),
+        ),
+      );
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'chat_data_': messages.map((msg) => msg.toJson()).toList(),
+      'is_receiver_online': isReceiverOnline,
+      'sender_room_id': senderRoom.toJson(),
+      'reciever_room_id': receiverRoom.toJson(),
+    };
+  }
+
+  String get senderName => senderRoom.user.fullName;
+
+  String get receiverName => receiverRoom.user.fullName;
+
+  String? get senderProfileImage => senderRoom.user.profileImage;
+
+  String? get receiverProfileImage => receiverRoom.user.profileImage;
+
   @override
   List<Object?> get props => [
     messages.length,
-    // Rebuild when message count changes
     messages.isNotEmpty ? messages.last.id : null,
-    // Rebuild when last message changes
     isReceiverOnline,
-    // Rebuild when online status changes
-    senderFirstName,
-    senderLastName,
-    senderProfileImage,
+    senderRoom,
+    receiverRoom,
   ];
 
-  // ✅ Optional: Add copyWith for easier state updates
   ChatData copyWith({
     List<ChatMessage>? messages,
     bool? isReceiverOnline,
-    String? senderFirstName,
-    String? senderLastName,
-    String? senderProfileImage,
+    ChatRoom? senderRoom,
+    ChatRoom? receiverRoom,
   }) {
     return ChatData(
       messages: messages ?? this.messages,
       isReceiverOnline: isReceiverOnline ?? this.isReceiverOnline,
-      senderFirstName: senderFirstName ?? this.senderFirstName,
-      senderLastName: senderLastName ?? this.senderLastName,
-      senderProfileImage: senderProfileImage ?? this.senderProfileImage,
+      senderRoom: senderRoom ?? this.senderRoom,
+      receiverRoom: receiverRoom ?? this.receiverRoom,
     );
   }
 
-  // ✅ Optional: Add toString for debugging
   @override
   String toString() =>
-      'ChatData(messages: ${messages.length}, online: $isReceiverOnline, sender: $senderFirstName $senderLastName)';
+      'ChatData(messages: ${messages.length}, online: $isReceiverOnline, sender: $senderName, receiver: $receiverName)';
+}
+
+// Helper functions
+String _parseString(dynamic value, {String fallback = ''}) {
+  if (value == null) return fallback;
+  if (value is String) return value;
+  return value.toString();
+}
+
+String? _parseNullableString(dynamic value) {
+  if (value == null) return null;
+  if (value is String) return value.isEmpty ? null : value;
+  final stringValue = value.toString();
+  return stringValue.isEmpty ? null : stringValue;
 }

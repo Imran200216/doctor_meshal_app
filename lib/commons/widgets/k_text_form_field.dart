@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
-import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
+import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
+import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 
 class KTextFormField extends StatelessWidget {
   final bool readOnly;
@@ -15,7 +15,7 @@ class KTextFormField extends StatelessWidget {
   final int? maxLines;
 
   final Widget? prefixIcon;
-  final Function(String)? onChanged;   // 👈 Optional onChanged callback
+  final Function(String)? onChanged; // 👈 Optional onChanged callback
 
   const KTextFormField({
     super.key,
@@ -29,7 +29,7 @@ class KTextFormField extends StatelessWidget {
     this.maxLines,
     this.readOnly = false,
     this.prefixIcon,
-    this.onChanged,  // 👈 Added optional parameter
+    this.onChanged, // 👈 Added optional parameter
   });
 
   @override
@@ -44,7 +44,11 @@ class KTextFormField extends StatelessWidget {
           KText(
             textAlign: TextAlign.start,
             text: labelText!,
-            fontSize: isMobile ? 16 : isTablet ? 18 : 20,
+            fontSize: isMobile
+                ? 16
+                : isTablet
+                ? 18
+                : 20,
             fontWeight: FontWeight.w600,
             color: AppColorConstants.titleColor,
           ),
@@ -61,8 +65,9 @@ class KTextFormField extends StatelessWidget {
           maxLines: maxLines ?? 1,
           style: const TextStyle(fontWeight: FontWeight.w600),
 
-          onChanged: onChanged,   // 👈 Added here
+          onChanged: onChanged,
 
+          // 👈 Added here
           decoration: InputDecoration(
             prefixIcon: prefixIcon,
 

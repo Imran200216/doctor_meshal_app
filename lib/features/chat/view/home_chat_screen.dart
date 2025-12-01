@@ -11,12 +11,12 @@ import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 import 'package:meshal_doctor_booking_app/features/chat/chat.dart';
 
-class ChatScreen extends StatefulWidget {
+class HomeChatScreen extends StatefulWidget {
   final String senderRoomId;
   final String receiverRoomId;
   final String userId;
 
-  const ChatScreen({
+  const HomeChatScreen({
     super.key,
     required this.senderRoomId,
     required this.receiverRoomId,
@@ -24,10 +24,11 @@ class ChatScreen extends StatefulWidget {
   });
 
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  State<HomeChatScreen> createState() => _HomeChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
+class _HomeChatScreenState extends State<HomeChatScreen>
+    with WidgetsBindingObserver {
   final TextEditingController _messageController = TextEditingController();
   final FocusNode _messageFocusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
@@ -49,22 +50,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startSubscription();
     });
-  }
-
-  // Stop Subscription Function
-  void _stopSubscription() {
-    if (mounted) {
-      AppLoggerHelper.logInfo('🛑 Stopping chat home subscription');
-      context.read<SubscribeChatMessageBloc>().add(
-        StopSubscribeChatMessageEvent(),
-      );
-    }
-  }
-
-  @override
-  void deactivate() {
-    _stopSubscription();
-    super.deactivate();
   }
 
   @override
@@ -145,6 +130,22 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         );
       });
     }
+  }
+
+  // Stop Subscription Function
+  void _stopSubscription() {
+    if (mounted) {
+      AppLoggerHelper.logInfo('🛑 Stopping chat home subscription');
+      context.read<SubscribeChatMessageBloc>().add(
+        StopSubscribeChatMessageEvent(),
+      );
+    }
+  }
+
+  @override
+  void deactivate() {
+    _stopSubscription();
+    super.deactivate();
   }
 
   @override

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_skeleton_rectangle.dart';
-import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
+import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 
 class HomeSkeleton extends StatelessWidget {
   const HomeSkeleton({super.key});

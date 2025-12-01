@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
+import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class KSkeletonParagraph extends StatelessWidget {

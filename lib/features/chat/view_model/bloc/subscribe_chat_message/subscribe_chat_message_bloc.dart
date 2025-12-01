@@ -40,7 +40,7 @@ class SubscribeChatMessageBloc
       try {
         String subscription =
             ''' 
-        subscription Subscription {
+         subscription Subscription {
   View_User_Chat_Message_(
     sender_room_id: "${event.senderRoomId}"
     reciever_room_id: "${event.recieverRoomId}"
@@ -58,6 +58,15 @@ class SubscribeChatMessageBloc
     sender_room_id {
       user_id {
         first_name
+        last_name
+        profile_image
+      }
+    }
+    reciever_room_id {
+      id
+      user_id {
+        first_name
+        id
         last_name
         profile_image
       }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_skeleton_rectangle.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_skeleton_text_form_field.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
+
 
 class DoctorListSkeleton extends StatelessWidget {
   const DoctorListSkeleton({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
 
 class KFilledBtn extends StatelessWidget {
   final String btnTitle;

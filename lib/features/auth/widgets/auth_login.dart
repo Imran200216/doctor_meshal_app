@@ -1,22 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_filled_btn.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_password_text_form_field.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_snack_bar.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_text_form_field.dart';
 import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
-import 'package:meshal_doctor_booking_app/core/service/hive_service.dart';
-import 'package:meshal_doctor_booking_app/core/utils/app_logger_helper.dart';
-import 'package:meshal_doctor_booking_app/core/utils/app_validator.dart';
-import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
-import 'package:meshal_doctor_booking_app/features/auth/view_model/bloc/email_auth/email_auth_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/auth/view_model/bloc/user_auth/user_auth_bloc.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
+import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
+import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
+import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
+import 'package:meshal_doctor_booking_app/core/service/service.dart';
 
 class AuthLogin extends StatefulWidget {
   const AuthLogin({super.key});
@@ -216,7 +207,8 @@ class _AuthLoginState extends State<AuthLogin> {
                           router.pushReplacementNamed(
                             AppRouterConstants.patientBottomNav,
                           );
-                        } else if (userType == 'doctor' || userType == 'admin') {
+                        } else if (userType == 'doctor' ||
+                            userType == 'admin') {
                           // User Logged Type - FIX: Should be 'doctor' not 'patient'
                           AppLoggerHelper.logInfo(
                             "Saving User Logged Type: doctor",

@@ -20,57 +20,53 @@ class ChatListScreen extends StatefulWidget {
 }
 
 class _ChatListScreenState extends State<ChatListScreen> {
-  // User Id
   String? userId;
-
-  // Controller
   final TextEditingController _searchController = TextEditingController();
+  StreamSubscription? _chatSubscription;
 
   @override
   void initState() {
     super.initState();
     AppLoggerHelper.logInfo('🎬 ChatListScreen initState called');
-
-    // Start Subscription
-    _startSubscription();
+    _initializeUserAndChat();
   }
 
-  // Start Subscription Function
-  Future<void> _startSubscription() async {
-    AppLoggerHelper.logInfo('🚀 Starting unified subscription...');
-
+  // Initialize User and Chat
+  Future<void> _initializeUserAndChat() async {
     try {
       await HiveService.openBox(AppDBConstants.userBox);
-
       final storedUserId = await HiveService.getData<String>(
         boxName: AppDBConstants.userBox,
         key: AppDBConstants.userId,
       );
 
-      if (storedUserId != null) {
+      if (storedUserId != null && mounted) {
         userId = storedUserId;
         AppLoggerHelper.logInfo('👤 User ID: $userId');
 
-        // First immediate dispatch
+        // Dispatch initial event
         context.read<ViewUserChatHomeBloc>().add(
           GetViewUserChatHomeEvent(userId: userId!),
         );
 
-        AppLoggerHelper.logInfo(
-          '📡 Event dispatched: GetViewUserChatHomeEvent',
-        );
+        // Listen for state changes to handle subscription
+        _chatSubscription = context.read<ViewUserChatHomeBloc>().stream.listen((
+          state,
+        ) {
+          AppLoggerHelper.logInfo('📡 Chat Bloc State: ${state.runtimeType}');
+        });
       } else {
         AppLoggerHelper.logError('❌ No userId found in Hive');
       }
     } catch (e) {
-      AppLoggerHelper.logError('💥 Error starting subscription: $e');
+      AppLoggerHelper.logError('💥 Error initializing chat: $e');
     }
   }
 
-  // Stop Subscription Function
+  // Stop Subscription
   void _stopSubscription() {
+    _chatSubscription?.cancel();
     if (mounted) {
-      AppLoggerHelper.logInfo('🛑 Stopping chat home subscription');
       context.read<ViewUserChatHomeBloc>().add(
         StopViewUserChatHomeSubscriptionEvent(),
       );
@@ -78,14 +74,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
   }
 
   @override
-  void deactivate() {
-    // Stop subscription
-    _stopSubscription();
-    super.deactivate();
-  }
-
-  @override
   void dispose() {
+    _stopSubscription();
     _searchController.dispose();
     AppLoggerHelper.logInfo('🧹 ChatListScreen disposed');
     super.dispose();
@@ -100,7 +90,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
     // Localization
     final appLoc = AppLocalizations.of(context)!;
 
-    // MediaQuery
+    // Screen Height
     final height = MediaQuery.of(context).size.height;
 
     return Directionality(
@@ -115,49 +105,30 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
               if (state is GetUserAuthSuccess) {
                 final userType = state.user.userType;
-
-                if (userType == 'doctor' || userType == 'admin') {
-                  // Doctor App Bar Title
-                  title = appLoc.patients;
-                } else {
-                  // Patient App Bar Title
-                  title = appLoc.consultDoctor;
-                }
-              } else if (state is GetUserAuthLoading) {
-                title = appLoc.consultDoctor;
-              } else if (state is GetUserAuthFailure) {
-                title = appLoc.consultDoctor;
+                title = (userType == 'doctor' || userType == 'admin')
+                    ? appLoc.patients
+                    : appLoc.consultDoctor;
               }
 
               return KAppBar(
                 title: title,
                 onBack: () {
-                  // Haptics
                   HapticFeedback.heavyImpact();
-
-                  // Back
                   GoRouter.of(context).pop();
                 },
               );
             },
           ),
         ),
-        // Conditionally show FAB only for patients
         floatingActionButton: BlocBuilder<UserAuthBloc, UserAuthState>(
           builder: (context, state) {
-            // Default to not showing FAB
             bool showFab = false;
-
             if (state is GetUserAuthSuccess) {
-              final userType = state.user.userType;
-              // Show FAB only for patients (not doctors or admins)
-              showFab = userType == 'patient';
+              showFab = state.user.userType == 'patient';
             }
-
             return showFab
                 ? KFloatingActionBtn(
                     onTap: () {
-                      // Doctor List
                       GoRouter.of(
                         context,
                       ).pushNamed(AppRouterConstants.doctorList);
@@ -165,19 +136,20 @@ class _ChatListScreenState extends State<ChatListScreen> {
                     fabIconPath: AppAssetsConstants.doctor,
                     heroTag: "doctorList",
                   )
-                : const SizedBox.shrink(); // Hide FAB for doctors/admins
+                : const SizedBox.shrink();
           },
         ),
-
         body: BlocConsumer<ViewUserChatHomeBloc, ViewUserChatHomeState>(
           listener: (context, state) {
-            AppLoggerHelper.logInfo('👂 State changed: ${state.runtimeType}');
+            AppLoggerHelper.logInfo('👂 Chat State: ${state.runtimeType}');
 
             if (state is GetViewUserChatHomeFailure) {
-              KSnackBar.error(context, state.message);
+              // Only show snackbar for actual errors, not for empty lists
+              if (state.message != appLoc.noChatsFound) {
+                KSnackBar.error(context, state.message);
+              }
             }
           },
-
           builder: (context, state) {
             return RefreshIndicator.adaptive(
               color: AppColorConstants.secondaryColor,
@@ -187,65 +159,51 @@ class _ChatListScreenState extends State<ChatListScreen> {
                     .read<ConnectivityBloc>()
                     .state;
                 if (connectivityState is ConnectivityFailure) {
-                  AppLoggerHelper.logError("No internet connection");
                   KSnackBar.error(context, appLoc.internetConnection);
                   return;
                 }
-
-                // Get View User Chat Home Event Subscription
                 if (userId != null) {
                   context.read<ViewUserChatHomeBloc>().add(
                     GetViewUserChatHomeEvent(userId: userId!),
                   );
                 }
               },
-
-              // ---------------------- FIXED: USING SINGLE CHILD SCROLL VIEW ---------------------- //
-              child: SingleChildScrollView(
+              child: CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: EdgeInsets.symmetric(
-                  horizontal: isMobile
-                      ? 20
-                      : isTablet
-                      ? 140
-                      : 160,
-                  vertical: isMobile
-                      ? 30
-                      : isTablet
-                      ? 60
-                      : 80,
-                ),
-                child: Column(
-                  children: [
-                    // 🔍 SEARCH BAR
-                    KTextFormField(
-                      prefixIcon: const Icon(Icons.search_outlined),
-                      controller: _searchController,
-                      hintText: appLoc.search,
-                      onChanged: (value) {},
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isMobile
+                            ? 20
+                            : isTablet
+                            ? 140
+                            : 160,
+                        vertical: isMobile
+                            ? 30
+                            : isTablet
+                            ? 60
+                            : 80,
+                      ),
+                      child: Column(
+                        children: [
+                          // Search Bar
+                          KTextFormField(
+                            prefixIcon: const Icon(Icons.search_outlined),
+                            controller: _searchController,
+                            hintText: appLoc.search,
+                            onChanged: (value) {
+                              // Implement search functionality
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 20),
-
-                    // Wrap only the chat list with Connectivity BlocBuilder
-                    BlocBuilder<ConnectivityBloc, ConnectivityState>(
-                      builder: (context, connectivityState) {
-                        if (connectivityState is ConnectivityFailure) {
-                          return FractionallySizedBox(
-                            heightFactor: height * 0.6,
-                            child: const Align(
-                              alignment: Alignment.center,
-                              child: KInternetFound(),
-                            ),
-                          );
-                        } else if (connectivityState is ConnectivitySuccess) {
-                          return _buildChatList(state, height, appLoc);
-                        } else {
-                          return const SizedBox.shrink();
-                        }
-                      },
-                    ),
-                  ],
-                ),
+                  ),
+                  // Chat List Section
+                  _buildChatListContent(state, height, appLoc),
+                ],
               ),
             );
           },
@@ -254,96 +212,129 @@ class _ChatListScreenState extends State<ChatListScreen> {
     );
   }
 
-  // ---------------------------------------------------------
-  // CHAT LIST BUILDER
-  // ---------------------------------------------------------
-  Widget _buildChatList(
+  Widget _buildChatListContent(
     ViewUserChatHomeState state,
     double height,
     AppLocalizations appLoc,
   ) {
-    // Loading state - FIXED: Using Column instead of ListView
-    if (state is GetViewUserChatHomeLoading) {
-      return Column(
-        children: List.generate(30, (index) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: KSkeletonRectangle(),
-          );
-        }),
-      );
-    }
-
-    // Error state
-    if (state is GetViewUserChatHomeFailure) {
-      return FractionallySizedBox(
-        heightFactor: height * 0.6,
-        child: KNoItemsFound(
-          noItemsSvg: AppAssetsConstants.noChatListFound,
-          noItemsFoundText: state.message,
-        ),
-      );
-    }
-
-    // SUCCESS STATE (subscription data)
-    if (state is GetViewUserChatHomeSuccess) {
-      final chatRooms = state.viewUserChatHomeModel.data;
-
-      if (chatRooms.isEmpty) {
-        return FractionallySizedBox(
-          heightFactor: height * 0.6,
-          child: Center(
-            child: KNoItemsFound(
-              noItemsFoundText: appLoc.noChatsFound,
-              noItemsSvg: AppAssetsConstants.noChatListFound,
-            ),
-          ),
-        );
-      }
-
-      // FIXED: Using Column instead of nested ListView
-      return Column(
-        children: [
-          for (final chat in chatRooms)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: ChatListTile(
-                onTap: () async {
-                  // Sender Room Id in hive
-                  final senderRoomId = await HiveService.getData(
-                    boxName: AppDBConstants.chatRoom,
-                    key: AppDBConstants.chatRoomSenderRoomId,
-                  );
-
-                  // Chat Screen
-                  GoRouter.of(context).pushNamed(
-                    AppRouterConstants.chat,
-                    extra: {
-                      "receiverRoomId": chat.id,
-                      "senderRoomId": senderRoomId,
-                      "userId": userId,
-                    },
-                  );
-                },
-                profileImageUrl: chat.reciever.profileImage,
-                name: '${chat.reciever.firstName} ${chat.reciever.lastName}',
-                message: chat.lastMessage,
-                time: chat.lastMessageTime.toChatTimeFormat(),
-                unreadCount: chat.unReadCount,
+    return BlocBuilder<ConnectivityBloc, ConnectivityState>(
+      builder: (context, connectivityState) {
+        // Handle connectivity states
+        if (connectivityState is ConnectivityFailure) {
+          return SliverFillRemaining(
+            child: FractionallySizedBox(
+              heightFactor: 0.6,
+              child: const Align(
+                alignment: Alignment.center,
+                child: KInternetFound(),
               ),
             ),
-        ],
-      );
-    }
+          );
+        }
 
-    // Default fallback
-    return Column(
-      children: List.generate(30, (index) {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: KSkeletonRectangle(),
+        // Handle chat states
+        if (state is GetViewUserChatHomeLoading) {
+          return SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 8,
+                ),
+                child: KSkeletonRectangle(),
+              ),
+              childCount: 5,
+            ),
+          );
+        }
+
+        if (state is GetViewUserChatHomeFailure) {
+          return SliverFillRemaining(
+            child: FractionallySizedBox(
+              heightFactor: 0.6,
+              child: KNoItemsFound(
+                noItemsSvg: AppAssetsConstants.noChatListFound,
+                noItemsFoundText: state.message,
+              ),
+            ),
+          );
+        }
+
+        if (state is GetViewUserChatHomeSuccess) {
+          final chatRooms = state.viewUserChatHomeModel.data;
+
+          if (chatRooms.isEmpty) {
+            return SliverFillRemaining(
+              child: FractionallySizedBox(
+                heightFactor: 0.6,
+                child: Center(
+                  child: KNoItemsFound(
+                    noItemsFoundText: appLoc.noChatsFound,
+                    noItemsSvg: AppAssetsConstants.noChatListFound,
+                  ),
+                ),
+              ),
+            );
+          }
+
+          return SliverPadding(
+            padding: EdgeInsets.symmetric(
+              horizontal: Responsive.isMobile(context)
+                  ? 20
+                  : Responsive.isTablet(context)
+                  ? 140
+                  : 160,
+            ),
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final chat = chatRooms[index];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: ChatListTile(
+                    onTap: () async {
+                      final senderRoomId = await HiveService.getData(
+                        boxName: AppDBConstants.chatRoom,
+                        key: AppDBConstants.chatRoomSenderRoomId,
+                      );
+
+                      // Home Chat Screen
+                      GoRouter.of(context).pushNamed(
+                        AppRouterConstants.homeChat,
+                        extra: {
+                          "receiverRoomId": chat.id,
+                          "senderRoomId": senderRoomId!,
+                          "userId": userId,
+                        },
+                      );
+
+                      AppLoggerHelper.logInfo(
+                        "Datas passing : ${chat.id} $senderRoomId $userId",
+                      );
+                    },
+                    profileImageUrl: chat.reciever.profileImage,
+                    name:
+                        '${chat.reciever.firstName} ${chat.reciever.lastName}',
+                    message: chat.lastMessage,
+                    time: chat.lastMessageTime.toChatTimeFormat(),
+                    unreadCount: chat.unReadCount,
+                  ),
+                );
+              }, childCount: chatRooms.length),
+            ),
+          );
+        }
+
+        // Initial state - show loading
+        return SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) => Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: KSkeletonRectangle(),
+            ),
+            childCount: 5,
+          ),
         );
-      }),
+      },
     );
   }
 }

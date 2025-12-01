@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
+import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 
 class KBottomSheetTopThumb extends StatelessWidget {
   const KBottomSheetTopThumb({super.key});

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_skeleton_paragraph.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_skeleton_rectangle.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
 
 class EducationArticleViewSkeleton extends StatelessWidget {
   const EducationArticleViewSkeleton({super.key});

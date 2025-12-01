@@ -12,4 +12,7 @@ class AppDBConstants {
   // Chat Room
   static const String chatRoom = "chat_room";
   static const String chatRoomSenderRoomId = "chat_room_sender_room_id";
+
+  // Chat Cache
+  static const String chatCache = "chat_cache";
 }

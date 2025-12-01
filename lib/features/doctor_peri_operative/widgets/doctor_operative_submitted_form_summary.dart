@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_no_items_found.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/features/home/model/view_submitted_patient_form_details_section_model.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
+import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 
 class DoctorOperativeSubmittedFormSummary extends StatelessWidget {
   final ViewSubmittedPatientFormDetailsSectionModel submittedForm;

@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_assets_constants.dart';
+import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 
 class KProfileAvatar extends StatelessWidget {
   final double height;

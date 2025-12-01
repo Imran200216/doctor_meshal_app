@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
-import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
+import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
+import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 
 class KPhoneNumberTextFormField extends StatelessWidget {
@@ -21,7 +21,8 @@ class KPhoneNumberTextFormField extends StatelessWidget {
     this.validator,
     this.onChanged,
     this.onCountryChanged,
-    this.locale, this.controller,
+    this.locale,
+    this.controller,
   });
 
   @override
@@ -54,9 +55,7 @@ class KPhoneNumberTextFormField extends StatelessWidget {
         /// 🔹 Phone Field
         IntlPhoneField(
           controller: controller,
-          style: TextStyle(
-              fontWeight: FontWeight.w600
-          ),
+          style: TextStyle(fontWeight: FontWeight.w600),
           searchText: appLoc.searchCountry,
           languageCode: locale?.languageCode ?? 'en',
           initialCountryCode: 'IN',

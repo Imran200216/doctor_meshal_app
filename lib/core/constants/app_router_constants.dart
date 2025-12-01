@@ -76,4 +76,7 @@ class AppRouterConstants {
 
   // Profile Localization
   static const String profileLocalization = "profileLocalization";
+
+  // Home Chat
+  static const String homeChat = "homeChat";
 }

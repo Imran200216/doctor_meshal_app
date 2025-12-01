@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
-import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
+import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
+import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 
 class KDatePickerTextFormField extends StatelessWidget {
   final String labelText;
@@ -24,7 +24,8 @@ class KDatePickerTextFormField extends StatelessWidget {
     this.initialDate,
     this.firstDate,
     this.lastDate,
-    this.readOnly = true, this.autofillHints,
+    this.readOnly = true,
+    this.autofillHints,
   });
 
   Future<void> _selectDate(BuildContext context) async {
@@ -78,9 +79,7 @@ class KDatePickerTextFormField extends StatelessWidget {
         /// 📅 Date Picker Text Form Field
         TextFormField(
           autofillHints: autofillHints,
-          style: TextStyle(
-              fontWeight: FontWeight.w600
-          ),
+          style: TextStyle(fontWeight: FontWeight.w600),
           controller: controller,
           validator: validator,
           readOnly: readOnly,

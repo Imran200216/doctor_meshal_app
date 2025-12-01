@@ -188,6 +188,25 @@ GoRouter appRouter = GoRouter(
       },
     ),
 
+    // Home Chat Screen
+    GoRoute(
+      path: '/homeChat',
+      name: AppRouterConstants.homeChat,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>? ?? {};
+
+        final receiverRoomId = extra["receiverRoomId"] ?? "";
+        final senderRoomId = extra["senderRoomId"] ?? "";
+        final userId = extra["userId"] ?? "";
+
+        return HomeChatScreen(
+          senderRoomId: senderRoomId,
+          receiverRoomId: receiverRoomId,
+          userId: userId,
+        );
+      },
+    ),
+
     // Personal Details Screen
     GoRoute(
       path: '/personalDetails',

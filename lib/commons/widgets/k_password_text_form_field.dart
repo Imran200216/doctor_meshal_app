@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
-import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
+import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
+import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 
 class KPasswordTextFormField extends StatefulWidget {
   final String? labelText;
@@ -51,9 +51,7 @@ class _KPasswordTextFormFieldState extends State<KPasswordTextFormField> {
 
         /// 🔹 Password Field
         TextFormField(
-          style: TextStyle(
-              fontWeight: FontWeight.w600
-          ),
+          style: TextStyle(fontWeight: FontWeight.w600),
           controller: widget.controller,
           validator: widget.validator,
           obscureText: _obscureText,
@@ -104,7 +102,9 @@ class _KPasswordTextFormFieldState extends State<KPasswordTextFormField> {
             /// 👁 Toggle visibility icon
             suffixIcon: IconButton(
               icon: Icon(
-                _obscureText ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                _obscureText
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
                 color: AppColorConstants.subTitleColor,
               ),
               onPressed: () => setState(() => _obscureText = !_obscureText),
