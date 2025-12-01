@@ -2,21 +2,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_app_bar.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_no_internet_found.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_no_items_found.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_text_form_field.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
 import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
-import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
-import 'package:meshal_doctor_booking_app/core/service/hive_service.dart';
-import 'package:meshal_doctor_booking_app/core/utils/app_logger_helper.dart';
-import 'package:meshal_doctor_booking_app/core/utils/responsive.dart';
-import 'package:meshal_doctor_booking_app/features/doctor_peri_operative/view_model/bloc/operative_form/view_doctor_operative_form_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/doctor_peri_operative/widgets/doctor_operative_form_card.dart';
+import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
+import 'package:meshal_doctor_booking_app/core/service/service.dart';
+import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
+import 'package:meshal_doctor_booking_app/features/doctor_peri_operative/doctor_peri_operative.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
 
 class DoctorPostOpScreen extends StatefulWidget {
   const DoctorPostOpScreen({super.key});
@@ -47,25 +41,28 @@ class _DoctorPostOpScreenState extends State<DoctorPostOpScreen> {
     try {
       await HiveService.openBox(AppDBConstants.userBox);
 
-      final storedUserId = await HiveService.getData<String>(
+      // Read full userAuthData from Hive
+      final storedUserMap = await HiveService.getData<Map<String, dynamic>>(
         boxName: AppDBConstants.userBox,
-        key: AppDBConstants.userId,
+        key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserId != null) {
-        userId = storedUserId;
+      if (storedUserMap != null) {
+        // Convert Map → UserAuthModel
+        final storedUser = UserAuthModel.fromJson(storedUserMap);
+        userId = storedUser.id;
 
-        AppLoggerHelper.logInfo("User ID fetched: $userId");
+        AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
 
         // Get Operative Form Events
         context.read<ViewDoctorOperativeFormBloc>().add(
           GetViewDoctorOperativeFormEvent(doctorId: userId!, formType: "post"),
         );
       } else {
-        AppLoggerHelper.logError("No User ID found in Hive!");
+        AppLoggerHelper.logError("No userAuthData found in Hive!");
       }
     } catch (e) {
-      AppLoggerHelper.logError("Error fetching User ID: $e");
+      AppLoggerHelper.logError("Error fetching User ID from userAuthData: $e");
     }
   }
 

@@ -14,7 +14,7 @@ class ViewUserChatRoomBloc
   ViewUserChatRoomBloc({required this.chatGraphQLHttpService})
     : super(ViewUserChatRoomInitial()) {
     on<GetViewChatRoomEvent>((event, emit) async {
-      emit(GetViewUserChatRoomLoading());
+      emit(GetViewUserHomeChatRoomLoading());
 
       try {
         final query =
@@ -44,7 +44,7 @@ class ViewUserChatRoomBloc
         }
 
         if (viewUserChatRoom == null) {
-          emit(GetViewUserChatRoomFailure(message: "No data found"));
+          emit(GetViewUserHomeChatRoomFailure(message: "No data found"));
           return;
         }
 
@@ -55,10 +55,10 @@ class ViewUserChatRoomBloc
         AppLoggerHelper.logInfo("Parsed Notification Count: $notification");
 
         emit(
-          GetViewUserChatRoomSuccess(id: id, notificationCount: notification),
+          GetViewUserHomeChatRoomSuccess(id: id, notificationCount: notification),
         );
       } catch (e) {
-        emit(GetViewUserChatRoomFailure(message: e.toString()));
+        emit(GetViewUserHomeChatRoomFailure(message: e.toString()));
       }
     });
   }

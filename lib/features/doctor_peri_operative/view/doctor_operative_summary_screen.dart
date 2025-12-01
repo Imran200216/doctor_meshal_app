@@ -8,6 +8,7 @@ import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:meshal_doctor_booking_app/core/service/service.dart';
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 import 'package:meshal_doctor_booking_app/features/doctor_peri_operative/doctor_peri_operative.dart';
+import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
 
 class DoctorOperativeSummaryScreen extends StatefulWidget {
   final String operativeFormId;
@@ -44,15 +45,18 @@ class _DoctorOperativeSummaryScreenState
     try {
       await HiveService.openBox(AppDBConstants.userBox);
 
-      final storedUserId = await HiveService.getData<String>(
+      // Read full userAuthData from Hive
+      final storedUserMap = await HiveService.getData<Map<String, dynamic>>(
         boxName: AppDBConstants.userBox,
-        key: AppDBConstants.userId,
+        key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserId != null) {
-        userId = storedUserId;
+      if (storedUserMap != null) {
+        // Convert Map → UserAuthModel
+        final storedUser = UserAuthModel.fromJson(storedUserMap);
+        userId = storedUser.id;
 
-        AppLoggerHelper.logInfo("User ID fetched: $userId");
+        AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
         AppLoggerHelper.logInfo("Form ID Passed: ${widget.operativeFormId}");
 
         // Get Operative Form Events
@@ -63,10 +67,10 @@ class _DoctorOperativeSummaryScreenState
           ),
         );
       } else {
-        AppLoggerHelper.logError("No User ID found in Hive!");
+        AppLoggerHelper.logError("No userAuthData found in Hive!");
       }
     } catch (e) {
-      AppLoggerHelper.logError("Error fetching User ID: $e");
+      AppLoggerHelper.logError("Error fetching User ID from userAuthData: $e");
     }
   }
 

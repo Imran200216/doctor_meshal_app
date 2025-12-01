@@ -27,30 +27,42 @@ class _SurveyFormScreenState extends State<SurveyFormScreen> {
     _fetchSurveyFormData();
   }
 
-  // Fetch Survey Form Data
+  // Fetch Survey Form Data using userAuthData
   Future<void> _fetchSurveyFormData() async {
     try {
+      // Open Hive box
       await HiveService.openBox(AppDBConstants.userBox);
-      final storedUserId = await HiveService.getData<String>(
+
+      // Fetch stored userAuthData
+      final storedUserMap = await HiveService.getData<Map<String, dynamic>>(
         boxName: AppDBConstants.userBox,
-        key: AppDBConstants.userId,
+        key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserId != null) {
-        userId = storedUserId;
-        AppLoggerHelper.logInfo("User ID fetched: $userId");
+      if (storedUserMap != null) {
+        // Convert Map → UserAuthModel
+        final storedUser = UserAuthModel.fromJson(storedUserMap);
+
+        userId = storedUser.id;
+
+        AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
         AppLoggerHelper.logInfo("Operative ID fetched: ${widget.operativeId}");
 
+        // Dispatch event to get survey operative form
         context.read<SurveyOperativeFormBloc>().add(
-          GetSurveyOperativeForm(userId: userId!, id: widget.operativeId),
+          GetSurveyOperativeForm(
+            userId: userId!,
+            id: widget.operativeId,
+          ),
         );
       } else {
-        AppLoggerHelper.logError("No User ID found in Hive!");
+        AppLoggerHelper.logError("No userAuthData found in Hive!");
       }
     } catch (e) {
-      AppLoggerHelper.logError("Error fetching User ID: $e");
+      AppLoggerHelper.logError("Error fetching userAuthData: $e");
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

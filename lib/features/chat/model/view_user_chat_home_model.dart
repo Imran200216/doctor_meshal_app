@@ -15,7 +15,8 @@ class ViewUserChatHomeModel {
 
       if (json.containsKey('View_User_Chat_Home_')) {
         // Case 1: With wrapper {"View_User_Chat_Home_": {"data": [...]}}
-        final viewUserChatHome = json['View_User_Chat_Home_'] as Map<String, dynamic>?;
+        final viewUserChatHome =
+            json['View_User_Chat_Home_'] as Map<String, dynamic>?;
         if (viewUserChatHome == null) {
           AppLoggerHelper.logWarning('⚠️ View_User_Chat_Home_ is null');
           return ViewUserChatHomeModel(data: []);
@@ -35,7 +36,9 @@ class ViewUserChatHomeModel {
       }
 
       if (data is! List) {
-        AppLoggerHelper.logError('❌ Expected List but got: ${data.runtimeType}');
+        AppLoggerHelper.logError(
+          '❌ Expected List but got: ${data.runtimeType}',
+        );
         return ViewUserChatHomeModel(data: []);
       }
 
@@ -45,23 +48,31 @@ class ViewUserChatHomeModel {
       for (var i = 0; i < data.length; i++) {
         try {
           final item = data[i];
-          AppLoggerHelper.logInfo('📝 Processing chat item $i: ${item.runtimeType}');
+          AppLoggerHelper.logInfo(
+            '📝 Processing chat item $i: ${item.runtimeType}',
+          );
 
           if (item is Map<String, dynamic>) {
             final chatItem = ChatHomeData.fromJson(item);
             chatData.add(chatItem);
           } else {
-            AppLoggerHelper.logWarning('⚠️ Item $i is not a Map: ${item.runtimeType}');
+            AppLoggerHelper.logWarning(
+              '⚠️ Item $i is not a Map: ${item.runtimeType}',
+            );
           }
         } catch (e) {
           AppLoggerHelper.logError('❌ Error processing item $i: $e');
         }
       }
 
-      AppLoggerHelper.logInfo('✅ Final parsed chat data count: ${chatData.length}');
+      AppLoggerHelper.logInfo(
+        '✅ Final parsed chat data count: ${chatData.length}',
+      );
       return ViewUserChatHomeModel(data: chatData);
     } catch (e, stackTrace) {
-      AppLoggerHelper.logError('💥 Error in ViewUserChatHomeModel.fromJson: $e');
+      AppLoggerHelper.logError(
+        '💥 Error in ViewUserChatHomeModel.fromJson: $e',
+      );
       AppLoggerHelper.logError('📋 Stack trace: $stackTrace');
       return ViewUserChatHomeModel(data: []);
     }
@@ -90,10 +101,15 @@ class ChatHomeData {
     required this.chatRoom,
   });
 
+  // Add getter for backward compatibility with chatRoomId name
+  ChatRoom? get chatRoomId => chatRoom;
+
   factory ChatHomeData.fromJson(Map<String, dynamic> json) {
     try {
       AppLoggerHelper.logInfo('🔄 ChatHomeData.fromJson called');
-      AppLoggerHelper.logInfo('📦 ChatHomeData JSON keys: ${json.keys.toList()}');
+      AppLoggerHelper.logInfo(
+        '📦 ChatHomeData JSON keys: ${json.keys.toList()}',
+      );
 
       // Parse with null checks
       final id = json['id'] as String?;
@@ -109,8 +125,12 @@ class ChatHomeData {
       AppLoggerHelper.logInfo('   - last_message: $lastMessage');
       AppLoggerHelper.logInfo('   - last_message_time: $lastMessageTime');
       AppLoggerHelper.logInfo('   - un_read_count: $unReadCount');
-      AppLoggerHelper.logInfo('   - reciever_id type: ${recieverJson?.runtimeType}');
-      AppLoggerHelper.logInfo('   - chat_room_id type: ${chatRoomJson?.runtimeType}');
+      AppLoggerHelper.logInfo(
+        '   - reciever_id type: ${recieverJson?.runtimeType}',
+      );
+      AppLoggerHelper.logInfo(
+        '   - chat_room_id type: ${chatRoomJson?.runtimeType}',
+      );
 
       return ChatHomeData(
         id: id ?? 'MISSING_ID',
@@ -144,9 +164,21 @@ class ChatHomeData {
   // Helper method to check if this is a valid data object (not an error)
   bool get isValid => id != 'MISSING_ID' && id != 'ERROR_ID';
 
+  // Convert to JSON for debugging
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'last_message': lastMessage,
+      'last_message_time': lastMessageTime,
+      'un_read_count': unReadCount,
+      'reciever_id': reciever.toJson(),
+      'chat_room_id': chatRoom.toJson(),
+    };
+  }
+
   @override
   String toString() {
-    return 'ChatHomeData(id: $id, lastMessage: $lastMessage, unReadCount: $unReadCount)';
+    return 'ChatHomeData(id: $id, lastMessage: $lastMessage, unReadCount: $unReadCount, chatRoomId: ${chatRoom.id})';
   }
 }
 
@@ -172,7 +204,8 @@ class Reciever {
         id: json['id'] as String? ?? 'MISSING_RECEIVER_ID',
         firstName: json['first_name'] as String? ?? 'MISSING_FIRST_NAME',
         lastName: json['last_name'] as String? ?? 'MISSING_LAST_NAME',
-        profileImage: json['profile_image'] as String? ?? 'MISSING_PROFILE_IMAGE',
+        profileImage:
+            json['profile_image'] as String? ?? 'MISSING_PROFILE_IMAGE',
       );
     } catch (e, stackTrace) {
       AppLoggerHelper.logError('💥 Error in Reciever.fromJson: $e');
@@ -184,6 +217,16 @@ class Reciever {
         profileImage: 'ERROR_PROFILE_IMAGE',
       );
     }
+  }
+
+  // Convert to JSON for debugging
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'first_name': firstName,
+      'last_name': lastName,
+      'profile_image': profileImage,
+    };
   }
 
   @override
@@ -208,6 +251,11 @@ class ChatRoom {
       AppLoggerHelper.logError('📋 Stack trace: $stackTrace');
       return ChatRoom(id: 'ERROR_CHAT_ROOM_ID');
     }
+  }
+
+  // Convert to JSON for debugging
+  Map<String, dynamic> toJson() {
+    return {'id': id};
   }
 
   @override

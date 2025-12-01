@@ -20,7 +20,6 @@ class OperativeSummaryCountsBloc
       try {
         String query =
             ''' 
-        
         query Get_operative_summary_counts_ {
   get_operative_summary_counts_(user_id: "${event.userId}") {
     post_operative_counts

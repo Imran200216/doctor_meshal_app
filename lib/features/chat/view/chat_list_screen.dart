@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,61 +21,11 @@ class ChatListScreen extends StatefulWidget {
 class _ChatListScreenState extends State<ChatListScreen> {
   String? userId;
   final TextEditingController _searchController = TextEditingController();
-  StreamSubscription? _chatSubscription;
-
-  @override
-  void initState() {
-    super.initState();
-    AppLoggerHelper.logInfo('🎬 ChatListScreen initState called');
-    _initializeUserAndChat();
-  }
-
-  // Initialize User and Chat
-  Future<void> _initializeUserAndChat() async {
-    try {
-      await HiveService.openBox(AppDBConstants.userBox);
-      final storedUserId = await HiveService.getData<String>(
-        boxName: AppDBConstants.userBox,
-        key: AppDBConstants.userId,
-      );
-
-      if (storedUserId != null && mounted) {
-        userId = storedUserId;
-        AppLoggerHelper.logInfo('👤 User ID: $userId');
-
-        // Dispatch initial event
-        context.read<ViewUserChatHomeBloc>().add(
-          GetViewUserChatHomeEvent(userId: userId!),
-        );
-
-        // Listen for state changes to handle subscription
-        _chatSubscription = context.read<ViewUserChatHomeBloc>().stream.listen((
-          state,
-        ) {
-          AppLoggerHelper.logInfo('📡 Chat Bloc State: ${state.runtimeType}');
-        });
-      } else {
-        AppLoggerHelper.logError('❌ No userId found in Hive');
-      }
-    } catch (e) {
-      AppLoggerHelper.logError('💥 Error initializing chat: $e');
-    }
-  }
-
-  // Stop Subscription
-  void _stopSubscription() {
-    _chatSubscription?.cancel();
-    if (mounted) {
-      context.read<ViewUserChatHomeBloc>().add(
-        StopViewUserChatHomeSubscriptionEvent(),
-      );
-    }
-  }
 
   @override
   void dispose() {
-    _stopSubscription();
     _searchController.dispose();
+
     AppLoggerHelper.logInfo('🧹 ChatListScreen disposed');
     super.dispose();
   }
@@ -196,7 +145,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
                               // Implement search functionality
                             },
                           ),
-                          const SizedBox(height: 20),
                         ],
                       ),
                     ),
@@ -288,6 +236,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate((context, index) {
                 final chat = chatRooms[index];
+
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 12),
                   child: ChatListTile(
@@ -297,18 +246,27 @@ class _ChatListScreenState extends State<ChatListScreen> {
                         key: AppDBConstants.chatRoomSenderRoomId,
                       );
 
-                      // Home Chat Screen
+                      // Get the chat room ID from the model
+                      final chatRoomId = chat.chatRoomId?.id;
+
+                      if (chatRoomId == null) {
+                        AppLoggerHelper.logError("Chat room ID is null!");
+                        return;
+                      }
+
+                      // Pass the chat room ID instead of chat.id
                       GoRouter.of(context).pushNamed(
                         AppRouterConstants.homeChat,
                         extra: {
-                          "receiverRoomId": chat.id,
+                          "receiverRoomId": chatRoomId,
+                          // ← Changed from chat.id to chatRoomId
                           "senderRoomId": senderRoomId!,
                           "userId": userId,
                         },
                       );
 
                       AppLoggerHelper.logInfo(
-                        "Datas passing : ${chat.id} $senderRoomId $userId",
+                        "Data passing : ChatRoomId: $chatRoomId, SenderRoomId: $senderRoomId, UserId: $userId",
                       );
                     },
                     profileImageUrl: chat.reciever.profileImage,
@@ -331,7 +289,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
               child: KSkeletonRectangle(),
             ),
-            childCount: 5,
+            childCount: 20,
           ),
         );
       },

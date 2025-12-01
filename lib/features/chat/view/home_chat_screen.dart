@@ -33,57 +33,19 @@ class _HomeChatScreenState extends State<HomeChatScreen>
   final FocusNode _messageFocusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
 
-  // Track the last stable message count to prevent flickering
-  int _lastStableMessageCount = 0;
-  bool _isSubscriptionStable = false;
-  List<ChatMessage> _cachedMessages = [];
-
-  // Track if we're already subscribed to prevent duplicate subscriptions
-  bool _isSubscribed = false;
-
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    // Start subscription with a small delay to ensure proper initialization
+    // Start subscription immediately
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startSubscription();
     });
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    // Check if we already have data from the previous screen
-    _checkForExistingData();
-  }
-
-  void _checkForExistingData() {
-    final currentState = context.read<SubscribeChatMessageBloc>().state;
-
-    if (currentState is GetSubscribeChatMessageSuccess) {
-      final messages = currentState.chatMessage.messages;
-      if (messages.isNotEmpty && !_isSubscriptionStable) {
-        _cachedMessages = List.from(messages);
-        _lastStableMessageCount = messages.length;
-        _isSubscriptionStable = true;
-        AppLoggerHelper.logInfo(
-          '📥 Using existing subscription data with ${messages.length} messages',
-        );
-      }
-    }
-  }
-
   void _startSubscription() {
-    if (_isSubscribed) {
-      AppLoggerHelper.logInfo('🔄 Already subscribed, skipping...');
-      return;
-    }
-
     AppLoggerHelper.logInfo('🚀 Starting chat subscription');
-    _isSubscribed = true;
 
     context.read<SubscribeChatMessageBloc>().add(
       StartSubscribeChatMessageEvent(
@@ -134,16 +96,15 @@ class _HomeChatScreenState extends State<HomeChatScreen>
 
   // Stop Subscription Function
   void _stopSubscription() {
-    if (mounted) {
-      AppLoggerHelper.logInfo('🛑 Stopping chat home subscription');
-      context.read<SubscribeChatMessageBloc>().add(
-        StopSubscribeChatMessageEvent(),
-      );
-    }
+    AppLoggerHelper.logInfo('🛑 Stopping chat subscription');
+    context.read<SubscribeChatMessageBloc>().add(
+      StopSubscribeChatMessageEvent(),
+    );
   }
 
   @override
   void deactivate() {
+    AppLoggerHelper.logInfo('⏸️ Deactivating HomeChatScreen');
     _stopSubscription();
     super.deactivate();
   }
@@ -151,12 +112,10 @@ class _HomeChatScreenState extends State<HomeChatScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+
     _messageController.dispose();
     _messageFocusNode.dispose();
     _scrollController.dispose();
-
-    // Don't stop subscription here to maintain WebSocket connection
-    // This prevents disconnection when navigating back to chat list
     super.dispose();
   }
 
@@ -204,98 +163,66 @@ class _HomeChatScreenState extends State<HomeChatScreen>
               // Messages Display
               Expanded(
                 flex: 9,
-                child: BlocConsumer<SubscribeChatMessageBloc, SubscribeChatMessageState>(
-                  listenWhen: (previous, current) => true,
-                  listener: (context, state) {
-                    if (state is GetSubscribeChatMessageSuccess) {
-                      final messageCount = state.chatMessage.messages.length;
-                      AppLoggerHelper.logInfo(
-                        "📥 Subscription updated with $messageCount messages (Previous: $_lastStableMessageCount)",
-                      );
+                child:
+                    BlocConsumer<
+                      SubscribeChatMessageBloc,
+                      SubscribeChatMessageState
+                    >(
+                      listener: (context, state) {
+                        if (state is GetSubscribeChatMessageSuccess) {
+                          final messageCount =
+                              state.chatMessage.messages.length;
+                          AppLoggerHelper.logInfo(
+                            "📥 Subscription updated with $messageCount messages",
+                          );
 
-                      // Check if this is a stable update (not flickering)
-                      if (messageCount > 0 &&
-                          messageCount != _lastStableMessageCount) {
-                        _lastStableMessageCount = messageCount;
-                        _cachedMessages = List.from(state.chatMessage.messages);
-                        _isSubscriptionStable = true;
+                          // Scroll to bottom on new messages
+                          if (messageCount > 0) {
+                            _scrollToBottom();
+                          }
+                        } else if (state is GetSubscribeChatMessageError) {
+                          AppLoggerHelper.logError(
+                            "❌ Subscription error: ${state.message}",
+                          );
+                        }
+                      },
+                      builder: (context, subscriptionState) {
+                        // Loading state
+                        if (subscriptionState
+                            is GetSubscribeChatMessageLoading) {
+                          return _buildLoadingState();
+                        }
 
-                        // Scroll to bottom when we get new stable messages
-                        _scrollToBottom();
-                      } else if (messageCount == 0 &&
-                          _lastStableMessageCount > 0) {
-                        // Ignore 0 message updates if we already have messages
-                        AppLoggerHelper.logInfo(
-                          "🔄 Ignoring flickering 0-message update",
-                        );
-                      }
-                    } else if (state is GetSubscribeChatMessageError) {
-                      AppLoggerHelper.logError(
-                        "❌ Subscription error: ${state.message}",
-                      );
-                    }
-                  },
-                  builder: (context, subscriptionState) {
-                    AppLoggerHelper.logInfo(
-                      "🎨 BUILDER - State: ${subscriptionState.runtimeType}",
-                    );
+                        // Success state
+                        if (subscriptionState
+                            is GetSubscribeChatMessageSuccess) {
+                          final chatData = subscriptionState.chatMessage;
+                          final messages = chatData.messages;
 
-                    // Use cached messages to prevent flickering
-                    if (_isSubscriptionStable && _cachedMessages.isNotEmpty) {
-                      AppLoggerHelper.logInfo(
-                        "✅ USING CACHED - Rendering ${_cachedMessages.length} stable messages",
-                      );
-                      return _buildMessageList(
-                        _cachedMessages,
-                        appLoc,
-                        isMobile,
-                        isTablet,
-                      );
-                    }
+                          AppLoggerHelper.logInfo(
+                            "✅ Rendering ${messages.length} messages",
+                          );
 
-                    // Loading state
-                    if (subscriptionState is GetSubscribeChatMessageLoading) {
-                      AppLoggerHelper.logInfo("⏳ Showing loading state");
-                      return _buildLoadingState();
-                    }
+                          return _buildMessageList(
+                            messages,
+                            appLoc,
+                            isMobile,
+                            isTablet,
+                          );
+                        }
 
-                    // Success state - Use actual state data if no cache
-                    if (subscriptionState is GetSubscribeChatMessageSuccess) {
-                      final chatData = subscriptionState.chatMessage;
-                      final messages = chatData.messages;
+                        // Error state
+                        if (subscriptionState is GetSubscribeChatMessageError) {
+                          return _buildErrorState(
+                            'Connection Error: ${subscriptionState.message}',
+                            true,
+                          );
+                        }
 
-                      // Only update cache if we have messages and they're different
-                      if (messages.isNotEmpty && !_isSubscriptionStable) {
-                        _cachedMessages = List.from(messages);
-                        _lastStableMessageCount = messages.length;
-                        _isSubscriptionStable = true;
-                      }
-
-                      AppLoggerHelper.logInfo(
-                        "✅ SUCCESS - Rendering ${messages.length} messages from subscription",
-                      );
-
-                      return _buildMessageList(
-                        messages,
-                        appLoc,
-                        isMobile,
-                        isTablet,
-                      );
-                    }
-
-                    // Error state
-                    if (subscriptionState is GetSubscribeChatMessageError) {
-                      AppLoggerHelper.logInfo("❌ Showing error state");
-                      return _buildErrorState(
-                        'Connection Error: ${subscriptionState.message}',
-                        true,
-                      );
-                    }
-
-                    // Initial/Unknown state
-                    return _buildLoadingState();
-                  },
-                ),
+                        // Initial state
+                        return _buildLoadingState();
+                      },
+                    ),
               ),
 
               _buildMessageInput(isMobile, isTablet, appLoc),
@@ -306,7 +233,6 @@ class _HomeChatScreenState extends State<HomeChatScreen>
     );
   }
 
-  // ... rest of your methods remain the same (_buildMessageInput, _buildMessageList, etc.)
   Widget _buildMessageInput(
     bool isMobile,
     bool isTablet,
@@ -468,24 +394,19 @@ class _HomeChatScreenState extends State<HomeChatScreen>
       );
     }
 
-    return NotificationListener<ScrollNotification>(
-      onNotification: (scrollNotification) {
-        return false;
-      },
-      child: ListView(
-        controller: _scrollController,
-        reverse: true,
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-        children: messageWidgets.reversed.toList(),
-      ),
+    return ListView(
+      controller: _scrollController,
+      reverse: true,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      children: messageWidgets.reversed.toList(),
     );
   }
 
   Widget _buildLoadingState() {
-    return Center(
+    return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [const CircularProgressIndicator.adaptive()],
+        children: [CircularProgressIndicator.adaptive()],
       ),
     );
   }

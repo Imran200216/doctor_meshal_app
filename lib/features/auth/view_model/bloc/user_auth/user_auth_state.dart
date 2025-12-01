@@ -16,8 +16,14 @@ final class GetUserAuthLoading extends UserAuthState {
 
 final class GetUserAuthSuccess extends UserAuthState {
   final UserAuthModel user;
+  final bool isCached;
+  final bool hasError;
 
-  const GetUserAuthSuccess({required this.user});
+  const GetUserAuthSuccess({
+    required this.user,
+    this.isCached = false,
+    this.hasError = false,
+  });
 
   @override
   // TODO: implement props

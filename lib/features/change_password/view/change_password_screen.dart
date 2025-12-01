@@ -9,6 +9,8 @@ import 'package:meshal_doctor_booking_app/core/service/service.dart';
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 import 'package:meshal_doctor_booking_app/features/change_password/change_password.dart';
 
+import '../../auth/auth.dart';
+
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
 
@@ -178,14 +180,33 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         // Open the Hive box
                         await HiveService.openBox(AppDBConstants.userBox);
 
-                        // Read userId from Hive
-                        final storedUserId = await HiveService.getData<String>(
+                        // Read full stored model
+                        final storedUserMap = await HiveService.getData<Map>(
                           boxName: AppDBConstants.userBox,
-                          key: AppDBConstants.userId,
+                          key: AppDBConstants.userAuthData,
                         );
 
+                        if (storedUserMap == null) {
+                          AppLoggerHelper.logError(
+                            "No user data found in Hive!",
+                          );
+                          KSnackBar.error(
+                            context,
+                            "User not found, please login again",
+                          );
+                          return;
+                        }
+
+                        // Convert Map → UserAuthModel
+                        final storedUser = UserAuthModel.fromJson(
+                          Map<String, dynamic>.from(storedUserMap),
+                        );
+
+                        // Use userId directly
+                        final storedUserId = storedUser.id;
+
                         AppLoggerHelper.logInfo(
-                          "The Change Password user Id: $storedUserId",
+                          "Change Password User ID: $storedUserId",
                         );
 
                         //  Change Password Event

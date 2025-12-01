@@ -8,6 +8,7 @@ import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:meshal_doctor_booking_app/core/service/service.dart';
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 import 'package:meshal_doctor_booking_app/features/education/education.dart';
+import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
 
 class EducationSubTopicsScreen extends StatefulWidget {
   final String educationId;
@@ -29,20 +30,27 @@ class _EducationSubTopicsScreenState extends State<EducationSubTopicsScreen> {
     super.initState();
   }
 
+  // Fetch Education Sub Topics
   Future<void> _fetchEducationSubTopics() async {
     try {
       // Open the Hive box if not already opened
       await HiveService.openBox(AppDBConstants.userBox);
 
-      // Read userId from Hive
-      final storedUserId = await HiveService.getData<String>(
+      // Read full userAuthData from Hive (no generic type)
+      final storedUserMapRaw = await HiveService.getData(
         boxName: AppDBConstants.userBox,
-        key: AppDBConstants.userId,
+        key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserId != null) {
-        userId = storedUserId;
-        AppLoggerHelper.logInfo("User ID fetched from Hive: $userId");
+      if (storedUserMapRaw != null) {
+        // Safely convert dynamic map → Map<String, dynamic>
+        final storedUserMap = Map<String, dynamic>.from(storedUserMapRaw);
+
+        // Convert Map → UserAuthModel
+        final storedUser = UserAuthModel.fromJson(storedUserMap);
+        userId = storedUser.id;
+
+        AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
         AppLoggerHelper.logInfo("Education ID: ${widget.educationId}");
 
         // Trigger Education Sub Title Bloc to fetch data
@@ -53,10 +61,10 @@ class _EducationSubTopicsScreenState extends State<EducationSubTopicsScreen> {
           ),
         );
       } else {
-        AppLoggerHelper.logError("No User ID found in Hive!");
+        AppLoggerHelper.logError("No userAuthData found in Hive!");
       }
     } catch (e) {
-      AppLoggerHelper.logError("Error fetching User ID from Hive: $e");
+      AppLoggerHelper.logError("Error fetching User ID from userAuthData: $e");
     }
   }
 

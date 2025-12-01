@@ -9,6 +9,7 @@ import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:meshal_doctor_booking_app/core/service/service.dart';
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/peri_operative.dart';
+import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
 
 class PreOpScreen extends StatefulWidget {
   const PreOpScreen({super.key});
@@ -28,32 +29,38 @@ class _PreOpScreenState extends State<PreOpScreen> {
     super.initState();
   }
 
-  // Fetch Peri Operative Form
+  // Fetch Pre Operative Form using userAuthData
   Future<void> _fetchPreOperative() async {
     try {
+      // Open Hive Box
       await HiveService.openBox(AppDBConstants.userBox);
 
-      final storedUserId = await HiveService.getData<String>(
+      // Fetch stored userAuthData
+      final storedUserMap = await HiveService.getData<Map<String, dynamic>>(
         boxName: AppDBConstants.userBox,
-        key: AppDBConstants.userId,
+        key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserId != null) {
-        userId = storedUserId;
+      if (storedUserMap != null) {
+        // Convert Map → UserAuthModel
+        final storedUser = UserAuthModel.fromJson(storedUserMap);
 
-        AppLoggerHelper.logInfo("User ID fetched: $userId");
+        userId = storedUser.id;
 
-        // Get Operative Form Events
+        AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
+
+        // Dispatch Event to Fetch Pre Operative Form
         context.read<OperativeFormBloc>().add(
           GetOperativeFormEvents(userId: userId!, formType: "pre"),
         );
       } else {
-        AppLoggerHelper.logError("No User ID found in Hive!");
+        AppLoggerHelper.logError("No userAuthData found in Hive!");
       }
     } catch (e) {
-      AppLoggerHelper.logError("Error fetching User ID: $e");
+      AppLoggerHelper.logError("Error fetching userAuthData: $e");
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

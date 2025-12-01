@@ -20,51 +20,46 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  // User Id
-  String? userId;
-
   @override
   void initState() {
-    // Fetch User Auth
-    _fetchUserAuth();
-
     super.initState();
+
+    // Load cached data immediately
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<UserAuthBloc>().add(LoadCachedUserAuthEvent());
+    });
   }
 
-  // Fetch Education Articles
-  Future<void> _fetchUserAuth() async {
+  Future<void> _loadUserFromHiveAndFetch() async {
     try {
       await HiveService.openBox(AppDBConstants.userBox);
 
-      final storedUserId = await HiveService.getData<String>(
+      final storedUserMap = await HiveService.getData<Map>(
         boxName: AppDBConstants.userBox,
-        key: AppDBConstants.userId,
+        key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserId != null) {
-        userId = storedUserId;
-
-        AppLoggerHelper.logInfo("User ID fetched: $userId");
-
-        // Get User Details
-        context.read<UserAuthBloc>().add(
-          GetUserAuthEvent(id: userId!, token: ""),
+      if (storedUserMap != null) {
+        final storedUser = UserAuthModel.fromJson(
+          Map<String, dynamic>.from(storedUserMap),
         );
-      } else {
-        AppLoggerHelper.logError("No User ID found in Hive!");
+
+        final connectivityState = context.read<ConnectivityBloc>().state;
+        if (connectivityState is ConnectivitySuccess) {
+          context.read<UserAuthBloc>().add(
+            GetUserAuthEvent(id: storedUser.id, token: ""),
+          );
+        }
       }
     } catch (e) {
-      AppLoggerHelper.logError("Error fetching User ID: $e");
+      AppLoggerHelper.logError("Error loading user from Hive: $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Responsive
     final isTablet = Responsive.isTablet(context);
     final isMobile = Responsive.isMobile(context);
-
-    // App Localization
     final appLoc = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -72,104 +67,112 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SafeArea(
         child: BlocBuilder<ConnectivityBloc, ConnectivityState>(
           builder: (context, connectivityState) {
-            if (connectivityState is ConnectivityFailure) {
-              return Align(
-                alignment: Alignment.center,
-                heightFactor: 3,
-                child: Column(
-                  spacing: 20,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [const KInternetFound()],
-                ),
-              );
-            } else if (connectivityState is ConnectivitySuccess) {
-              return BlocBuilder<UserAuthBloc, UserAuthState>(
-                builder: (context, state) {
-                  // Loading
-                  if (state is GetUserAuthLoading || state is UserAuthInitial) {
+            return BlocBuilder<UserAuthBloc, UserAuthState>(
+              builder: (context, state) {
+                // Handle different states
+                if (state is GetUserAuthLoading) {
+                  // Check if we should show skeleton
+                  final bloc = context.read<UserAuthBloc>();
+                  if (bloc.getCachedUser() == null) {
                     return ProfileSkeleton();
                   }
+                }
 
-                  // Success
-                  if (state is GetUserAuthSuccess) {
-                    final user = state.user;
+                if (state is GetUserAuthSuccess) {
+                  final bool isOnline =
+                      connectivityState is ConnectivitySuccess;
+                  final bool isOffline =
+                      connectivityState is ConnectivityFailure;
 
-                    return RefreshIndicator.adaptive(
-                      color: AppColorConstants.secondaryColor,
-                      backgroundColor: AppColorConstants.primaryColor,
-                      onRefresh: () async {
-                        // Fetch User Auth
-                        _fetchUserAuth();
-                      },
-                      child: SingleChildScrollView(
-                        child: Directionality(
-                          textDirection: TextDirection.ltr,
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: isMobile
-                                  ? 20
-                                  : isTablet
-                                  ? 30
-                                  : 40,
-                              vertical: isMobile
-                                  ? 20
-                                  : isTablet
-                                  ? 30
-                                  : 40,
-                            ),
-                            child: Column(
-                              spacing: 20,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // My Account
-                                KText(
-                                  text: appLoc.myAccount,
-                                  fontSize: isMobile
-                                      ? 20
-                                      : isTablet
-                                      ? 22
-                                      : 24,
-                                  fontWeight: FontWeight.w700,
-                                ),
+                  return RefreshIndicator.adaptive(
+                    color: AppColorConstants.secondaryColor,
+                    backgroundColor: AppColorConstants.primaryColor,
+                    onRefresh: () async {
+                      if (isOnline) {
+                        await _loadUserFromHiveAndFetch();
+                      }
+                    },
+                    child: SingleChildScrollView(
+                      child: Directionality(
+                        textDirection: TextDirection.ltr,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isMobile
+                                ? 20
+                                : isTablet
+                                ? 30
+                                : 40,
+                            vertical: isMobile
+                                ? 20
+                                : isTablet
+                                ? 30
+                                : 40,
+                          ),
+                          child: Column(
+                            spacing: 20,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Profile Details
+                              ProfileDetailsContainer(
+                                profileImageUrl:
+                                    state.user.profileImage.isNotEmpty
+                                    ? state.user.profileImage
+                                    : "https://e-quester.com/wp-content/uploads/2021/11/placeholder-image-person-jpg.jpg",
+                                name:
+                                    "${state.user.firstName} ${state.user.lastName}",
+                                email: state.user.email,
+                              ),
 
-                                // Profile
-                                ProfileDetailsContainer(
-                                  profileImageUrl: user.profileImage.isNotEmpty
-                                      ? user.profileImage
-                                      : "https://e-quester.com/wp-content/uploads/2021/11/placeholder-image-person-jpg.jpg",
-                                  name: "${user.firstName} ${user.lastName}",
-                                  email: user.email,
-                                ),
-
-                                // ---------- REST OF YOUR UI BELOW ----------
-                                _buildGeneralSection(
-                                  context,
-                                  appLoc,
-                                  isMobile,
-                                  isTablet,
-                                ),
-                                _buildSupportSection(
-                                  context,
-                                  appLoc,
-                                  isMobile,
-                                  isTablet,
-                                ),
-                                _buildLogoutSection(context, appLoc),
-                              ],
-                            ),
+                              // Rest of your sections...
+                              _buildGeneralSection(
+                                context,
+                                appLoc,
+                                isMobile,
+                                isTablet,
+                              ),
+                              _buildSupportSection(
+                                context,
+                                appLoc,
+                                isMobile,
+                                isTablet,
+                              ),
+                              _buildLogoutSection(context, appLoc),
+                            ],
                           ),
                         ),
                       ),
-                    );
-                  }
+                    ),
+                  );
+                }
 
-                  return SizedBox.shrink();
-                },
-              );
-            } else {
-              return const SizedBox.shrink();
-            }
+                if (state is GetUserAuthFailure) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.error_outline, size: 48, color: Colors.red),
+                        SizedBox(height: 16),
+                        Text(
+                          state.message,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: AppColorConstants.subTitleColor,
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: _loadUserFromHiveAndFetch,
+                          child: Text('Retry'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                // Initial state
+                return ProfileSkeleton();
+              },
+            );
           },
         ),
       ),
@@ -285,14 +288,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             spacing: 10,
             children: [
-              // ProfileListTile(
-              //   prefixIcon: Icons.app_registration,
-              //   title: appLoc.termsAndConditions,
-              //   onTap: () {
-              //     UrlLauncherHelper.launchUrlLink('https://flutter.dev');
-              //   },
-              // ),
-
               // Privacy Policy
               ProfileListTile(
                 prefixIcon: Icons.privacy_tip_outlined,
@@ -304,8 +299,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   );
                 },
               ),
-
-              // Support
             ],
           ),
         ),
@@ -325,13 +318,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
         spacing: 10,
         children: [
           BlocListener<EmailAuthBloc, EmailAuthState>(
-            listener: (context, state) {
+            listener: (context, state) async {
+              // ✅ Make listener async
               if (state is EmailAuthLogoutSuccess) {
                 if (state.status == true) {
                   // 🛑 STOP ALL ACTIVE SUBSCRIPTIONS FIRST
                   context.read<ViewUserChatHomeBloc>().add(
                     StopViewUserChatHomeSubscriptionEvent(),
                   );
+
+                  // ✅ Clear Hive Boxes PROPERLY with await
+                  try {
+                    // Open boxes first if not already open
+                    await HiveService.openBox(AppDBConstants.userBox);
+                    await HiveService.openBox(AppDBConstants.surveyForm);
+                    await HiveService.openBox(AppDBConstants.chatRoom);
+
+                    AppLoggerHelper.logInfo(
+                      "📦 All Hive boxes opened for clearing",
+                    );
+
+                    // Clear all boxes
+                    await HiveService.clearBox(AppDBConstants.userBox);
+                    await HiveService.clearBox(AppDBConstants.surveyForm);
+                    await HiveService.clearBox(AppDBConstants.chatRoom);
+
+                    AppLoggerHelper.logInfo(
+                      "✅ All Hive boxes cleared successfully: "
+                      "${AppDBConstants.userBox}, "
+                      "${AppDBConstants.surveyForm}, "
+                      "${AppDBConstants.chatRoom}",
+                    );
+                  } catch (e) {
+                    AppLoggerHelper.logError(
+                      "❌ Failed to clear Hive boxes: $e",
+                    );
+                  }
 
                   // Success Snack Bar
                   KSnackBar.success(context, appLoc.logoutSuccess);
@@ -341,41 +363,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                   // Clear Language
                   context.read<LocalizationCubit>().clearLanguage();
-
-                  // Clear Hive Boxes
-                  try {
-                    HiveService.clearBox(AppDBConstants.userBox);
-                    HiveService.clearBox(AppDBConstants.surveyForm);
-                    AppLoggerHelper.logInfo(
-                      "Hive Box Cleared: ${AppDBConstants.userBox}, ${AppDBConstants.surveyForm}",
-                    );
-                  } catch (e) {
-                    AppLoggerHelper.logError(
-                      "Failed to clear Hive Box userBox: $e",
-                    );
-                  }
-
-                  try {
-                    HiveService.clearBox(AppDBConstants.surveyForm);
-                    AppLoggerHelper.logInfo(
-                      "Hive Box Cleared: ${AppDBConstants.surveyForm}",
-                    );
-                  } catch (e) {
-                    AppLoggerHelper.logError(
-                      "Failed to clear Hive Box surveyForm: $e",
-                    );
-                  }
-
-                  try {
-                    HiveService.clearBox(AppDBConstants.chatRoom);
-                    AppLoggerHelper.logInfo(
-                      "Hive Box Cleared: ${AppDBConstants.chatRoom}",
-                    );
-                  } catch (e) {
-                    AppLoggerHelper.logError(
-                      "Failed to clear Hive Box chatRoom: $e",
-                    );
-                  }
                 } else {
                   // Failure Snack Bar
                   KSnackBar.error(context, appLoc.logoutFailed);
@@ -389,6 +376,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
               prefixIcon: Icons.logout,
               title: appLoc.logout,
               onTap: () {
+                // Get userId from UserAuthBloc
+                final userAuthBloc = context.read<UserAuthBloc>();
+                final userId = userAuthBloc.getCachedUserId();
+
+                if (userId == null || userId.isEmpty) {
+                  KSnackBar.error(context, "User ID not found");
+                  return;
+                }
+
                 showModalBottomSheet(
                   context: context,
                   builder: (_) {
@@ -400,7 +396,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       onSubmitTap: () {
                         // Logout Functionality
                         context.read<EmailAuthBloc>().add(
-                          EmailAuthLogoutEvent(userId: userId!),
+                          EmailAuthLogoutEvent(userId: userId),
                         );
                       },
                     );

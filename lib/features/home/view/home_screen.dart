@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -10,6 +11,7 @@ import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
 import 'package:meshal_doctor_booking_app/features/home/home.dart';
 import 'package:meshal_doctor_booking_app/features/education/education.dart';
+import 'package:meshal_doctor_booking_app/features/chat/chat.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,6 +23,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   // User Id
   String? userId;
+
+  StreamSubscription? _chatSubscription;
 
   @override
   void initState() {
@@ -37,6 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _fetchUserAuth(),
         _fetchOperativeSummaryCounts(),
         _viewUserChatRoom(),
+        _initializeUserAndChat(),
       ]);
 
       AppLoggerHelper.logInfo("All data fetched successfully!");
@@ -45,107 +50,167 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Fetch Use Id And Load Education
+  // Fetch User ID from userAuthData and Load Education
   Future<void> _fetchUserIdAndLoadEducation() async {
     try {
       await HiveService.openBox(AppDBConstants.userBox);
 
-      final storedUserId = await HiveService.getData<String>(
+      final storedUserMapRaw = await HiveService.getData(
         boxName: AppDBConstants.userBox,
-        key: AppDBConstants.userId,
+        key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserId != null) {
-        userId = storedUserId;
-        AppLoggerHelper.logInfo("User ID fetched from Hive: $userId");
+      if (storedUserMapRaw != null) {
+        // Convert dynamic map → Map<String, dynamic>
+        final storedUserMap = Map<String, dynamic>.from(storedUserMapRaw);
+        final storedUser = UserAuthModel.fromJson(storedUserMap);
 
-        context.read<EducationBloc>().add(GetEducationEvent(userId: userId!));
-      } else {
-        AppLoggerHelper.logError("No User ID found in Hive!");
-      }
-    } catch (e) {
-      AppLoggerHelper.logError("Error fetching User ID from Hive: $e");
-    }
-  }
+        userId = storedUser.id;
 
-  // Fetch Education Articles
-  Future<void> _fetchUserAuth() async {
-    try {
-      await HiveService.openBox(AppDBConstants.userBox);
+        AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
 
-      final storedUserId = await HiveService.getData<String>(
-        boxName: AppDBConstants.userBox,
-        key: AppDBConstants.userId,
-      );
-
-      if (storedUserId != null) {
-        userId = storedUserId;
-
-        AppLoggerHelper.logInfo("User ID fetched: $userId");
-
-        // Get User Details
-        context.read<UserAuthBloc>().add(
-          GetUserAuthEvent(id: userId!, token: ""),
-        );
-      } else {
-        AppLoggerHelper.logError("No User ID found in Hive!");
-      }
-    } catch (e) {
-      AppLoggerHelper.logError("Error fetching User ID: $e");
-    }
-  }
-
-  // Fetch Education Articles
-  Future<void> _fetchOperativeSummaryCounts() async {
-    try {
-      await HiveService.openBox(AppDBConstants.userBox);
-
-      final storedUserId = await HiveService.getData<String>(
-        boxName: AppDBConstants.userBox,
-        key: AppDBConstants.userId,
-      );
-
-      if (storedUserId != null) {
-        userId = storedUserId;
-
-        AppLoggerHelper.logInfo("User ID fetched: $userId");
-
-        // Get Operative Summary Counts
+        // Dispatch event
         context.read<OperativeSummaryCountsBloc>().add(
           GetOperativeSummaryCountEvent(userId: userId!),
         );
       } else {
-        AppLoggerHelper.logError("No User ID found in Hive!");
+        AppLoggerHelper.logError("No userAuthData found in Hive!");
       }
     } catch (e) {
-      AppLoggerHelper.logError("Error fetching User ID: $e");
+      AppLoggerHelper.logError("Error fetching userAuthData from Hive: $e");
     }
   }
 
-  // View User Chat Room
+  // Fetch User Auth from userAuthData
+  Future<void> _fetchUserAuth() async {
+    try {
+      await HiveService.openBox(AppDBConstants.userBox);
+
+      final storedUserMapRaw = await HiveService.getData(
+        boxName: AppDBConstants.userBox,
+        key: AppDBConstants.userAuthData,
+      );
+
+      if (storedUserMapRaw != null) {
+        // Convert dynamic map → Map<String, dynamic>
+        final storedUserMap = Map<String, dynamic>.from(storedUserMapRaw);
+        final storedUser = UserAuthModel.fromJson(storedUserMap);
+
+        userId = storedUser.id;
+
+        AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
+
+        // Dispatch event
+        context.read<OperativeSummaryCountsBloc>().add(
+          GetOperativeSummaryCountEvent(userId: userId!),
+        );
+      } else {
+        AppLoggerHelper.logError("No userAuthData found in Hive!");
+      }
+    } catch (e) {
+      AppLoggerHelper.logError("Error fetching userAuthData from Hive: $e");
+    }
+  }
+
+  // Fetch Operative Summary Counts using userAuthData
+  Future<void> _fetchOperativeSummaryCounts() async {
+    try {
+      await HiveService.openBox(AppDBConstants.userBox);
+
+      final storedUserMapRaw = await HiveService.getData(
+        boxName: AppDBConstants.userBox,
+        key: AppDBConstants.userAuthData,
+      );
+
+      if (storedUserMapRaw != null) {
+        // Convert dynamic map → Map<String, dynamic>
+        final storedUserMap = Map<String, dynamic>.from(storedUserMapRaw);
+        final storedUser = UserAuthModel.fromJson(storedUserMap);
+
+        userId = storedUser.id;
+
+        AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
+
+        // Dispatch event
+        context.read<OperativeSummaryCountsBloc>().add(
+          GetOperativeSummaryCountEvent(userId: userId!),
+        );
+      } else {
+        AppLoggerHelper.logError("No userAuthData found in Hive!");
+      }
+    } catch (e) {
+      AppLoggerHelper.logError("Error fetching userAuthData from Hive: $e");
+    }
+  }
+
+  // View User Chat Room using userAuthData
   Future<void> _viewUserChatRoom() async {
     try {
       await HiveService.openBox(AppDBConstants.userBox);
 
-      final storedUserId = await HiveService.getData<String>(
+      final storedUserMapRaw = await HiveService.getData(
         boxName: AppDBConstants.userBox,
-        key: AppDBConstants.userId,
+        key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserId != null) {
-        userId = storedUserId;
+      if (storedUserMapRaw != null) {
+        // Convert dynamic map → Map<String, dynamic>
+        final storedUserMap = Map<String, dynamic>.from(storedUserMapRaw);
+        final storedUser = UserAuthModel.fromJson(storedUserMap);
 
-        AppLoggerHelper.logInfo("User ID fetched: $userId");
+        userId = storedUser.id;
+
+        AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
 
         // Get View User Chat Room
         context.read<ViewUserChatRoomBloc>().add(
           GetViewChatRoomEvent(userId: userId!),
         );
       } else {
-        AppLoggerHelper.logError("No User ID found in Hive!");
+        AppLoggerHelper.logError("No userAuthData found in Hive!");
       }
     } catch (e) {
-      AppLoggerHelper.logError("Error fetching User ID: $e");
+      AppLoggerHelper.logError("Error fetching userAuthData from Hive: $e");
+    }
+  }
+
+  // Initialize User and Chat using userAuthData
+  Future<void> _initializeUserAndChat() async {
+    try {
+      await HiveService.openBox(AppDBConstants.userBox);
+
+      // Fetch stored userAuthData (no generic type)
+      final storedUserMapRaw = await HiveService.getData(
+        boxName: AppDBConstants.userBox,
+        key: AppDBConstants.userAuthData,
+      );
+
+      if (storedUserMapRaw != null && mounted) {
+        // Convert dynamic map → Map<String, dynamic>
+        final storedUserMap = Map<String, dynamic>.from(storedUserMapRaw);
+
+        // Convert Map → UserAuthModel
+        final storedUser = UserAuthModel.fromJson(storedUserMap);
+        userId = storedUser.id;
+
+        AppLoggerHelper.logInfo('👤 User ID from userAuthData: $userId');
+
+        // Dispatch initial event
+        context.read<ViewUserChatHomeBloc>().add(
+          GetViewUserChatHomeEvent(userId: userId!),
+        );
+
+        // Listen for state changes to handle subscription
+        _chatSubscription = context.read<ViewUserChatHomeBloc>().stream.listen((
+          state,
+        ) {
+          AppLoggerHelper.logInfo('📡 Chat Bloc State: ${state.runtimeType}');
+        });
+      } else {
+        AppLoggerHelper.logError('❌ No userAuthData found in Hive');
+      }
+    } catch (e) {
+      AppLoggerHelper.logError('💥 Error initializing chat: $e');
     }
   }
 
@@ -162,12 +227,13 @@ class _HomeScreenState extends State<HomeScreen> {
       textDirection: TextDirection.ltr,
       child: Scaffold(
         backgroundColor: AppColorConstants.secondaryColor,
+
         floatingActionButton:
             BlocBuilder<ViewUserChatRoomBloc, ViewUserChatRoomState>(
               builder: (context, state) {
                 int count = 0;
 
-                if (state is GetViewUserChatRoomSuccess) {
+                if (state is GetViewUserHomeChatRoomSuccess) {
                   try {
                     count = int.tryParse(state.notificationCount) ?? 0;
 

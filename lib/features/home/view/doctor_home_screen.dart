@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +9,7 @@ import 'package:meshal_doctor_booking_app/core/service/service.dart';
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
 import 'package:meshal_doctor_booking_app/features/home/home.dart';
+import 'package:meshal_doctor_booking_app/features/chat/chat.dart';
 
 class DoctorHomeScreen extends StatefulWidget {
   const DoctorHomeScreen({super.key});
@@ -19,6 +21,10 @@ class DoctorHomeScreen extends StatefulWidget {
 class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
   // User Id
   String? userId;
+
+  String? _lastSavedChatRoomId;
+
+  StreamSubscription? _chatSubscription;
 
   @override
   void initState() {
@@ -34,6 +40,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
         _fetchUserAuth(),
         _viewUserChatRoom(),
         _fetchDoctorDashboardSummaryCounts(),
+        _initializeUserAndChat(),
       ]);
 
       AppLoggerHelper.logInfo("All data fetched successfully!");
@@ -42,84 +49,168 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
     }
   }
 
-  // Fetch Education Articles
+  // Fetch Education Articles using userAuthData
   Future<void> _fetchUserAuth() async {
     try {
+      // Open Hive box
       await HiveService.openBox(AppDBConstants.userBox);
 
-      final storedUserId = await HiveService.getData<String>(
+      // Fetch stored userAuthData
+      final storedUserMap = await HiveService.getData<Map<String, dynamic>>(
         boxName: AppDBConstants.userBox,
-        key: AppDBConstants.userId,
+        key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserId != null) {
-        userId = storedUserId;
+      if (storedUserMap != null) {
+        // Convert Map → UserAuthModel
+        final storedUser = UserAuthModel.fromJson(storedUserMap);
 
-        AppLoggerHelper.logInfo("User ID fetched: $userId");
+        userId = storedUser.id;
 
-        // Get User Details
+        AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
+
+        // Dispatch event to get user details
         context.read<UserAuthBloc>().add(
           GetUserAuthEvent(id: userId!, token: ""),
         );
       } else {
-        AppLoggerHelper.logError("No User ID found in Hive!");
+        AppLoggerHelper.logError("No userAuthData found in Hive!");
       }
     } catch (e) {
-      AppLoggerHelper.logError("Error fetching User ID: $e");
+      AppLoggerHelper.logError("Error fetching userAuthData: $e");
     }
   }
 
-  // Fetch Doctor Dashboard Summary Counts
+  // Fetch Doctor Dashboard Summary Counts using userAuthData
   Future<void> _fetchDoctorDashboardSummaryCounts() async {
     try {
+      // Open Hive box
       await HiveService.openBox(AppDBConstants.userBox);
 
-      final storedUserId = await HiveService.getData<String>(
+      // Fetch stored userAuthData
+      final storedUserMap = await HiveService.getData<Map<String, dynamic>>(
         boxName: AppDBConstants.userBox,
-        key: AppDBConstants.userId,
+        key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserId != null) {
-        userId = storedUserId;
+      if (storedUserMap != null) {
+        // Convert Map → UserAuthModel
+        final storedUser = UserAuthModel.fromJson(storedUserMap);
 
-        AppLoggerHelper.logInfo("User ID fetched: $userId");
+        userId = storedUser.id;
 
-        // Get Doctor Dashboard Summary Counts
+        AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
+
+        // Dispatch event to get doctor dashboard summary counts
         context.read<DoctorDashboardSummaryCountsBloc>().add(
           GetDoctorDashboardSummaryCountsEvent(userId: userId!),
         );
       } else {
-        AppLoggerHelper.logError("No User ID found in Hive!");
+        AppLoggerHelper.logError("No userAuthData found in Hive!");
       }
     } catch (e) {
-      AppLoggerHelper.logError("Error fetching User ID: $e");
+      AppLoggerHelper.logError("Error fetching userAuthData: $e");
     }
   }
 
-  // View User Chat Room
+  // View User Chat Room using userAuthData
   Future<void> _viewUserChatRoom() async {
     try {
+      // Open Hive box
       await HiveService.openBox(AppDBConstants.userBox);
 
-      final storedUserId = await HiveService.getData<String>(
+      // Fetch stored userAuthData
+      final storedUserMap = await HiveService.getData<Map<String, dynamic>>(
         boxName: AppDBConstants.userBox,
-        key: AppDBConstants.userId,
+        key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserId != null) {
-        userId = storedUserId;
+      if (storedUserMap != null) {
+        // Convert Map → UserAuthModel
+        final storedUser = UserAuthModel.fromJson(storedUserMap);
 
-        AppLoggerHelper.logInfo("User ID fetched: $userId");
+        userId = storedUser.id;
 
-        // Get View User Chat Room
+        AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
+
+        // Dispatch event to get view user chat room
         context.read<ViewUserChatRoomBloc>().add(
           GetViewChatRoomEvent(userId: userId!),
         );
       } else {
-        AppLoggerHelper.logError("No User ID found in Hive!");
+        AppLoggerHelper.logError("No userAuthData found in Hive!");
       }
     } catch (e) {
-      AppLoggerHelper.logError("Error fetching User ID: $e");
+      AppLoggerHelper.logError("Error fetching userAuthData: $e");
+    }
+  }
+
+  // Initialize User and Chat using userAuthData
+  Future<void> _initializeUserAndChat() async {
+    try {
+      await HiveService.openBox(AppDBConstants.userBox);
+
+      // Fetch stored userAuthData
+      final storedUserMap = await HiveService.getData<Map<String, dynamic>>(
+        boxName: AppDBConstants.userBox,
+        key: AppDBConstants.userAuthData,
+      );
+
+      if (storedUserMap != null && mounted) {
+        // Convert Map → UserAuthModel
+        final storedUser = UserAuthModel.fromJson(storedUserMap);
+        userId = storedUser.id;
+
+        AppLoggerHelper.logInfo(
+          '👤 User ID fetched from userAuthData: $userId',
+        );
+
+        // Dispatch initial event
+        context.read<ViewUserChatHomeBloc>().add(
+          GetViewUserChatHomeEvent(userId: userId!),
+        );
+
+        // Listen for state changes to handle subscription
+        _chatSubscription = context.read<ViewUserChatHomeBloc>().stream.listen((
+          state,
+        ) {
+          AppLoggerHelper.logInfo('📡 Chat Bloc State: ${state.runtimeType}');
+        });
+      } else {
+        AppLoggerHelper.logError('❌ No userAuthData found in Hive');
+      }
+    } catch (e) {
+      AppLoggerHelper.logError('💥 Error initializing chat: $e');
+    }
+  }
+
+  // Save Chat Room Id Hive
+  Future<void> _saveChatRoomIdToHive(String chatRoomId) async {
+    // Prevent saving the same ID multiple times
+    if (_lastSavedChatRoomId == chatRoomId) return;
+
+    try {
+      AppLoggerHelper.logInfo(
+        "📦 Opening Hive box: ${AppDBConstants.chatRoom}",
+      );
+
+      await HiveService.openBox(AppDBConstants.chatRoom);
+
+      await HiveService.saveData(
+        boxName: AppDBConstants.chatRoom,
+        key: AppDBConstants.chatRoomSenderRoomId,
+        value: chatRoomId,
+      );
+
+      _lastSavedChatRoomId = chatRoomId;
+
+      AppLoggerHelper.logInfo(
+        "✅ Hive Save Success → box: ${AppDBConstants.chatRoom}, "
+        "key: ${AppDBConstants.chatRoomSenderRoomId}, "
+        "value: $chatRoomId",
+      );
+    } catch (e) {
+      AppLoggerHelper.logError("❌ Hive Save Failed → Error: $e");
     }
   }
 
@@ -141,34 +232,10 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
               builder: (context, state) {
                 int count = 0;
 
-                if (state is GetViewUserChatRoomSuccess) {
-                  try {
-                    count = int.tryParse(state.notificationCount) ?? 0;
+                if (state is GetViewUserHomeChatRoomSuccess) {
+                  count = int.tryParse(state.notificationCount) ?? 0;
 
-                    /// Log before opening Hive box
-                    AppLoggerHelper.logInfo(
-                      "Opening Hive box: ${AppDBConstants.chatRoom}",
-                    );
-
-                    HiveService.openBox(AppDBConstants.chatRoom);
-
-                    /// Save Data to Hive
-                    HiveService.saveData(
-                      boxName: AppDBConstants.chatRoom,
-                      key: AppDBConstants.chatRoomSenderRoomId,
-                      value: state.id,
-                    );
-
-                    /// Log success
-                    AppLoggerHelper.logInfo(
-                      "Hive Save Success → box: ${AppDBConstants.chatRoom}, "
-                      "key: ${AppDBConstants.chatRoomSenderRoomId}, "
-                      "value: ${state.id}",
-                    );
-                  } catch (e) {
-                    /// Log error
-                    AppLoggerHelper.logError("Hive Save Failed → Error: $e");
-                  }
+                  _saveChatRoomIdToHive(state.id);
                 }
 
                 return FittedBox(
@@ -177,7 +244,6 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                     children: [
                       KFloatingActionBtn(
                         onTap: () {
-                          // Chat List
                           GoRouter.of(
                             context,
                           ).pushNamed(AppRouterConstants.chatList);
@@ -185,9 +251,8 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                         fabIconPath: AppAssetsConstants.chats,
                         heroTag: "doctorList",
                       ),
-
                       // Show badge only when count > 0
-                      Badge.count(count: count, isLabelVisible: count > 0),
+                      Badge.count(count: count, isLabelVisible: true),
                     ],
                   ),
                 );

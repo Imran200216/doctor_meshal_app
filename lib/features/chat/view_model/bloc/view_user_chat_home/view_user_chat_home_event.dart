@@ -25,18 +25,9 @@ final class StopViewUserChatHomeSubscriptionEvent
   List<Object> get props => [];
 }
 
-final class ReconnectHomeSubscriptionEvent extends ViewUserChatHomeEvent {
-  const ReconnectHomeSubscriptionEvent();
-
+// In view_user_chat_home_event.dart
+final class ResetViewUserChatHomeStateEvent extends ViewUserChatHomeEvent {
   @override
+  // TODO: implement props
   List<Object> get props => [];
-}
-
-class GetViewUserChatRoomEvent extends ViewUserChatHomeEvent {
-  final String userId;
-
-  const GetViewUserChatRoomEvent({required this.userId});
-
-  @override
-  List<Object> get props => [userId];
 }

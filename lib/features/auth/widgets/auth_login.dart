@@ -106,56 +106,29 @@ class _AuthLoginState extends State<AuthLogin> {
               BlocListener<EmailAuthBloc, EmailAuthState>(
                 listener: (context, state) async {
                   if (state is EmailAuthSuccess) {
-                    // Save userId in Hive
-                    try {
-                      AppLoggerHelper.logInfo(
-                        "Opening Hive box: ${AppDBConstants.userBox}",
-                      );
-                      await HiveService.openBox(AppDBConstants.userBox);
-                      AppLoggerHelper.logInfo("Hive box opened successfully");
+                    // User Auth Logged Status
+                    await HiveService.saveData(
+                      boxName: AppDBConstants.userBox,
+                      key: AppDBConstants.userAuthLoggedStatus,
+                      value: true,
+                    );
 
-                      // User Id
-                      AppLoggerHelper.logInfo("Saving User ID: ${state.id}");
-                      await HiveService.saveData(
-                        boxName: AppDBConstants.userBox,
-                        key: AppDBConstants.userId,
-                        value: state.id,
-                      );
-                      AppLoggerHelper.logInfo(
-                        "User ID saved successfully in Hive",
-                      );
+                    AppLoggerHelper.logInfo(
+                      "User Logged Status saved successfully in Hive",
+                    );
 
-                      // User Logged Status
-                      AppLoggerHelper.logInfo(
-                        "Saving User Logged Status: true",
-                      );
-                      await HiveService.saveData(
-                        boxName: AppDBConstants.userBox,
-                        key: AppDBConstants.userAuthLoggedStatus,
-                        value: true,
-                      );
-                      AppLoggerHelper.logInfo(
-                        "User Logged Status saved successfully in Hive",
-                      );
+                    AppLoggerHelper.logInfo(
+                      "EmailAuthSuccess → Triggering UserAuthBloc for userId: ${state.id}",
+                    );
 
-                      // Show success message only once
-                      if (context.mounted) {
-                        KSnackBar.success(context, appLoc.loginSuccess);
-                      }
-                    } catch (e) {
-                      AppLoggerHelper.logError(
-                        "Hive Error while saving login data: $e",
-                      );
-                    }
+                    // Trigger fetching full user details
+                    context.read<UserAuthBloc>().add(
+                      GetUserAuthEvent(id: state.id, token: state.token),
+                    );
 
-                    // Trigger fetching full user data
+                    // Show success message once
                     if (context.mounted) {
-                      AppLoggerHelper.logInfo(
-                        "Triggering GetUserAuthEvent for user: ${state.id}",
-                      );
-                      context.read<UserAuthBloc>().add(
-                        GetUserAuthEvent(id: state.id, token: state.token),
-                      );
+                      KSnackBar.success(context, appLoc.loginSuccess);
                     }
 
                     clearControllers();
@@ -172,74 +145,79 @@ class _AuthLoginState extends State<AuthLogin> {
                 },
               ),
 
-              // UserAuthBloc Listener
               BlocListener<UserAuthBloc, UserAuthState>(
                 listener: (context, state) {
                   if (state is GetUserAuthSuccess) {
-                    final userType = state.user.userType;
-                    AppLoggerHelper.logInfo(
-                      "User authenticated successfully. User Type: $userType",
-                    );
-
-                    // Save router reference before async gap
+                    final user = state.user;
                     final router = GoRouter.of(context);
+
+                    // Log full user data before saving
+                    AppLoggerHelper.logInfo(
+                      "USER AUTH SUCCESS — FULL USER DATA:",
+                    );
+                    AppLoggerHelper.logInfo("ID: ${user.id}");
+                    AppLoggerHelper.logInfo(
+                      "Profile Image: ${user.profileImage}",
+                    );
+                    AppLoggerHelper.logInfo("First Name: ${user.firstName}");
+                    AppLoggerHelper.logInfo("Last Name: ${user.lastName}");
+                    AppLoggerHelper.logInfo("Email: ${user.email}");
+                    AppLoggerHelper.logInfo("Phone Code: ${user.phoneCode}");
+                    AppLoggerHelper.logInfo(
+                      "Phone Number: ${user.phoneNumber}",
+                    );
+                    AppLoggerHelper.logInfo(
+                      "Register Date: ${user.registerDate}",
+                    );
+                    AppLoggerHelper.logInfo("Age: ${user.age}");
+                    AppLoggerHelper.logInfo("Gender: ${user.gender}");
+                    AppLoggerHelper.logInfo("Height: ${user.height}");
+                    AppLoggerHelper.logInfo("Weight: ${user.weight}");
+                    AppLoggerHelper.logInfo("Blood Group: ${user.bloodGroup}");
+                    AppLoggerHelper.logInfo("CID: ${user.cid}");
+                    AppLoggerHelper.logInfo("Created At: ${user.createdAt}");
+                    AppLoggerHelper.logInfo("Updated At: ${user.updatedAt}");
+                    AppLoggerHelper.logInfo("User Type: ${user.userType}");
 
                     Future.delayed(const Duration(milliseconds: 400), () async {
                       try {
-                        // Navigate based on user type
-                        if (userType == 'patient') {
-                          // User Logged Type
-                          AppLoggerHelper.logInfo(
-                            "Saving User Logged Type: patient",
-                          );
-                          await HiveService.saveData(
-                            boxName: AppDBConstants.userBox,
-                            key: AppDBConstants.userAuthLoggedType,
-                            value: 'patient',
-                          );
-                          AppLoggerHelper.logInfo(
-                            "User Logged Type 'patient' saved successfully",
-                          );
+                        // Save full model
+                        await HiveService.saveData(
+                          boxName: AppDBConstants.userBox,
+                          key: AppDBConstants.userAuthData,
+                          value: user.toJson(),
+                        );
+
+                        AppLoggerHelper.logInfo(
+                          "Full user data saved to Hive successfully",
+                        );
+
+                        // Routing
+                        if (user.userType == 'patient') {
                           AppLoggerHelper.logInfo(
                             "Navigating to Patient Bottom Nav",
                           );
-
                           router.pushReplacementNamed(
                             AppRouterConstants.patientBottomNav,
                           );
-                        } else if (userType == 'doctor' ||
-                            userType == 'admin') {
-                          // User Logged Type - FIX: Should be 'doctor' not 'patient'
-                          AppLoggerHelper.logInfo(
-                            "Saving User Logged Type: doctor",
-                          );
-                          await HiveService.saveData(
-                            boxName: AppDBConstants.userBox,
-                            key: AppDBConstants.userAuthLoggedType,
-                            value: 'doctor', // Fixed: was 'patient'
-                          );
-                          AppLoggerHelper.logInfo(
-                            "User Logged Type 'doctor' saved successfully",
-                          );
+                        } else if (user.userType == 'doctor' ||
+                            user.userType == 'admin') {
                           AppLoggerHelper.logInfo(
                             "Navigating to Doctor Bottom Nav",
                           );
-
                           router.pushReplacementNamed(
                             AppRouterConstants.doctorBottomNav,
                           );
                         } else {
                           AppLoggerHelper.logInfo(
-                            "Unknown user type, navigating to default Bottom Nav",
+                            "Unknown user type, defaulting to Patient Nav",
                           );
                           router.pushReplacementNamed(
                             AppRouterConstants.patientBottomNav,
                           );
                         }
                       } catch (e) {
-                        AppLoggerHelper.logError(
-                          "Error saving user type to Hive: $e",
-                        );
+                        AppLoggerHelper.logError("Hive Save Error: $e");
                       }
                     });
                   }

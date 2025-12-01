@@ -57,9 +57,6 @@ class KOutlinedBtn extends StatelessWidget {
                     height: btnHeight * 0.6,
                     width: btnHeight * 0.6,
                     child: CircularProgressIndicator.adaptive(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        titleColor ?? AppColorConstants.titleColor,
-                      ),
                       strokeWidth: 2,
                     ),
                   )

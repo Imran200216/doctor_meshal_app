@@ -9,6 +9,7 @@ import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:meshal_doctor_booking_app/core/service/service.dart';
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/peri_operative.dart';
+import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
 
 class StatusScreen extends StatefulWidget {
   const StatusScreen({super.key});
@@ -27,27 +28,33 @@ class _StatusScreenState extends State<StatusScreen> {
     super.initState();
   }
 
-  // Fetch Status Datas
+  // Fetch Status Form using userAuthData
   Future<void> _fetchStatusForm() async {
     try {
+      // Open Hive box
       await HiveService.openBox(AppDBConstants.userBox);
 
-      final storedUserId = await HiveService.getData<String>(
+      // Fetch stored userAuthData
+      final storedUserMap = await HiveService.getData<Map<String, dynamic>>(
         boxName: AppDBConstants.userBox,
-        key: AppDBConstants.userId,
+        key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserId != null) {
-        userId = storedUserId;
+      if (storedUserMap != null) {
+        // Convert Map → UserAuthModel
+        final storedUser = UserAuthModel.fromJson(storedUserMap);
 
-        AppLoggerHelper.logInfo("User ID fetched: $userId");
+        userId = storedUser.id;
 
+        AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
+
+        // Dispatch event to fetch status form
         context.read<StatusFormBloc>().add(GetStatusFormEvent(userId: userId!));
       } else {
-        AppLoggerHelper.logError("No User ID found in Hive!");
+        AppLoggerHelper.logError("No userAuthData found in Hive!");
       }
     } catch (e) {
-      AppLoggerHelper.logError("Error fetching User ID: $e");
+      AppLoggerHelper.logError("Error fetching userAuthData: $e");
     }
   }
 
@@ -60,7 +67,6 @@ class _StatusScreenState extends State<StatusScreen> {
     // App Localization
     final appLoc = AppLocalizations.of(context)!;
 
-
     return Scaffold(
       backgroundColor: AppColorConstants.secondaryColor,
       appBar: KAppBar(
@@ -70,8 +76,6 @@ class _StatusScreenState extends State<StatusScreen> {
           GoRouter.of(context).pop();
         },
       ),
-
-
 
       body: RefreshIndicator.adaptive(
         color: AppColorConstants.secondaryColor,

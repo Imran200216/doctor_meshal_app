@@ -8,6 +8,7 @@ import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:meshal_doctor_booking_app/core/service/service.dart';
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 import 'package:meshal_doctor_booking_app/features/education/education.dart';
+import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
 
 class EducationArticleViewScreen extends StatefulWidget {
   final String educationFullArticleId;
@@ -34,20 +35,26 @@ class _EducationArticleViewScreenState
     super.initState();
   }
 
-  // Fetch Education Articles View
+  // Fetch Education Articles View using userAuthData
   Future<void> _fetchEducationArticlesView() async {
     try {
       await HiveService.openBox(AppDBConstants.userBox);
 
-      final storedUserId = await HiveService.getData<String>(
+      // Fetch stored userAuthData (no generic type)
+      final storedUserMapRaw = await HiveService.getData(
         boxName: AppDBConstants.userBox,
-        key: AppDBConstants.userId,
+        key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserId != null) {
-        userId = storedUserId;
+      if (storedUserMapRaw != null) {
+        // Safely convert dynamic map → Map<String, dynamic>
+        final storedUserMap = Map<String, dynamic>.from(storedUserMapRaw);
 
-        AppLoggerHelper.logInfo("User ID fetched: $userId");
+        // Convert Map → UserAuthModel
+        final storedUser = UserAuthModel.fromJson(storedUserMap);
+        userId = storedUser.id;
+
+        AppLoggerHelper.logInfo("User ID from userAuthData: $userId");
         AppLoggerHelper.logInfo(
           "Education Article ID: ${widget.educationFullArticleId}",
         );
@@ -60,12 +67,13 @@ class _EducationArticleViewScreenState
           ),
         );
       } else {
-        AppLoggerHelper.logError("No User ID found in Hive!");
+        AppLoggerHelper.logError("No userAuthData found in Hive!");
       }
     } catch (e) {
-      AppLoggerHelper.logError("Error fetching User ID: $e");
+      AppLoggerHelper.logError("Error fetching User ID from userAuthData: $e");
     }
   }
+
 
   // Font Size for Zoom In and Zoom Out
   double _contentFontSize = 16;

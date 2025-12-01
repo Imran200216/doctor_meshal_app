@@ -52,30 +52,36 @@ class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
     super.dispose();
   }
 
-  // Fetch User Id Details
+// Fetch User Id Details
   Future<void> _fetchUserIdAndDetails() async {
     try {
       await HiveService.openBox(AppDBConstants.userBox);
-      final storedUserId = await HiveService.getData<String>(
+
+      // Read full userAuthData from Hive
+      final storedUserMap = await HiveService.getData<Map<String, dynamic>>(
         boxName: AppDBConstants.userBox,
-        key: AppDBConstants.userId,
+        key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserId != null) {
-        userId = storedUserId;
-        AppLoggerHelper.logInfo("User ID fetched: $userId");
+      if (storedUserMap != null) {
+        // Convert Map → UserAuthModel
+        final storedUser = UserAuthModel.fromJson(storedUserMap);
+        userId = storedUser.id;
+
+        AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
 
         // Dispatch the event to get user details
         context.read<UserAuthBloc>().add(
           GetUserAuthEvent(id: userId!, token: ""),
         );
       } else {
-        AppLoggerHelper.logError("No User ID found in Hive!");
+        AppLoggerHelper.logError("No userAuthData found in Hive!");
       }
     } catch (e) {
-      AppLoggerHelper.logError("Error fetching User ID: $e");
+      AppLoggerHelper.logError("Error fetching User ID from userAuthData: $e");
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:meshal_doctor_booking_app/core/service/service.dart';
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
+import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -42,23 +43,37 @@ class _SplashScreenState extends State<SplashScreen> {
       if (!mounted) return;
 
       if (isLoggedIn) {
-        // Get user type
-        final userType = await HiveService.getData(
+        // Get user model map from Hive
+        final storedUserMap = await HiveService.getData<Map>(
           boxName: AppDBConstants.userBox,
-          key: AppDBConstants.userAuthLoggedType,
+          key: AppDBConstants.userAuthData,
         );
 
-        AppLoggerHelper.logInfo("User type: $userType");
+        if (storedUserMap == null) {
+          AppLoggerHelper.logInfo("No user model found → navigate to login");
+          GoRouter.of(
+            context,
+          ).pushReplacementNamed(AppRouterConstants.localization);
+          return;
+        }
 
-        // Navigate based on user type
+        // Convert Map → UserAuthModel
+        final storedUser = UserAuthModel.fromJson(
+          Map<String, dynamic>.from(storedUserMap),
+        );
+
+        final userType = storedUser.userType;
+
+        AppLoggerHelper.logInfo(
+          "Extracted userType from Hive model: $userType",
+        );
+
+        // Navigate based on userType
         if (userType == 'doctor' || userType == 'admin') {
-          AppLoggerHelper.logInfo("Navigating to Doctor Bottom Nav");
           GoRouter.of(
             context,
           ).pushReplacementNamed(AppRouterConstants.doctorBottomNav);
         } else {
-          // Default to patient bottom nav for 'patient' or null/unknown types
-          AppLoggerHelper.logInfo("Navigating to Patient Bottom Nav");
           GoRouter.of(
             context,
           ).pushReplacementNamed(AppRouterConstants.patientBottomNav);

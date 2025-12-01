@@ -58,4 +58,28 @@ class UserAuthModel {
       userType: json['user_type'] ?? '',
     );
   }
+
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "profile_image": profileImage,
+      "first_name": firstName,
+      "last_name": lastName,
+      "email": email,
+      "phone_code": phoneCode,
+      "phone_number": phoneNumber,
+      "register_date": registerDate,
+      "age": age,
+      "gender": gender,
+      "height": height,
+      "weight": weight,
+      "blood_group": bloodGroup,
+      "cid": cid,
+      "createdAt": createdAt,
+      "updatedAt": updatedAt,
+      "user_type": userType,
+    };
+  }
+
 }

@@ -9,16 +9,16 @@ final class ViewUserChatRoomInitial extends ViewUserChatRoomState {
   List<Object> get props => [];
 }
 
-final class GetViewUserChatRoomLoading extends ViewUserChatRoomState {
+final class GetViewUserHomeChatRoomLoading extends ViewUserChatRoomState {
   @override
   List<Object> get props => [];
 }
 
-final class GetViewUserChatRoomSuccess extends ViewUserChatRoomState {
+final class GetViewUserHomeChatRoomSuccess extends ViewUserChatRoomState {
   final String id;
   final String notificationCount;
 
-  const GetViewUserChatRoomSuccess({
+  const GetViewUserHomeChatRoomSuccess({
     required this.id,
     required this.notificationCount,
   });
@@ -28,10 +28,10 @@ final class GetViewUserChatRoomSuccess extends ViewUserChatRoomState {
   List<Object?> get props => [id, notificationCount];
 }
 
-final class GetViewUserChatRoomFailure extends ViewUserChatRoomState {
+final class GetViewUserHomeChatRoomFailure extends ViewUserChatRoomState {
   final String message;
 
-  const GetViewUserChatRoomFailure({required this.message});
+  const GetViewUserHomeChatRoomFailure({required this.message});
 
   @override
   // TODO: implement props

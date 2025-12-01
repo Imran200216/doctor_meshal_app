@@ -63,28 +63,40 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
     _fetchUserIdAndDetails();
   }
 
-  // Fetch User Id Details
+  // Fetch User Id From userAuthData and then load details
   Future<void> _fetchUserIdAndDetails() async {
     try {
       await HiveService.openBox(AppDBConstants.userBox);
-      final storedUserId = await HiveService.getData<String>(
+
+      // Fetch full stored user model
+      final storedUserMap = await HiveService.getData<Map>(
         boxName: AppDBConstants.userBox,
-        key: AppDBConstants.userId,
+        key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserId != null) {
-        userId = storedUserId;
-        AppLoggerHelper.logInfo("User ID fetched: $userId");
-
-        // Dispatch the event to get user details
-        context.read<UserAuthBloc>().add(
-          GetUserAuthEvent(id: userId!, token: ""),
-        );
-      } else {
-        AppLoggerHelper.logError("No User ID found in Hive!");
+      if (storedUserMap == null) {
+        AppLoggerHelper.logError("No userAuthData found in Hive!");
+        return;
       }
+
+      // Convert Map → UserAuthModel
+      final storedUser = UserAuthModel.fromJson(
+        Map<String, dynamic>.from(storedUserMap),
+      );
+
+      // Extract the userId
+      final String storedUserId = storedUser.id;
+
+      userId = storedUserId;
+
+      AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
+
+      // Dispatch the event to get user details
+      context.read<UserAuthBloc>().add(
+        GetUserAuthEvent(id: userId!, token: ""),
+      );
     } catch (e) {
-      AppLoggerHelper.logError("Error fetching User ID: $e");
+      AppLoggerHelper.logError("Error fetching User ID from userAuthData: $e");
     }
   }
 

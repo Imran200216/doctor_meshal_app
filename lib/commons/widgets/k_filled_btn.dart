@@ -50,8 +50,6 @@ class KFilledBtn extends StatelessWidget {
                     height: btnHeight * 0.6,
                     width: btnHeight * 0.6,
                     child: CircularProgressIndicator.adaptive(
-                      backgroundColor: btnBgColor,
-                      valueColor: AlwaysStoppedAnimation<Color>(btnTitleColor),
                       strokeWidth: 2,
                     ),
                   )

@@ -9,6 +9,7 @@ import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
 import 'package:meshal_doctor_booking_app/features/doctor_peri_operative/doctor_peri_operative.dart';
 import 'package:meshal_doctor_booking_app/core/service/service.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/peri_operative.dart';
+import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
 
 class StatusSummaryScreen extends StatefulWidget {
   final String patientFormId;
@@ -31,22 +32,28 @@ class _StatusSummaryScreenState extends State<StatusSummaryScreen> {
   }
 
   // Fetch Patient Operative Summary
+  // Fetch Patient Operative Summary using userAuthData
   Future<void> _fetchPatientOperativeSummary() async {
     try {
+      // Open Hive box
       await HiveService.openBox(AppDBConstants.userBox);
 
-      final storedUserId = await HiveService.getData<String>(
+      // Fetch stored userAuthData
+      final storedUserMap = await HiveService.getData<Map<String, dynamic>>(
         boxName: AppDBConstants.userBox,
-        key: AppDBConstants.userId,
+        key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserId != null) {
-        userId = storedUserId;
+      if (storedUserMap != null) {
+        // Convert Map → UserAuthModel
+        final storedUser = UserAuthModel.fromJson(storedUserMap);
 
-        AppLoggerHelper.logInfo("User ID fetched: $userId");
+        userId = storedUser.id;
+
+        AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
         AppLoggerHelper.logInfo("Form ID Passed: ${widget.patientFormId}");
 
-        // Get View Submitted Form Details Event
+        // Dispatch event to get view submitted form details
         context.read<ViewSubmittedFormDetailsSectionBloc>().add(
           GetViewSubmittedFormDetailsEvent(
             userId: userId!,
@@ -54,10 +61,10 @@ class _StatusSummaryScreenState extends State<StatusSummaryScreen> {
           ),
         );
       } else {
-        AppLoggerHelper.logError("No User ID found in Hive!");
+        AppLoggerHelper.logError("No userAuthData found in Hive!");
       }
     } catch (e) {
-      AppLoggerHelper.logError("Error fetching User ID: $e");
+      AppLoggerHelper.logError("Error fetching userAuthData: $e");
     }
   }
 
@@ -69,7 +76,6 @@ class _StatusSummaryScreenState extends State<StatusSummaryScreen> {
 
     // App Localization
     final appLoc = AppLocalizations.of(context)!;
-
 
     return Scaffold(
       backgroundColor: AppColorConstants.secondaryColor,

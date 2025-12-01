@@ -7,6 +7,7 @@ import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:meshal_doctor_booking_app/core/service/service.dart';
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 import 'package:meshal_doctor_booking_app/features/education/education.dart';
+import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
 
 class EducationArticlesScreen extends StatefulWidget {
   final String educationArticleId;
@@ -28,20 +29,26 @@ class _EducationArticlesScreenState extends State<EducationArticlesScreen> {
     super.initState();
   }
 
-  // Fetch Education Articles
+  // Fetch Education Articles using userAuthData
   Future<void> _fetchEducationArticles() async {
     try {
       await HiveService.openBox(AppDBConstants.userBox);
 
-      final storedUserId = await HiveService.getData<String>(
+      // Fetch stored userAuthData (no generic type)
+      final storedUserMapRaw = await HiveService.getData(
         boxName: AppDBConstants.userBox,
-        key: AppDBConstants.userId,
+        key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserId != null) {
-        userId = storedUserId;
+      if (storedUserMapRaw != null) {
+        // Safely convert dynamic map → Map<String, dynamic>
+        final storedUserMap = Map<String, dynamic>.from(storedUserMapRaw);
 
-        AppLoggerHelper.logInfo("User ID fetched: $userId");
+        // Convert Map → UserAuthModel
+        final storedUser = UserAuthModel.fromJson(storedUserMap);
+        userId = storedUser.id;
+
+        AppLoggerHelper.logInfo("User ID from userAuthData: $userId");
         AppLoggerHelper.logInfo(
           "Education Article ID: ${widget.educationArticleId}",
         );
@@ -54,10 +61,10 @@ class _EducationArticlesScreenState extends State<EducationArticlesScreen> {
           ),
         );
       } else {
-        AppLoggerHelper.logError("No User ID found in Hive!");
+        AppLoggerHelper.logError("No userAuthData found in Hive!");
       }
     } catch (e) {
-      AppLoggerHelper.logError("Error fetching User ID: $e");
+      AppLoggerHelper.logError("Error fetching User ID from userAuthData: $e");
     }
   }
 

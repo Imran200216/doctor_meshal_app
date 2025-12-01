@@ -14,3 +14,19 @@ final class GetUserAuthEvent extends UserAuthEvent {
   // TODO: implement props
   List<Object?> get props => [id, token];
 }
+
+class LoadCachedUserAuthEvent extends UserAuthEvent {
+  const LoadCachedUserAuthEvent();
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
+
+class ClearUserAuthCacheEvent extends UserAuthEvent {
+  const ClearUserAuthCacheEvent();
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}

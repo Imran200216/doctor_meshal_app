@@ -135,32 +135,59 @@ class _AuthRegisterState extends State<AuthRegister> {
             listener: (context, state) async {
               if (state is EmailAuthSuccess) {
                 try {
-                  // Open box
+                  // Open Hive box
                   await HiveService.openBox(AppDBConstants.userBox);
 
-                  // Save User ID
-                  await HiveService.saveData(
-                    boxName: AppDBConstants.userBox,
-                    key: AppDBConstants.userId,
-                    value: state.id,
+                  // Create full UserAuthModel
+                  final userModel = UserAuthModel(
+                    id: state.id,
+                    profileImage: "",
+                    firstName: _authFirstNameRegisterController.text.trim(),
+                    lastName: _authLastNameRegisterController.text.trim(),
+                    email: _authEmailRegisterController.text.trim(),
+                    phoneCode: selectedPhoneCode,
+                    phoneNumber: phoneNumber.trim(),
+                    registerDate: DateTime.now().toString(),
+                    age: "",
+                    gender: "",
+                    height: "",
+                    weight: "",
+                    bloodGroup: "",
+                    cid: "",
+                    createdAt: DateTime.now().toString(),
+                    updatedAt: DateTime.now().toString(),
+                    userType: "patient",
                   );
 
-                  // Read it back properly
-                  final userId = await HiveService.getData<String>(
+                  // Save full model in Hive
+                  await HiveService.saveData(
                     boxName: AppDBConstants.userBox,
-                    key: AppDBConstants.userId,
+                    key: AppDBConstants.userAuthData,
+                    value: userModel,
                   );
 
                   AppLoggerHelper.logInfo(
-                    "User ID stored successfully in Hive: $userId",
+                    "UserAuthModel successfully saved in Hive => $userModel",
+                  );
+
+                  await HiveService.saveData(
+                    boxName: AppDBConstants.userBox,
+                    key: AppDBConstants.userAuthLoggedStatus,
+                    value: true,
+                  );
+                  AppLoggerHelper.logInfo(
+                    "User Logged Status saved successfully in Hive",
                   );
                 } catch (e) {
-                  AppLoggerHelper.logError("Error storing User ID in Hive: $e");
+                  AppLoggerHelper.logError(
+                    "Error saving UserAuthModel in Hive: $e",
+                  );
                 }
 
-                // Show success FIRST
+                // Show success
                 KSnackBar.success(context, "Registration Success");
 
+                // Navigate
                 Future.delayed(const Duration(milliseconds: 400), () {
                   GoRouter.of(
                     context,
@@ -184,7 +211,6 @@ class _AuthRegisterState extends State<AuthRegister> {
                 btnTitleColor: AppColorConstants.secondaryColor,
                 onTap: () {
                   if (_formKey.currentState!.validate()) {
-                    // INTERNET CONNECTIVITY CHECK
                     final connectivityState = context
                         .read<ConnectivityBloc>()
                         .state;
@@ -196,7 +222,7 @@ class _AuthRegisterState extends State<AuthRegister> {
                       return;
                     }
 
-                    // Proceed with Register Event
+                    // Fire Register Event
                     context.read<EmailAuthBloc>().add(
                       EmailAuthRegisterEvent(
                         firstName: _authFirstNameRegisterController.text.trim(),

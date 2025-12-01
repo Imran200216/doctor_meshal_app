@@ -1,9 +1,6 @@
 import 'package:get_it/get_it.dart';
-import 'package:meshal_doctor_booking_app/core/service/graphql_service.dart';
-import 'package:meshal_doctor_booking_app/features/education/view_model/education/education_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/education/view_model/education_articles/education_articles_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/education/view_model/education_full_view_article/education_full_view_article_bloc.dart';
-import 'package:meshal_doctor_booking_app/features/education/view_model/education_sub_title/education_sub_title_bloc.dart';
+import 'package:meshal_doctor_booking_app/features/education/education.dart';
+import 'package:meshal_doctor_booking_app/core/service/service.dart';
 
 final GetIt getIt = GetIt.instance;
 

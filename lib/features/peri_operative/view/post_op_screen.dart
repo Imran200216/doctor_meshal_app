@@ -9,6 +9,7 @@ import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:meshal_doctor_booking_app/core/service/service.dart';
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/peri_operative.dart';
+import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
 
 class PostOpScreen extends StatefulWidget {
   const PostOpScreen({super.key});
@@ -33,25 +34,40 @@ class _PostOpScreenState extends State<PostOpScreen> {
     try {
       await HiveService.openBox(AppDBConstants.userBox);
 
-      final storedUserId = await HiveService.getData<String>(
+      // Get full stored user data
+      final storedUserMap = await HiveService.getData<Map>(
         boxName: AppDBConstants.userBox,
-        key: AppDBConstants.userId,
+        key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserId != null) {
-        userId = storedUserId;
-
-        AppLoggerHelper.logInfo("User ID fetched: $userId");
-
-        // Get Operative Form Events
-        context.read<OperativeFormBloc>().add(
-          GetOperativeFormEvents(userId: userId!, formType: "post"),
-        );
-      } else {
-        AppLoggerHelper.logError("No User ID found in Hive!");
+      if (storedUserMap == null) {
+        AppLoggerHelper.logError("No userAuthData found in Hive!");
+        return;
       }
+
+      // Convert Map → UserAuthModel
+      final storedUser = UserAuthModel.fromJson(
+        Map<String, dynamic>.from(storedUserMap),
+      );
+
+      // Extract ID
+      final String? storedUserId = storedUser.id;
+
+      if (storedUserId == null) {
+        AppLoggerHelper.logError("User ID is NULL inside userAuthData!");
+        return;
+      }
+
+      userId = storedUserId;
+
+      AppLoggerHelper.logInfo("Post Operative → User ID fetched: $userId");
+
+      // Dispatch event
+      context.read<OperativeFormBloc>().add(
+        GetOperativeFormEvents(userId: userId!, formType: "post"),
+      );
     } catch (e) {
-      AppLoggerHelper.logError("Error fetching User ID: $e");
+      AppLoggerHelper.logError("Error fetching User ID for Post Operative: $e");
     }
   }
 
