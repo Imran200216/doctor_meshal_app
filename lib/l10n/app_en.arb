@@ -164,5 +164,13 @@
   "patientStatus": "Patient Status",
   "doctorStatus": "Doctor Status",
   "somethingWentWrong": "Something went wrong",
-  "localization": "Localization"
+  "localization": "Localization",
+  "bio": "Bio",
+  "services": "Services",
+  "doctorInfo": "Doctor Info",
+  "patientFeedbacks": "Patient Feedbacks",
+  "writeFeedback": "Write your Feedback",
+  "enterFeedback": "Enter Feedback",
+  "feedback": "Feedback",
+  "submit": "Submit"
 }

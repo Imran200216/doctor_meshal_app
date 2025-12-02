@@ -79,4 +79,14 @@ class AppRouterConstants {
 
   // Home Chat
   static const String homeChat = "homeChat";
+
+  // Bio
+  static const String bio = "bio";
+
+  // Doctor Services
+  static const String doctorServices = "doctorServices";
+
+  // feedback
+  static const String writeFeedback = "writeFeedback";
+  static const String viewDoctorFeedback = "viewDoctorFeedback";
 }

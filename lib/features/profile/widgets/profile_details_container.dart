@@ -22,69 +22,72 @@ class ProfileDetailsContainer extends StatelessWidget {
     final isTablet = Responsive.isTablet(context);
     final isMobile = Responsive.isMobile(context);
 
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: AppColorConstants.subTitleColor.withOpacity(0.05),
-      ),
-      child: Row(
-        spacing: 20,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          // Profile Image
-          KProfileAvatar(
-            personImageUrl: profileImageUrl,
-            width: isMobile
-                ? 90
-                : isTablet
-                ? 100
-                : 110,
-            height: isMobile
-                ? 90
-                : isTablet
-                ? 100
-                : 110,
-          ),
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: AppColorConstants.subTitleColor.withOpacity(0.05),
+        ),
+        child: Row(
+          spacing: 20,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            // Profile Image
+            KProfileAvatar(
+              personImageUrl: profileImageUrl,
+              width: isMobile
+                  ? 90
+                  : isTablet
+                  ? 100
+                  : 110,
+              height: isMobile
+                  ? 90
+                  : isTablet
+                  ? 100
+                  : 110,
+            ),
 
 
 
-          Column(
-            spacing: 6,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Person Name
-              KText(
-                text: name,
-                textAlign: TextAlign.start,
-                overflow: TextOverflow.visible,
-                fontSize: isMobile
-                    ? 20
-                    : isTablet
-                    ? 22
-                    : 24,
-                fontWeight: FontWeight.w700,
-                color: AppColorConstants.titleColor,
-              ),
+            Column(
+              spacing: 6,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Person Name
+                KText(
+                  text: name,
+                  textAlign: TextAlign.start,
+                  overflow: TextOverflow.visible,
+                  fontSize: isMobile
+                      ? 20
+                      : isTablet
+                      ? 22
+                      : 24,
+                  fontWeight: FontWeight.w700,
+                  color: AppColorConstants.titleColor,
+                ),
 
-              // Person Email
-              KText(
-                text: email,
-                textAlign: TextAlign.start,
-                overflow: TextOverflow.visible,
-                fontSize: isMobile
-                    ? 16
-                    : isTablet
-                    ? 18
-                    : 20,
-                fontWeight: FontWeight.w500,
-                color: AppColorConstants.subTitleColor,
-              ),
-            ],
-          ),
-        ],
+                // Person Email
+                KText(
+                  text: email,
+                  textAlign: TextAlign.start,
+                  overflow: TextOverflow.visible,
+                  fontSize: isMobile
+                      ? 16
+                      : isTablet
+                      ? 18
+                      : 20,
+                  fontWeight: FontWeight.w500,
+                  color: AppColorConstants.subTitleColor,
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

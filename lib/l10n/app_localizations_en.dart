@@ -505,4 +505,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get localization => 'Localization';
+
+  @override
+  String get bio => 'Bio';
+
+  @override
+  String get services => 'Services';
+
+  @override
+  String get doctorInfo => 'Doctor Info';
+
+  @override
+  String get patientFeedbacks => 'Patient Feedbacks';
+
+  @override
+  String get writeFeedback => 'Write your Feedback';
+
+  @override
+  String get enterFeedback => 'Enter Feedback';
+
+  @override
+  String get feedback => 'Feedback';
+
+  @override
+  String get submit => 'Submit';
 }

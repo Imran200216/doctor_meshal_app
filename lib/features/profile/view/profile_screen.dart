@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
-import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
 import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:meshal_doctor_booking_app/core/service/service.dart';
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
@@ -20,162 +19,198 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  // User Id
+  String? userId;
+
   @override
   void initState() {
-    super.initState();
+    // Fetch User Auth
+    _fetchUserAuth();
 
-    // Load cached data immediately
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<UserAuthBloc>().add(LoadCachedUserAuthEvent());
-    });
+    super.initState();
   }
 
-  Future<void> _loadUserFromHiveAndFetch() async {
+  // Fetch Education Articles
+  Future<void> _fetchUserAuth() async {
     try {
       await HiveService.openBox(AppDBConstants.userBox);
 
-      final storedUserMap = await HiveService.getData<Map>(
+      // Read full userAuthData from Hive (no generic type)
+      final storedUserMapRaw = await HiveService.getData(
         boxName: AppDBConstants.userBox,
         key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserMap != null) {
-        final storedUser = UserAuthModel.fromJson(
-          Map<String, dynamic>.from(storedUserMap),
-        );
+      if (storedUserMapRaw != null) {
+        // Safely convert dynamic map → Map<String, dynamic>
+        final storedUserMap = Map<String, dynamic>.from(storedUserMapRaw);
 
-        final connectivityState = context.read<ConnectivityBloc>().state;
-        if (connectivityState is ConnectivitySuccess) {
-          context.read<UserAuthBloc>().add(
-            GetUserAuthEvent(id: storedUser.id, token: ""),
-          );
-        }
+        // Convert Map → UserAuthModel
+        final storedUser = UserAuthModel.fromJson(storedUserMap);
+        userId = storedUser.id;
+
+        AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
+
+        // Trigger EducationBloc to fetch data
+        context.read<UserAuthBloc>().add(
+          GetUserAuthEvent(id: userId!, token: ""),
+        );
+      } else {
+        AppLoggerHelper.logError("No userAuthData found in Hive!");
       }
     } catch (e) {
-      AppLoggerHelper.logError("Error loading user from Hive: $e");
+      AppLoggerHelper.logError("Error fetching User ID: $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    // Responsive
     final isTablet = Responsive.isTablet(context);
     final isMobile = Responsive.isMobile(context);
+
+    // App Localization
     final appLoc = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: AppColorConstants.secondaryColor,
       body: SafeArea(
-        child: BlocBuilder<ConnectivityBloc, ConnectivityState>(
-          builder: (context, connectivityState) {
-            return BlocBuilder<UserAuthBloc, UserAuthState>(
-              builder: (context, state) {
-                // Handle different states
-                if (state is GetUserAuthLoading) {
-                  // Check if we should show skeleton
-                  final bloc = context.read<UserAuthBloc>();
-                  if (bloc.getCachedUser() == null) {
-                    return ProfileSkeleton();
-                  }
-                }
-
-                if (state is GetUserAuthSuccess) {
-                  final bool isOnline =
-                      connectivityState is ConnectivitySuccess;
-                  final bool isOffline =
-                      connectivityState is ConnectivityFailure;
-
-                  return RefreshIndicator.adaptive(
-                    color: AppColorConstants.secondaryColor,
-                    backgroundColor: AppColorConstants.primaryColor,
-                    onRefresh: () async {
-                      if (isOnline) {
-                        await _loadUserFromHiveAndFetch();
-                      }
-                    },
-                    child: SingleChildScrollView(
-                      child: Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: isMobile
-                                ? 20
-                                : isTablet
-                                ? 30
-                                : 40,
-                            vertical: isMobile
-                                ? 20
-                                : isTablet
-                                ? 30
-                                : 40,
-                          ),
-                          child: Column(
-                            spacing: 20,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Profile Details
-                              ProfileDetailsContainer(
-                                profileImageUrl:
-                                    state.user.profileImage.isNotEmpty
-                                    ? state.user.profileImage
-                                    : "https://e-quester.com/wp-content/uploads/2021/11/placeholder-image-person-jpg.jpg",
-                                name:
-                                    "${state.user.firstName} ${state.user.lastName}",
-                                email: state.user.email,
-                              ),
-
-                              // Rest of your sections...
-                              _buildGeneralSection(
-                                context,
-                                appLoc,
-                                isMobile,
-                                isTablet,
-                              ),
-                              _buildSupportSection(
-                                context,
-                                appLoc,
-                                isMobile,
-                                isTablet,
-                              ),
-                              _buildLogoutSection(context, appLoc),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                }
-
-                if (state is GetUserAuthFailure) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.error_outline, size: 48, color: Colors.red),
-                        SizedBox(height: 16),
-                        Text(
-                          state.message,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: AppColorConstants.subTitleColor,
-                          ),
-                        ),
-                        SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: _loadUserFromHiveAndFetch,
-                          child: Text('Retry'),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                // Initial state
-                return ProfileSkeleton();
-              },
-            );
+        child: RefreshIndicator.adaptive(
+          color: AppColorConstants.secondaryColor,
+          backgroundColor: AppColorConstants.primaryColor,
+          onRefresh: () async {
+            // Fetch User Auth
+            _fetchUserAuth();
           },
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: isMobile
+                    ? 20
+                    : isTablet
+                    ? 30
+                    : 40,
+                vertical: isMobile
+                    ? 20
+                    : isTablet
+                    ? 30
+                    : 40,
+              ),
+              child: Column(
+                spacing: 20,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // My Account
+                  KText(
+                    text: appLoc.myAccount,
+                    fontSize: isMobile
+                        ? 20
+                        : isTablet
+                        ? 22
+                        : 24,
+                    fontWeight: FontWeight.w700,
+                  ),
+
+                  // Profile
+                  BlocBuilder<UserAuthBloc, UserAuthState>(
+                    builder: (context, state) {
+                      // Loading
+                      if (state is GetUserAuthLoading ||
+                          state is UserAuthInitial) {
+                        return CircularProgressIndicator();
+                      }
+
+                      // Success
+                      if (state is GetUserAuthSuccess) {
+                        final user = state.user;
+                        return ProfileDetailsContainer(
+                          profileImageUrl: user.profileImage.isNotEmpty
+                              ? user.profileImage
+                              : "https://e-quester.com/wp-content/uploads/2021/11/placeholder-image-person-jpg.jpg",
+                          name: "${user.firstName} ${user.lastName}",
+                          email: user.email,
+                        );
+                      }
+
+                      // Failure / Unknown state
+                      return SizedBox.shrink(); // Or any fallback widget
+                    },
+                  ),
+
+                  // General Section
+                  _buildGeneralSection(context, appLoc, isMobile, isTablet),
+
+                  // Doctor Bio Section
+                  _buildDoctorBioSection(context, appLoc, isMobile, isTablet),
+
+                  // Support Section
+                  _buildSupportSection(context, appLoc, isMobile, isTablet),
+
+                  // Logout Section
+                  _buildLogoutSection(context, appLoc),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
+    );
+  }
+
+  // Build Doctor Bio Section
+  Widget _buildDoctorBioSection(
+    BuildContext context,
+    AppLocalizations appLoc,
+    bool isMobile,
+    bool isTablet,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 20,
+      children: [
+        KText(
+          text: appLoc.doctorInfo,
+          fontSize: isMobile
+              ? 20
+              : isTablet
+              ? 22
+              : 24,
+          fontWeight: FontWeight.w700,
+          color: AppColorConstants.titleColor,
+        ),
+
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: AppColorConstants.subTitleColor.withOpacity(0.05),
+          ),
+          child: Column(
+            spacing: 10,
+            children: [
+              ProfileListTile(
+                prefixIcon: Icons.description_outlined,
+                title: appLoc.bio,
+                onTap: () {
+                  // Doctor Bio Screen
+                  GoRouter.of(context).pushNamed(AppRouterConstants.bio);
+                },
+              ),
+
+              ProfileListTile(
+                prefixIcon: Icons.health_and_safety_outlined,
+                title: appLoc.services,
+                onTap: () {
+                  // Doctor Services Screen
+                  GoRouter.of(
+                    context,
+                  ).pushNamed(AppRouterConstants.doctorServices);
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -299,6 +334,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   );
                 },
               ),
+
+              // Feedback
+              BlocBuilder<UserAuthBloc, UserAuthState>(
+                builder: (context, state) {
+                  if (state is GetUserAuthSuccess) {
+                    return ProfileListTile(
+                      prefixIcon: Icons.feedback_outlined,
+                      title: state.user.userType == "patient"
+                          ? appLoc.writeFeedback
+                          : appLoc.patientFeedbacks,
+                      onTap: () {
+                        // Screen
+                        GoRouter.of(context).pushNamed(
+                          state.user.userType == "patient"
+                              ? AppRouterConstants.writeFeedback
+                              : AppRouterConstants.viewDoctorFeedback,
+                        );
+                      },
+                    );
+                  }
+
+                  return SizedBox();
+                },
+              ),
             ],
           ),
         ),
@@ -376,11 +435,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               prefixIcon: Icons.logout,
               title: appLoc.logout,
               onTap: () {
-                // Get userId from UserAuthBloc
-                final userAuthBloc = context.read<UserAuthBloc>();
-                final userId = userAuthBloc.getCachedUserId();
-
-                if (userId == null || userId.isEmpty) {
+                if (userId == null || userId!.isEmpty) {
                   KSnackBar.error(context, "User ID not found");
                   return;
                 }
@@ -396,7 +451,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       onSubmitTap: () {
                         // Logout Functionality
                         context.read<EmailAuthBloc>().add(
-                          EmailAuthLogoutEvent(userId: userId),
+                          EmailAuthLogoutEvent(userId: userId!),
                         );
                       },
                     );

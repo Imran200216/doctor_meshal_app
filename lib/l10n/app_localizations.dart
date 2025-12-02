@@ -1090,6 +1090,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Localization'**
   String get localization;
+
+  /// No description provided for @bio.
+  ///
+  /// In en, this message translates to:
+  /// **'Bio'**
+  String get bio;
+
+  /// No description provided for @services.
+  ///
+  /// In en, this message translates to:
+  /// **'Services'**
+  String get services;
+
+  /// No description provided for @doctorInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor Info'**
+  String get doctorInfo;
+
+  /// No description provided for @patientFeedbacks.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient Feedbacks'**
+  String get patientFeedbacks;
+
+  /// No description provided for @writeFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Write your Feedback'**
+  String get writeFeedback;
+
+  /// No description provided for @enterFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Feedback'**
+  String get enterFeedback;
+
+  /// No description provided for @feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback'**
+  String get feedback;
+
+  /// No description provided for @submit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get submit;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -1,18 +1,21 @@
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
 import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
+import 'package:meshal_doctor_booking_app/features/bio/bio.dart';
 import 'package:meshal_doctor_booking_app/features/bottom_nav/bottom_nav.dart';
 import 'package:meshal_doctor_booking_app/features/change_password/change_password.dart';
 import 'package:meshal_doctor_booking_app/features/chat/chat.dart';
 import 'package:meshal_doctor_booking_app/features/doctor_peri_operative/doctor_peri_operative.dart';
 import 'package:meshal_doctor_booking_app/features/edit_personal_details/edit_personal_details.dart';
 import 'package:meshal_doctor_booking_app/features/education/education.dart';
+import 'package:meshal_doctor_booking_app/features/feedback/feedback.dart';
 import 'package:meshal_doctor_booking_app/features/intro/intro.dart';
 import 'package:meshal_doctor_booking_app/features/localization/localization.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/peri_operative.dart';
 import 'package:meshal_doctor_booking_app/features/personal_details/personal_details.dart';
 import 'package:meshal_doctor_booking_app/features/splash/splash.dart';
 import 'package:meshal_doctor_booking_app/features/profile/profile.dart';
+import 'package:meshal_doctor_booking_app/features/services/doctor_services.dart';
 
 GoRouter appRouter = GoRouter(
   initialLocation: "/splash",
@@ -318,6 +321,42 @@ GoRouter appRouter = GoRouter(
       name: AppRouterConstants.profileLocalization,
       builder: (context, state) {
         return ProfileLocalizationScreen();
+      },
+    ),
+
+    // Bio Screen
+    GoRoute(
+      path: '/bio',
+      name: AppRouterConstants.bio,
+      builder: (context, state) {
+        return BioScreen();
+      },
+    ),
+
+    // Services Screen
+    GoRoute(
+      path: '/doctorServices',
+      name: AppRouterConstants.doctorServices,
+      builder: (context, state) {
+        return DoctorServicesScreen();
+      },
+    ),
+
+    // Write Feedback Screen
+    GoRoute(
+      path: '/writeFeedback',
+      name: AppRouterConstants.writeFeedback,
+      builder: (context, state) {
+        return WriteFeedbackScreen();
+      },
+    ),
+
+    // Read Feedback Screen
+    GoRoute(
+      path: '/viewDoctorFeedback',
+      name: AppRouterConstants.viewDoctorFeedback,
+      builder: (context, state) {
+        return ViewDoctorFeedbackScreen();
       },
     ),
   ],

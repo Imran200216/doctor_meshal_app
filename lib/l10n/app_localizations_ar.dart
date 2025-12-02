@@ -505,4 +505,28 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get localization => 'اللغة';
+
+  @override
+  String get bio => 'السيرة الذاتية';
+
+  @override
+  String get services => 'الخدمات';
+
+  @override
+  String get doctorInfo => 'معلومات الطبيب';
+
+  @override
+  String get patientFeedbacks => 'آراء المرضى';
+
+  @override
+  String get writeFeedback => 'اكتب ملاحظاتك';
+
+  @override
+  String get enterFeedback => 'أدخل الملاحظات';
+
+  @override
+  String get feedback => 'الملاحظات';
+
+  @override
+  String get submit => 'إرسال';
 }

@@ -8,6 +8,9 @@ class AppAssetsConstants {
   // Jpeg
   static const String doctorIntro = "assets/images/jpeg/intro-doctor.jpeg";
 
+  static const String imagePlaceholder = "assets/images/jpeg/image-placeholder.jpg";
+
+
   // Svg
   static const String localization = "assets/icons/svg/localization.svg";
 
@@ -71,4 +74,6 @@ class AppAssetsConstants {
   static const String reset = "assets/icons/svg/reset.svg";
 
   static const String failure = "assets/icons/svg/failure.svg";
+
+
 }

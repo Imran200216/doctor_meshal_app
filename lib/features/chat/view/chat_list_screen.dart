@@ -256,7 +256,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
                       // Pass the chat room ID instead of chat.id
                       GoRouter.of(context).pushNamed(
-                        AppRouterConstants.homeChat,
+                        AppRouterConstants.chat,
                         extra: {
                           "receiverRoomId": chatRoomId,
                           // ← Changed from chat.id to chatRoomId

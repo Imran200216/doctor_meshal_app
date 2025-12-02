@@ -14,8 +14,10 @@ class KTextFormField extends StatelessWidget {
   final Iterable<String>? autofillHints;
   final int? maxLines;
 
+  final int? maxLength; // 👈 NEW optional parameter
+
   final Widget? prefixIcon;
-  final Function(String)? onChanged; // 👈 Optional onChanged callback
+  final Function(String)? onChanged;
 
   const KTextFormField({
     super.key,
@@ -29,7 +31,8 @@ class KTextFormField extends StatelessWidget {
     this.maxLines,
     this.readOnly = false,
     this.prefixIcon,
-    this.onChanged, // 👈 Added optional parameter
+    this.onChanged,
+    this.maxLength, // 👈 include in constructor
   });
 
   @override
@@ -44,11 +47,7 @@ class KTextFormField extends StatelessWidget {
           KText(
             textAlign: TextAlign.start,
             text: labelText!,
-            fontSize: isMobile
-                ? 16
-                : isTablet
-                ? 18
-                : 20,
+            fontSize: isMobile ? 16 : isTablet ? 18 : 20,
             fontWeight: FontWeight.w600,
             color: AppColorConstants.titleColor,
           ),
@@ -63,14 +62,12 @@ class KTextFormField extends StatelessWidget {
           keyboardType: keyboardType,
           autofillHints: autofillHints,
           maxLines: maxLines ?? 1,
+          maxLength: maxLength, // 👈 ADDED HERE
           style: const TextStyle(fontWeight: FontWeight.w600),
-
           onChanged: onChanged,
 
-          // 👈 Added here
           decoration: InputDecoration(
             prefixIcon: prefixIcon,
-
             filled: true,
             fillColor: AppColorConstants.secondaryColor.withOpacity(0.1),
 

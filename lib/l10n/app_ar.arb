@@ -164,6 +164,14 @@
   "patientStatus": "حالة المريض",
   "doctorStatus": "حالة الطبيب",
   "somethingWentWrong": "حدث خطأ ما",
-  "localization": "اللغة"
+  "localization": "اللغة",
+  "bio": "السيرة الذاتية",
+  "services": "الخدمات",
+  "doctorInfo": "معلومات الطبيب",
+  "patientFeedbacks": "آراء المرضى",
+  "writeFeedback": "اكتب ملاحظاتك",
+  "enterFeedback": "أدخل الملاحظات",
+  "feedback": "الملاحظات",
+  "submit": "إرسال"
 
 }
