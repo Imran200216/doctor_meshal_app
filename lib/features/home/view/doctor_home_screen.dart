@@ -61,15 +61,23 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
         key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserMap != null) {
+      // Read full userAuthData from Hive (no generic type)
+      final storedUserMapRaw = await HiveService.getData(
+        boxName: AppDBConstants.userBox,
+        key: AppDBConstants.userAuthData,
+      );
+
+      if (storedUserMapRaw != null) {
+        // Safely convert dynamic map → Map<String, dynamic>
+        final storedUserMap = Map<String, dynamic>.from(storedUserMapRaw);
+
         // Convert Map → UserAuthModel
         final storedUser = UserAuthModel.fromJson(storedUserMap);
-
         userId = storedUser.id;
 
         AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
 
-        // Dispatch event to get user details
+        // Trigger EducationBloc to fetch data
         context.read<UserAuthBloc>().add(
           GetUserAuthEvent(id: userId!, token: ""),
         );
