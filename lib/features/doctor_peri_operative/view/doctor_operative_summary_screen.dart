@@ -45,13 +45,17 @@ class _DoctorOperativeSummaryScreenState
     try {
       await HiveService.openBox(AppDBConstants.userBox);
 
-      // Read full userAuthData from Hive
-      final storedUserMap = await HiveService.getData<Map<String, dynamic>>(
+      // Read raw data from Hive (_Map<dynamic, dynamic>)
+      final storedUserMapDynamic = await HiveService.getData(
         boxName: AppDBConstants.userBox,
         key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserMap != null) {
+      if (storedUserMapDynamic != null) {
+        // Convert to Map<String, dynamic>
+        final Map<String, dynamic> storedUserMap =
+        Map<String, dynamic>.from(storedUserMapDynamic);
+
         // Convert Map → UserAuthModel
         final storedUser = UserAuthModel.fromJson(storedUserMap);
         userId = storedUser.id;
@@ -59,7 +63,7 @@ class _DoctorOperativeSummaryScreenState
         AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
         AppLoggerHelper.logInfo("Form ID Passed: ${widget.operativeFormId}");
 
-        // Get Operative Form Events
+        // Get Operative Form Summary Event
         context.read<SubmittedPatientFormDetailsSectionBloc>().add(
           GetSubmittedPatientFormDetailsSectionEvent(
             userId: userId!,
@@ -73,6 +77,7 @@ class _DoctorOperativeSummaryScreenState
       AppLoggerHelper.logError("Error fetching User ID from userAuthData: $e");
     }
   }
+
 
   @override
   void dispose() {

@@ -532,4 +532,145 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get viewPatientFeedback => 'View Patient Feedback';
+
+  @override
+  String get loading => 'Loading...';
+
+  @override
+  String get traumaService1 => 'All kinds of Shoulder, Clavicle, Scapula, Humerus, Elbow, Forearm, Wrist fracture or dislocation and soft tissue trauma.';
+
+  @override
+  String get traumaService2 => 'Acromioclavicular and Sternoclavicular joint dislocations.';
+
+  @override
+  String get traumaService3 => 'Pelvis and acetabulum fractures.';
+
+  @override
+  String get traumaService4 => 'All kinds of Hip, Femur, Tibia fractures or dislocation, and soft tissue trauma.';
+
+  @override
+  String get traumaService5 => 'Ankle fracture.';
+
+  @override
+  String get traumaService6 => 'Dislocation of bones.';
+
+  @override
+  String get traumaService7 => 'Stress fractures.';
+
+  @override
+  String get traumaService8 => 'Complex fractures of the upper and lower extremity.';
+
+  @override
+  String get traumaService9 => 'Intra-articular and periarticular fractures.';
+
+  @override
+  String get traumaService10 => 'Fracture nonunions.';
+
+  @override
+  String get traumaService11 => 'Fracture malunions.';
+
+  @override
+  String get traumaService12 => 'Bone infections.';
+
+  @override
+  String get traumaService13 => 'Complex Regional Pain Syndrome.';
+
+  @override
+  String get traumaService14 => 'Peri-prosthetic fractures of upper and lower limb.';
+
+  @override
+  String get traumaService15 => 'Post-traumatic deformity and arthritis.';
+
+  @override
+  String get traumaService16 => 'Minimally-invasive fracture stabilization.';
+
+  @override
+  String get traumaService17 => 'Arthroscopically assisted fracture care.';
+
+  @override
+  String get traumaService18 => 'Joint dislocation and ligamentous injuries.';
+
+  @override
+  String get traumaService19 => 'Osteoporosis.';
+
+  @override
+  String get traumaService20 => 'All kinds of geriatric fractures.';
+
+  @override
+  String get footAnkleService1 => 'All kinds of non-operative treatment of foot and ankle pathologies.';
+
+  @override
+  String get footAnkleService2 => 'All kinds of surgeries of Forefoot, Midfoot, Hindfoot, and Ankle.';
+
+  @override
+  String get footAnkleService3 => 'Hallux valgus.';
+
+  @override
+  String get footAnkleService4 => 'Lesser Toe deformity.';
+
+  @override
+  String get footAnkleService5 => 'Keratosis Disorder.';
+
+  @override
+  String get footAnkleService6 => 'Bunionette.';
+
+  @override
+  String get footAnkleService7 => 'Sesamoid and accessory bone issues.';
+
+  @override
+  String get footAnkleService8 => 'Disorders of foot and ankle nerves.';
+
+  @override
+  String get footAnkleService9 => 'Plantar heel pain.';
+
+  @override
+  String get footAnkleService10 => 'Diabetic foot and infections.';
+
+  @override
+  String get footAnkleService11 => 'Charcot foot.';
+
+  @override
+  String get footAnkleService12 => 'Benign foot and ankle tumors.';
+
+  @override
+  String get footAnkleService13 => 'Forefoot, Midfoot, Hindfoot and Ankle arthritis.';
+
+  @override
+  String get footAnkleService14 => 'Total ankle replacement.';
+
+  @override
+  String get footAnkleService15 => 'Pes Cavus deformities.';
+
+  @override
+  String get footAnkleService16 => 'Pes Planus deformities.';
+
+  @override
+  String get footAnkleService17 => 'Congenital and acquired neurological disorders.';
+
+  @override
+  String get footAnkleService18 => 'Tendon disorders.';
+
+  @override
+  String get footAnkleService19 => 'Foot and ankle sports injuries.';
+
+  @override
+  String get footAnkleService20 => 'Arthroscopy of foot and ankle.';
+
+  @override
+  String get footAnkleService21 => 'Minimal invasive foot and ankle surgery.';
+
+  @override
+  String get footAnkleService22 => 'All kinds of foot and ankle fractures and dislocations.';
+
+  @override
+  String get traumaServicesTitle => 'Trauma Services';
+
+  @override
+  String get traumaServicesDescription => 'All forms of fractures ranging from minor to severe, high complexity fractures, or fractures with complications.';
+
+  @override
+  String get footAnkleServicesTitle => 'Foot & Ankle Services';
+
+  @override
+  String get footAnkleServicesDescription => 'All forms of foot & ankle pathology ranging from minor to severe, high complex cases, or cases with complications.';
 }

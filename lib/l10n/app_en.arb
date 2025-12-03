@@ -173,5 +173,62 @@
   "enterFeedback": "Enter Feedback",
   "feedback": "Feedback",
   "submit": "Submit",
-  "viewPatientFeedback": "View Patient Feedback"
+  "viewPatientFeedback": "View Patient Feedback",
+  "loading": "Loading...",
+
+  "traumaService1": "All kinds of Shoulder, Clavicle, Scapula, Humerus, Elbow, Forearm, Wrist fracture or dislocation and soft tissue trauma.",
+  "traumaService2": "Acromioclavicular and Sternoclavicular joint dislocations.",
+  "traumaService3": "Pelvis and acetabulum fractures.",
+  "traumaService4": "All kinds of Hip, Femur, Tibia fractures or dislocation, and soft tissue trauma.",
+  "traumaService5": "Ankle fracture.",
+  "traumaService6": "Dislocation of bones.",
+  "traumaService7": "Stress fractures.",
+  "traumaService8": "Complex fractures of the upper and lower extremity.",
+  "traumaService9": "Intra-articular and periarticular fractures.",
+  "traumaService10": "Fracture nonunions.",
+  "traumaService11": "Fracture malunions.",
+  "traumaService12": "Bone infections.",
+  "traumaService13": "Complex Regional Pain Syndrome.",
+  "traumaService14": "Peri-prosthetic fractures of upper and lower limb.",
+  "traumaService15": "Post-traumatic deformity and arthritis.",
+  "traumaService16": "Minimally-invasive fracture stabilization.",
+  "traumaService17": "Arthroscopically assisted fracture care.",
+  "traumaService18": "Joint dislocation and ligamentous injuries.",
+  "traumaService19": "Osteoporosis.",
+  "traumaService20": "All kinds of geriatric fractures.",
+
+
+
+  "footAnkleService1": "All kinds of non-operative treatment of foot and ankle pathologies.",
+  "footAnkleService2": "All kinds of surgeries of Forefoot, Midfoot, Hindfoot, and Ankle.",
+  "footAnkleService3": "Hallux valgus.",
+  "footAnkleService4": "Lesser Toe deformity.",
+  "footAnkleService5": "Keratosis Disorder.",
+  "footAnkleService6": "Bunionette.",
+  "footAnkleService7": "Sesamoid and accessory bone issues.",
+  "footAnkleService8": "Disorders of foot and ankle nerves.",
+  "footAnkleService9": "Plantar heel pain.",
+  "footAnkleService10": "Diabetic foot and infections.",
+  "footAnkleService11": "Charcot foot.",
+  "footAnkleService12": "Benign foot and ankle tumors.",
+  "footAnkleService13": "Forefoot, Midfoot, Hindfoot and Ankle arthritis.",
+  "footAnkleService14": "Total ankle replacement.",
+  "footAnkleService15": "Pes Cavus deformities.",
+  "footAnkleService16": "Pes Planus deformities.",
+  "footAnkleService17": "Congenital and acquired neurological disorders.",
+  "footAnkleService18": "Tendon disorders.",
+  "footAnkleService19": "Foot and ankle sports injuries.",
+  "footAnkleService20": "Arthroscopy of foot and ankle.",
+  "footAnkleService21": "Minimal invasive foot and ankle surgery.",
+  "footAnkleService22": "All kinds of foot and ankle fractures and dislocations.",
+
+
+  "traumaServicesTitle": "Trauma Services",
+  "traumaServicesDescription": "All forms of fractures ranging from minor to severe, high complexity fractures, or fractures with complications.",
+
+  "footAnkleServicesTitle": "Foot & Ankle Services",
+  "footAnkleServicesDescription": "All forms of foot & ankle pathology ranging from minor to severe, high complex cases, or cases with complications."
+
+
+
 }

@@ -4,32 +4,23 @@ import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:meshal_doctor_booking_app/features/doctor_peri_operative/doctor_peri_operative.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
-import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 
-class ViewFullDoctorFeedbackContentScreen extends StatefulWidget {
-  const ViewFullDoctorFeedbackContentScreen({super.key});
+class ViewFullDoctorFeedbackContentScreen extends StatelessWidget {
+  final String patientName;
+  final String patientSubmittedDate;
+  final String patientFeedback;
 
-  @override
-  State<ViewFullDoctorFeedbackContentScreen> createState() =>
-      _ViewFullDoctorFeedbackContentScreenState();
-}
-
-class _ViewFullDoctorFeedbackContentScreenState
-    extends State<ViewFullDoctorFeedbackContentScreen> {
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
+  const ViewFullDoctorFeedbackContentScreen({
+    super.key,
+    required this.patientName,
+    required this.patientSubmittedDate,
+    required this.patientFeedback,
+  });
 
   @override
   Widget build(BuildContext context) {
     // App Localization
     final appLoc = AppLocalizations.of(context)!;
-
-    // Responsive
-    final isTablet = Responsive.isTablet(context);
-    final isMobile = Responsive.isMobile(context);
 
     return Scaffold(
       appBar: KAppBar(
@@ -49,19 +40,19 @@ class _ViewFullDoctorFeedbackContentScreenState
               // Patient Name
               DoctorOperativeTextRich(
                 title: "Patient Name: ",
-                content: "Imran B",
+                content: patientName,
               ),
 
               // Submitted Date
               DoctorOperativeTextRich(
                 title: "Submitted Date",
-                content: "22/11/2025",
+                content: patientSubmittedDate,
               ),
 
               // Submitted Date
               DoctorOperativeTextRich(
                 title: "Feedback",
-                content: "Good Doctor, his advice make my health more longer",
+                content: patientFeedback,
               ),
             ],
           ),

@@ -532,4 +532,145 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get viewPatientFeedback => 'عرض ملاحظات المريض';
+
+  @override
+  String get loading => 'جارٍ التحميل...';
+
+  @override
+  String get traumaService1 => 'جميع أنواع كسور أو خلع الكتف، الترقوة، لوح الكتف، العضد، المرفق، الساعد، الرسغ وإصابات الأنسجة الرخوة.';
+
+  @override
+  String get traumaService2 => 'خلوع مفاصل الأخرم الترقوي والمفصل القصي الترقوي.';
+
+  @override
+  String get traumaService3 => 'كسور الحوض والحُقّ.';
+
+  @override
+  String get traumaService4 => 'جميع أنواع كسور أو خلع الورك، عظم الفخذ، الساق (الظنبوب)، وإصابات الأنسجة الرخوة.';
+
+  @override
+  String get traumaService5 => 'كسر الكاحل.';
+
+  @override
+  String get traumaService6 => 'خلع العظام.';
+
+  @override
+  String get traumaService7 => 'كسور الإجهاد.';
+
+  @override
+  String get traumaService8 => 'الكسور المعقدة للأطراف العلوية والسفلية.';
+
+  @override
+  String get traumaService9 => 'الكسور داخل المفصل وحول المفصل.';
+
+  @override
+  String get traumaService10 => 'عدم التئام الكسور.';
+
+  @override
+  String get traumaService11 => 'سوء التئام الكسور.';
+
+  @override
+  String get traumaService12 => 'التهابات العظام.';
+
+  @override
+  String get traumaService13 => 'متلازمة الألم الإقليمي المعقد.';
+
+  @override
+  String get traumaService14 => 'كسور حول الأطراف الصناعية في الأطراف العلوية والسفلية.';
+
+  @override
+  String get traumaService15 => 'تشوهات ما بعد الصدمة والتهاب المفاصل.';
+
+  @override
+  String get traumaService16 => 'تثبيت الكسور بالحد الأدنى من التدخل الجراحي.';
+
+  @override
+  String get traumaService17 => 'علاج الكسور بمساعدة تنظير المفصل.';
+
+  @override
+  String get traumaService18 => 'خلوع المفاصل وإصابات الأربطة.';
+
+  @override
+  String get traumaService19 => 'هشاشة العظام.';
+
+  @override
+  String get traumaService20 => 'جميع أنواع الكسور لدى كبار السن.';
+
+  @override
+  String get footAnkleService1 => 'جميع أنواع العلاج غير الجراحي لأمراض القدم والكاحل.';
+
+  @override
+  String get footAnkleService2 => 'جميع أنواع جراحات مقدمة القدم، منتصف القدم، مؤخرة القدم، والكاحل.';
+
+  @override
+  String get footAnkleService3 => 'إبهام القدم الأروح (Hallux valgus).';
+
+  @override
+  String get footAnkleService4 => 'تشوه أصابع القدم الصغيرة.';
+
+  @override
+  String get footAnkleService5 => 'اضطراب التقرّن (Keratosis).';
+
+  @override
+  String get footAnkleService6 => 'الورم الصغير (Bunionette).';
+
+  @override
+  String get footAnkleService7 => 'مشاكل العظام السمسمية والعظام الإضافية.';
+
+  @override
+  String get footAnkleService8 => 'اضطرابات أعصاب القدم والكاحل.';
+
+  @override
+  String get footAnkleService9 => 'ألم الكعب الأخمصي.';
+
+  @override
+  String get footAnkleService10 => 'القدم السكري والالتهابات.';
+
+  @override
+  String get footAnkleService11 => 'قدم شاركو.';
+
+  @override
+  String get footAnkleService12 => 'الأورام الحميدة في القدم والكاحل.';
+
+  @override
+  String get footAnkleService13 => 'التهاب مفاصل مقدمة القدم، منتصف القدم، مؤخرة القدم والكاحل.';
+
+  @override
+  String get footAnkleService14 => 'استبدال الكاحل الكامل.';
+
+  @override
+  String get footAnkleService15 => 'تشوهات القدم المقوسة (Pes Cavus).';
+
+  @override
+  String get footAnkleService16 => 'تشوهات القدم المسطحة (Pes Planus).';
+
+  @override
+  String get footAnkleService17 => 'الاضطرابات العصبية الخلقية والمكتسبة.';
+
+  @override
+  String get footAnkleService18 => 'اضطرابات الأوتار.';
+
+  @override
+  String get footAnkleService19 => 'إصابات القدم والكاحل الرياضية.';
+
+  @override
+  String get footAnkleService20 => 'تنظير القدم والكاحل.';
+
+  @override
+  String get footAnkleService21 => 'الجراحة طفيفة التوغل للقدم والكاحل.';
+
+  @override
+  String get footAnkleService22 => 'جميع أنواع كسور وخلوع القدم والكاحل.';
+
+  @override
+  String get traumaServicesTitle => 'خدمات الإصابات والعظام';
+
+  @override
+  String get traumaServicesDescription => 'جميع أنواع الكسور من البسيطة إلى الشديدة، والكسور عالية التعقيد، أو الكسور المصحوبة بمضاعفات.';
+
+  @override
+  String get footAnkleServicesTitle => 'خدمات القدم والكاحل';
+
+  @override
+  String get footAnkleServicesDescription => 'جميع حالات أمراض القدم والكاحل من البسيطة إلى الشديدة، والحالات عالية التعقيد، أو الحالات المصحوبة بمضاعفات.';
 }

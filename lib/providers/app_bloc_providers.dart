@@ -2,12 +2,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
+import 'package:meshal_doctor_booking_app/features/bio/bio.dart';
 import 'package:meshal_doctor_booking_app/features/bottom_nav/bottom_nav.dart';
 import 'package:meshal_doctor_booking_app/features/change_password/change_password.dart';
 import 'package:meshal_doctor_booking_app/features/chat/chat.dart';
 import 'package:meshal_doctor_booking_app/features/doctor_peri_operative/doctor_peri_operative.dart';
 import 'package:meshal_doctor_booking_app/features/edit_personal_details/edit_personal_details.dart';
 import 'package:meshal_doctor_booking_app/features/education/education.dart';
+import 'package:meshal_doctor_booking_app/features/feedback/feedback.dart';
 import 'package:meshal_doctor_booking_app/features/home/home.dart';
 import 'package:meshal_doctor_booking_app/features/localization/localization.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/peri_operative.dart';
@@ -157,5 +159,15 @@ List<BlocProvider> appBlocProviders = [
   BlocProvider<DoctorReviewPatientSubmittedOperationFormsBloc>(
     create: (context) =>
         getIt<DoctorReviewPatientSubmittedOperationFormsBloc>(),
+  ),
+
+  // Doctor Bio Bloc
+  BlocProvider<ViewDoctorBioBloc>(
+    create: (context) => getIt<ViewDoctorBioBloc>(),
+  ),
+
+  // Doctor Feedback Bloc
+  BlocProvider<DoctorFeedbackBloc>(
+    create: (context) => getIt<DoctorFeedbackBloc>(),
   ),
 ];

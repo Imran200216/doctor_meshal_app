@@ -117,7 +117,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       // Loading
                       if (state is GetUserAuthLoading ||
                           state is UserAuthInitial) {
-                        return CircularProgressIndicator();
+                        return KSkeletonRectangle(
+                          height: isMobile
+                              ? 150
+                              : isTablet
+                              ? 200
+                              : 240,
+                        );
                       }
 
                       // Success

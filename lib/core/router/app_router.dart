@@ -365,7 +365,13 @@ GoRouter appRouter = GoRouter(
       path: '/viewFullDoctorFeedbackContent',
       name: AppRouterConstants.viewFullDoctorFeedbackContent,
       builder: (context, state) {
-        return ViewFullDoctorFeedbackContentScreen();
+        final extra = state.extra as Map<String, dynamic>;
+
+        return ViewFullDoctorFeedbackContentScreen(
+          patientName: extra["patientName"],
+          patientSubmittedDate: extra["feedBackSubmittedDate"],
+          patientFeedback: extra["patientFeedbackContent"],
+        );
       },
     ),
   ],

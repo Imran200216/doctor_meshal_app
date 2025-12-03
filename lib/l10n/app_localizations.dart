@@ -1144,6 +1144,288 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View Patient Feedback'**
   String get viewPatientFeedback;
+
+  /// No description provided for @loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading;
+
+  /// No description provided for @traumaService1.
+  ///
+  /// In en, this message translates to:
+  /// **'All kinds of Shoulder, Clavicle, Scapula, Humerus, Elbow, Forearm, Wrist fracture or dislocation and soft tissue trauma.'**
+  String get traumaService1;
+
+  /// No description provided for @traumaService2.
+  ///
+  /// In en, this message translates to:
+  /// **'Acromioclavicular and Sternoclavicular joint dislocations.'**
+  String get traumaService2;
+
+  /// No description provided for @traumaService3.
+  ///
+  /// In en, this message translates to:
+  /// **'Pelvis and acetabulum fractures.'**
+  String get traumaService3;
+
+  /// No description provided for @traumaService4.
+  ///
+  /// In en, this message translates to:
+  /// **'All kinds of Hip, Femur, Tibia fractures or dislocation, and soft tissue trauma.'**
+  String get traumaService4;
+
+  /// No description provided for @traumaService5.
+  ///
+  /// In en, this message translates to:
+  /// **'Ankle fracture.'**
+  String get traumaService5;
+
+  /// No description provided for @traumaService6.
+  ///
+  /// In en, this message translates to:
+  /// **'Dislocation of bones.'**
+  String get traumaService6;
+
+  /// No description provided for @traumaService7.
+  ///
+  /// In en, this message translates to:
+  /// **'Stress fractures.'**
+  String get traumaService7;
+
+  /// No description provided for @traumaService8.
+  ///
+  /// In en, this message translates to:
+  /// **'Complex fractures of the upper and lower extremity.'**
+  String get traumaService8;
+
+  /// No description provided for @traumaService9.
+  ///
+  /// In en, this message translates to:
+  /// **'Intra-articular and periarticular fractures.'**
+  String get traumaService9;
+
+  /// No description provided for @traumaService10.
+  ///
+  /// In en, this message translates to:
+  /// **'Fracture nonunions.'**
+  String get traumaService10;
+
+  /// No description provided for @traumaService11.
+  ///
+  /// In en, this message translates to:
+  /// **'Fracture malunions.'**
+  String get traumaService11;
+
+  /// No description provided for @traumaService12.
+  ///
+  /// In en, this message translates to:
+  /// **'Bone infections.'**
+  String get traumaService12;
+
+  /// No description provided for @traumaService13.
+  ///
+  /// In en, this message translates to:
+  /// **'Complex Regional Pain Syndrome.'**
+  String get traumaService13;
+
+  /// No description provided for @traumaService14.
+  ///
+  /// In en, this message translates to:
+  /// **'Peri-prosthetic fractures of upper and lower limb.'**
+  String get traumaService14;
+
+  /// No description provided for @traumaService15.
+  ///
+  /// In en, this message translates to:
+  /// **'Post-traumatic deformity and arthritis.'**
+  String get traumaService15;
+
+  /// No description provided for @traumaService16.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimally-invasive fracture stabilization.'**
+  String get traumaService16;
+
+  /// No description provided for @traumaService17.
+  ///
+  /// In en, this message translates to:
+  /// **'Arthroscopically assisted fracture care.'**
+  String get traumaService17;
+
+  /// No description provided for @traumaService18.
+  ///
+  /// In en, this message translates to:
+  /// **'Joint dislocation and ligamentous injuries.'**
+  String get traumaService18;
+
+  /// No description provided for @traumaService19.
+  ///
+  /// In en, this message translates to:
+  /// **'Osteoporosis.'**
+  String get traumaService19;
+
+  /// No description provided for @traumaService20.
+  ///
+  /// In en, this message translates to:
+  /// **'All kinds of geriatric fractures.'**
+  String get traumaService20;
+
+  /// No description provided for @footAnkleService1.
+  ///
+  /// In en, this message translates to:
+  /// **'All kinds of non-operative treatment of foot and ankle pathologies.'**
+  String get footAnkleService1;
+
+  /// No description provided for @footAnkleService2.
+  ///
+  /// In en, this message translates to:
+  /// **'All kinds of surgeries of Forefoot, Midfoot, Hindfoot, and Ankle.'**
+  String get footAnkleService2;
+
+  /// No description provided for @footAnkleService3.
+  ///
+  /// In en, this message translates to:
+  /// **'Hallux valgus.'**
+  String get footAnkleService3;
+
+  /// No description provided for @footAnkleService4.
+  ///
+  /// In en, this message translates to:
+  /// **'Lesser Toe deformity.'**
+  String get footAnkleService4;
+
+  /// No description provided for @footAnkleService5.
+  ///
+  /// In en, this message translates to:
+  /// **'Keratosis Disorder.'**
+  String get footAnkleService5;
+
+  /// No description provided for @footAnkleService6.
+  ///
+  /// In en, this message translates to:
+  /// **'Bunionette.'**
+  String get footAnkleService6;
+
+  /// No description provided for @footAnkleService7.
+  ///
+  /// In en, this message translates to:
+  /// **'Sesamoid and accessory bone issues.'**
+  String get footAnkleService7;
+
+  /// No description provided for @footAnkleService8.
+  ///
+  /// In en, this message translates to:
+  /// **'Disorders of foot and ankle nerves.'**
+  String get footAnkleService8;
+
+  /// No description provided for @footAnkleService9.
+  ///
+  /// In en, this message translates to:
+  /// **'Plantar heel pain.'**
+  String get footAnkleService9;
+
+  /// No description provided for @footAnkleService10.
+  ///
+  /// In en, this message translates to:
+  /// **'Diabetic foot and infections.'**
+  String get footAnkleService10;
+
+  /// No description provided for @footAnkleService11.
+  ///
+  /// In en, this message translates to:
+  /// **'Charcot foot.'**
+  String get footAnkleService11;
+
+  /// No description provided for @footAnkleService12.
+  ///
+  /// In en, this message translates to:
+  /// **'Benign foot and ankle tumors.'**
+  String get footAnkleService12;
+
+  /// No description provided for @footAnkleService13.
+  ///
+  /// In en, this message translates to:
+  /// **'Forefoot, Midfoot, Hindfoot and Ankle arthritis.'**
+  String get footAnkleService13;
+
+  /// No description provided for @footAnkleService14.
+  ///
+  /// In en, this message translates to:
+  /// **'Total ankle replacement.'**
+  String get footAnkleService14;
+
+  /// No description provided for @footAnkleService15.
+  ///
+  /// In en, this message translates to:
+  /// **'Pes Cavus deformities.'**
+  String get footAnkleService15;
+
+  /// No description provided for @footAnkleService16.
+  ///
+  /// In en, this message translates to:
+  /// **'Pes Planus deformities.'**
+  String get footAnkleService16;
+
+  /// No description provided for @footAnkleService17.
+  ///
+  /// In en, this message translates to:
+  /// **'Congenital and acquired neurological disorders.'**
+  String get footAnkleService17;
+
+  /// No description provided for @footAnkleService18.
+  ///
+  /// In en, this message translates to:
+  /// **'Tendon disorders.'**
+  String get footAnkleService18;
+
+  /// No description provided for @footAnkleService19.
+  ///
+  /// In en, this message translates to:
+  /// **'Foot and ankle sports injuries.'**
+  String get footAnkleService19;
+
+  /// No description provided for @footAnkleService20.
+  ///
+  /// In en, this message translates to:
+  /// **'Arthroscopy of foot and ankle.'**
+  String get footAnkleService20;
+
+  /// No description provided for @footAnkleService21.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimal invasive foot and ankle surgery.'**
+  String get footAnkleService21;
+
+  /// No description provided for @footAnkleService22.
+  ///
+  /// In en, this message translates to:
+  /// **'All kinds of foot and ankle fractures and dislocations.'**
+  String get footAnkleService22;
+
+  /// No description provided for @traumaServicesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trauma Services'**
+  String get traumaServicesTitle;
+
+  /// No description provided for @traumaServicesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'All forms of fractures ranging from minor to severe, high complexity fractures, or fractures with complications.'**
+  String get traumaServicesDescription;
+
+  /// No description provided for @footAnkleServicesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Foot & Ankle Services'**
+  String get footAnkleServicesTitle;
+
+  /// No description provided for @footAnkleServicesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'All forms of foot & ankle pathology ranging from minor to severe, high complex cases, or cases with complications.'**
+  String get footAnkleServicesDescription;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

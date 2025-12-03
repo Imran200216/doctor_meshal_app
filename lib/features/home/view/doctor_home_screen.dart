@@ -49,35 +49,29 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
     }
   }
 
-  // Fetch Education Articles using userAuthData
+  // Fetch User Auth
   Future<void> _fetchUserAuth() async {
     try {
-      // Open Hive box
       await HiveService.openBox(AppDBConstants.userBox);
 
-      // Fetch stored userAuthData
-      final storedUserMap = await HiveService.getData<Map<String, dynamic>>(
-        boxName: AppDBConstants.userBox,
-        key: AppDBConstants.userAuthData,
-      );
-
-      // Read full userAuthData from Hive (no generic type)
       final storedUserMapRaw = await HiveService.getData(
         boxName: AppDBConstants.userBox,
         key: AppDBConstants.userAuthData,
       );
 
       if (storedUserMapRaw != null) {
-        // Safely convert dynamic map → Map<String, dynamic>
-        final storedUserMap = Map<String, dynamic>.from(storedUserMapRaw);
+        // SAFE conversion
+        final Map<String, dynamic> storedUserMap = Map<String, dynamic>.from(
+          storedUserMapRaw as Map,
+        );
 
-        // Convert Map → UserAuthModel
+        // Convert to model
         final storedUser = UserAuthModel.fromJson(storedUserMap);
         userId = storedUser.id;
 
         AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
 
-        // Trigger EducationBloc to fetch data
+        // Trigger Bloc
         context.read<UserAuthBloc>().add(
           GetUserAuthEvent(id: userId!, token: ""),
         );

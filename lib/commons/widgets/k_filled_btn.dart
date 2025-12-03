@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
+import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 
 class KFilledBtn extends StatelessWidget {
   final String btnTitle;
@@ -28,6 +29,8 @@ class KFilledBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appLoc = AppLocalizations.of(context)!;
+
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
@@ -45,21 +48,13 @@ class KFilledBtn extends StatelessWidget {
             color: btnBgColor,
           ),
           child: Center(
-            child: isLoading
-                ? SizedBox(
-                    height: btnHeight * 0.6,
-                    width: btnHeight * 0.6,
-                    child: CircularProgressIndicator.adaptive(
-                      strokeWidth: 2,
-                    ),
-                  )
-                : KText(
-                    text: btnTitle,
-                    fontSize: fontSize,
-                    color: btnTitleColor,
-                    fontWeight: FontWeight.w600,
-                    textAlign: TextAlign.center,
-                  ),
+            child: KText(
+              text: isLoading ? appLoc.loading : btnTitle,
+              fontSize: fontSize,
+              color: btnTitleColor,
+              fontWeight: FontWeight.w600,
+              textAlign: TextAlign.center,
+            ),
           ),
         ),
       ),

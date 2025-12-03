@@ -12,7 +12,6 @@ import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
 
-
 class DoctorPreOpScreen extends StatefulWidget {
   const DoctorPreOpScreen({super.key});
 
@@ -38,25 +37,25 @@ class _DoctorPreOpScreenState extends State<DoctorPreOpScreen> {
   }
 
   // Fetch Peri Operative Form
-  // Fetch Peri Operative Form
   Future<void> _fetchDoctorPreOperative() async {
     try {
       await HiveService.openBox(AppDBConstants.userBox);
 
-      // Read full userAuthData from Hive
-      final storedUserMap = await HiveService.getData<Map<String, dynamic>>(
+      final storedUserMapDynamic = await HiveService.getData(
         boxName: AppDBConstants.userBox,
         key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserMap != null) {
-        // Convert Map → UserAuthModel
+      if (storedUserMapDynamic != null) {
+        final Map<String, dynamic> storedUserMap = Map<String, dynamic>.from(
+          storedUserMapDynamic,
+        );
+
         final storedUser = UserAuthModel.fromJson(storedUserMap);
         userId = storedUser.id;
 
         AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
 
-        // Get Operative Form Events
         context.read<ViewDoctorOperativeFormBloc>().add(
           GetViewDoctorOperativeFormEvent(doctorId: userId!, formType: "pre"),
         );
@@ -67,7 +66,6 @@ class _DoctorPreOpScreenState extends State<DoctorPreOpScreen> {
       AppLoggerHelper.logError("Error fetching User ID from userAuthData: $e");
     }
   }
-
 
   // Debounce Search Changed
   void _onSearchChanged(String query) {
