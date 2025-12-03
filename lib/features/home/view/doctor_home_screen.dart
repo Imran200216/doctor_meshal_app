@@ -83,6 +83,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
     }
   }
 
+  // Fetch Doctor Dashboard Summary Counts
   Future<void> _fetchDoctorDashboardSummaryCounts() async {
     try {
       await HiveService.openBox(AppDBConstants.userBox);
