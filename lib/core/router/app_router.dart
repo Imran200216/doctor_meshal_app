@@ -359,5 +359,14 @@ GoRouter appRouter = GoRouter(
         return ViewDoctorFeedbackScreen();
       },
     ),
+
+    // View Full Doctor Feedback Content Screen
+    GoRoute(
+      path: '/viewFullDoctorFeedbackContent',
+      name: AppRouterConstants.viewFullDoctorFeedbackContent,
+      builder: (context, state) {
+        return ViewFullDoctorFeedbackContentScreen();
+      },
+    ),
   ],
 );

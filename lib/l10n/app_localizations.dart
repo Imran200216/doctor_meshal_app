@@ -1138,6 +1138,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Submit'**
   String get submit;
+
+  /// No description provided for @viewPatientFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'View Patient Feedback'**
+  String get viewPatientFeedback;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

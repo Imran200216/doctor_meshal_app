@@ -3,7 +3,6 @@ import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
 import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 
-
 class DoctorOperativeTextRich extends StatelessWidget {
   final String title;
   final String content;
@@ -27,6 +26,7 @@ class DoctorOperativeTextRich extends StatelessWidget {
         TextSpan(
           text: "$title: ",
           style: TextStyle(
+            fontFamily: "OpenSans",
             fontSize: isMobile
                 ? 16
                 : isTablet
@@ -39,6 +39,7 @@ class DoctorOperativeTextRich extends StatelessWidget {
         TextSpan(
           text: content,
           style: TextStyle(
+            fontFamily: "OpenSans",
             fontSize: isMobile
                 ? 16
                 : isTablet

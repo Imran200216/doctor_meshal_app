@@ -529,4 +529,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get submit => 'إرسال';
+
+  @override
+  String get viewPatientFeedback => 'عرض ملاحظات المريض';
 }

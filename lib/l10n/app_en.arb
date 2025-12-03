@@ -172,5 +172,6 @@
   "writeFeedback": "Write your Feedback",
   "enterFeedback": "Enter Feedback",
   "feedback": "Feedback",
-  "submit": "Submit"
+  "submit": "Submit",
+  "viewPatientFeedback": "View Patient Feedback"
 }

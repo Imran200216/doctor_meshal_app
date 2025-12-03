@@ -25,6 +25,12 @@ class DoctorListTile extends StatelessWidget {
     final isMobile = Responsive.isMobile(context);
 
     return ListTile(
+
+      splashColor: AppColorConstants.transparentColor,
+      hoverColor: AppColorConstants.transparentColor,
+      focusColor: AppColorConstants.transparentColor,
+      tileColor: AppColorConstants.transparentColor,
+
       onTap: () {
         // Haptics
         HapticFeedback.heavyImpact();

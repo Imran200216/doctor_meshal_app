@@ -172,6 +172,8 @@
   "writeFeedback": "اكتب ملاحظاتك",
   "enterFeedback": "أدخل الملاحظات",
   "feedback": "الملاحظات",
-  "submit": "إرسال"
+  "submit": "إرسال",
+  "viewPatientFeedback": "عرض ملاحظات المريض"
+
 
 }

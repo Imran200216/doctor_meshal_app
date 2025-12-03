@@ -28,6 +28,11 @@ class ProfileListTile extends StatelessWidget {
         onTap();
       },
       child: ListTile(
+        splashColor: AppColorConstants.transparentColor,
+        hoverColor: AppColorConstants.transparentColor,
+        focusColor: AppColorConstants.transparentColor,
+        tileColor: AppColorConstants.transparentColor,
+
         leading: Icon(prefixIcon, color: AppColorConstants.titleColor),
         title: Text(title),
         titleTextStyle: TextStyle(

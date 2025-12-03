@@ -55,6 +55,7 @@ class DoctorOperativeSubmittedFormSummary extends StatelessWidget {
                 // Options (Checkbox List)
                 ...section.formOption.map((option) {
                   return CheckboxListTile(
+
                     value: option.answerStatus,
                     onChanged: null,
                     //  Read-only summary

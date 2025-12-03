@@ -89,27 +89,27 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
     }
   }
 
-  // Fetch Doctor Dashboard Summary Counts using userAuthData
   Future<void> _fetchDoctorDashboardSummaryCounts() async {
     try {
-      // Open Hive box
       await HiveService.openBox(AppDBConstants.userBox);
 
-      // Fetch stored userAuthData
-      final storedUserMap = await HiveService.getData<Map<String, dynamic>>(
+      // Read userAuthData from Hive safely
+      final storedUserMapRaw = await HiveService.getData(
         boxName: AppDBConstants.userBox,
         key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserMap != null) {
-        // Convert Map → UserAuthModel
-        final storedUser = UserAuthModel.fromJson(storedUserMap);
+      if (storedUserMapRaw != null) {
+        // Convert dynamic map → Map<String, dynamic>
+        final storedUserMap = Map<String, dynamic>.from(storedUserMapRaw);
 
+        // Parse model
+        final storedUser = UserAuthModel.fromJson(storedUserMap);
         userId = storedUser.id;
 
         AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
 
-        // Dispatch event to get doctor dashboard summary counts
+        // Dispatch event
         context.read<DoctorDashboardSummaryCountsBloc>().add(
           GetDoctorDashboardSummaryCountsEvent(userId: userId!),
         );
@@ -127,16 +127,18 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
       // Open Hive box
       await HiveService.openBox(AppDBConstants.userBox);
 
-      // Fetch stored userAuthData
-      final storedUserMap = await HiveService.getData<Map<String, dynamic>>(
+      // Read full userAuthData from Hive (no generic type)
+      final storedUserMapRaw = await HiveService.getData(
         boxName: AppDBConstants.userBox,
         key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserMap != null) {
+      if (storedUserMapRaw != null) {
+        // Safely convert dynamic map → Map<String, dynamic>
+        final storedUserMap = Map<String, dynamic>.from(storedUserMapRaw);
+
         // Convert Map → UserAuthModel
         final storedUser = UserAuthModel.fromJson(storedUserMap);
-
         userId = storedUser.id;
 
         AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
@@ -158,13 +160,16 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
     try {
       await HiveService.openBox(AppDBConstants.userBox);
 
-      // Fetch stored userAuthData
-      final storedUserMap = await HiveService.getData<Map<String, dynamic>>(
+      // Read full userAuthData from Hive (no generic type)
+      final storedUserMapRaw = await HiveService.getData(
         boxName: AppDBConstants.userBox,
         key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserMap != null && mounted) {
+      if (storedUserMapRaw != null && mounted) {
+        // Safely convert dynamic map → Map<String, dynamic>
+        final storedUserMap = Map<String, dynamic>.from(storedUserMapRaw);
+
         // Convert Map → UserAuthModel
         final storedUser = UserAuthModel.fromJson(storedUserMap);
         userId = storedUser.id;

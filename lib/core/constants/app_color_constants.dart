@@ -21,4 +21,7 @@ class AppColorConstants {
 
   // Notification Bg Color
   static const Color notificationBgColor = Color(0xFFBA1A1B);
+
+  // Transparent Color
+  static const Color transparentColor = Colors.transparent;
 }

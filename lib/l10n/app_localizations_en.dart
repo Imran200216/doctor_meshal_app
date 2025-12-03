@@ -529,4 +529,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get submit => 'Submit';
+
+  @override
+  String get viewPatientFeedback => 'View Patient Feedback';
 }
