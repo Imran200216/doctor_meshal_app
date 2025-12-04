@@ -68,6 +68,9 @@ class _EducationScreenState extends State<EducationScreen> {
     // App Localization
     final appLoc = AppLocalizations.of(context)!;
 
+    // Screen Height
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: AppColorConstants.secondaryColor,
       body: RefreshIndicator.adaptive(
@@ -120,6 +123,7 @@ class _EducationScreenState extends State<EducationScreen> {
                       // Internet available, show Education
                       return BlocBuilder<EducationBloc, EducationState>(
                         builder: (context, state) {
+                          // Success State
                           if (state is EducationLoading) {
                             return isTablet
                                 ? GridView.builder(
@@ -157,7 +161,10 @@ class _EducationScreenState extends State<EducationScreen> {
                                       );
                                     },
                                   );
-                          } else if (state is EducationSuccess) {
+                          }
+
+                          // Success State
+                          if (state is EducationSuccess) {
                             final educations = state.educations;
                             if (educations.isEmpty) {
                               return const KNoItemsFound();
@@ -221,16 +228,33 @@ class _EducationScreenState extends State<EducationScreen> {
                                       );
                                     },
                                   );
-                          } else if (state is EducationFailure) {
-                            AppLoggerHelper.logError(state.message);
+                          }
+
+                          // Failure State
+                          if (state is EducationFailure) {
+                            return Center(
+                              child: SizedBox(
+                                height: screenHeight * 0.3,
+                                child: KNoItemsFound(
+                                  noItemsSvg: AppAssetsConstants.failure,
+                                  noItemsFoundText: appLoc.somethingWentWrong,
+                                ),
+                              ),
+                            );
                           }
 
                           return const SizedBox.shrink();
                         },
                       );
-                    } else {
-                      return const SizedBox.shrink();
+                    } else if (connectivityState is ConnectivityFailure) {
+                      return Align(
+                        alignment: Alignment.center,
+                        heightFactor: 3,
+                        child: const KInternetFound(),
+                      );
                     }
+
+                    return const SizedBox.shrink();
                   },
                 ),
               ],

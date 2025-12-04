@@ -271,10 +271,12 @@ class _StatusScreenState extends State<StatusScreen> {
                   if (state is StatusFormFailure) {
                     AppLoggerHelper.logError("Status Error: ${state.message}");
 
-                    return Center(
+                    return Align(
+                      alignment: Alignment.center,
+                      heightFactor: 3,
                       child: KNoItemsFound(
-                        noItemsFoundText: appLoc.somethingWentWrong,
                         noItemsSvg: AppAssetsConstants.failure,
+                        noItemsFoundText: appLoc.somethingWentWrong,
                       ),
                     );
                   }

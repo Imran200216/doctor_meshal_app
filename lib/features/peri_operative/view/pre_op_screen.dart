@@ -264,6 +264,15 @@ class _PreOpScreenState extends State<PreOpScreen> {
 
                   if (state is OperativeFormFailure) {
                     AppLoggerHelper.logError("Error: ${state.message}");
+
+                    return Align(
+                      alignment: Alignment.center,
+                      heightFactor: 3,
+                      child: KNoItemsFound(
+                        noItemsSvg: AppAssetsConstants.failure,
+                        noItemsFoundText: appLoc.somethingWentWrong,
+                      ),
+                    );
                   }
 
                   return const SizedBox.shrink();

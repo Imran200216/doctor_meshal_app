@@ -223,11 +223,64 @@ class _HomeScreenState extends State<HomeScreen> {
     // Localization
     final appLoc = AppLocalizations.of(context)!;
 
+    // Screen Height
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Scaffold(
         backgroundColor: AppColorConstants.secondaryColor,
 
+        // Drawer
+        drawer: HomeDrawer(),
+
+        // App Bar
+        appBar: AppBar(
+          backgroundColor: AppColorConstants.primaryColor,
+          leading: Builder(
+            builder: (context) {
+              return IconButton(
+                onPressed: () {
+                  // Open Drawer
+                  Scaffold.of(context).openDrawer();
+                },
+                icon: Icon(Icons.menu, color: AppColorConstants.secondaryColor),
+              );
+            },
+          ),
+          title: Text(appLoc.meshalApp),
+          titleTextStyle: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: isMobile
+                ? 20
+                : isTablet
+                ? 22
+                : 24,
+            color: AppColorConstants.secondaryColor,
+            fontFamily: "OpenSans",
+          ),
+          centerTitle: true,
+          actions: [
+            IconButton(
+              onPressed: () {
+                GoRouter.of(context).pushNamed(AppRouterConstants.notification);
+              },
+              icon: Badge(
+                label: Text(
+                  "3",
+                  style: TextStyle(color: Colors.white, fontSize: 10),
+                ),
+                backgroundColor: AppColorConstants.notificationBgColor,
+                child: Icon(
+                  Icons.notifications,
+                  color: AppColorConstants.secondaryColor,
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        // FAB
         floatingActionButton:
             BlocBuilder<ViewUserChatRoomBloc, ViewUserChatRoomState>(
               builder: (context, state) {
@@ -303,45 +356,40 @@ class _HomeScreenState extends State<HomeScreen> {
                       horizontal: 20,
                       vertical: 20,
                     ),
-                    child: BlocBuilder<UserAuthBloc, UserAuthState>(
-                      builder: (context, state) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                color: AppColorConstants.primaryColor,
-                              ),
-                              child: Row(
-                                children: [
-                                  /// LEFT SIDE (Text) - Should expand depending on screen size
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        KText(
-                                          textAlign: TextAlign.start,
-                                          text:
-                                              "${getGreetingMessage(appLoc)},",
-                                          fontSize: isMobile
-                                              ? 22
-                                              : isTablet
-                                              ? 24
-                                              : 26,
-                                          fontWeight: FontWeight.w700,
-                                          color:
-                                              AppColorConstants.secondaryColor,
-                                        ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: AppColorConstants.primaryColor,
+                          ),
+                          child: Row(
+                            children: [
+                              /// LEFT SIDE (Text) - Should expand depending on screen size
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    KText(
+                                      textAlign: TextAlign.start,
+                                      text: "${getGreetingMessage(appLoc)},",
+                                      fontSize: isMobile
+                                          ? 22
+                                          : isTablet
+                                          ? 24
+                                          : 26,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColorConstants.secondaryColor,
+                                    ),
 
-                                        const SizedBox(height: 5),
+                                    const SizedBox(height: 5),
 
-                                        if (state is GetUserAuthSuccess)
-                                          KText(
+                                    BlocBuilder<UserAuthBloc, UserAuthState>(
+                                      builder: (context, state) {
+                                        if (state is GetUserAuthSuccess) {
+                                          return KText(
                                             textAlign: TextAlign.start,
                                             text:
                                                 "${state.user.firstName} ${state.user.lastName}",
@@ -355,94 +403,41 @@ class _HomeScreenState extends State<HomeScreen> {
                                             fontWeight: FontWeight.w700,
                                             color: AppColorConstants
                                                 .secondaryColor,
-                                          ),
-                                      ],
-                                    ),
-                                  ),
+                                          );
+                                        }
 
-                                  /// RIGHT SIDE (Image)
-                                  Flexible(
-                                    child: Image.asset(
-                                      AppAssetsConstants.doctorIntro,
-                                      height: isMobile
-                                          ? 140
-                                          : isTablet
-                                          ? 150
-                                          : 160,
-                                      fit: BoxFit.cover,
+                                        return const SizedBox.shrink(); // or a loader if needed
+                                      },
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
 
-                            const SizedBox(height: 30),
+                              /// RIGHT SIDE (Image)
+                              Flexible(
+                                child: Image.asset(
+                                  AppAssetsConstants.doctorIntro,
+                                  height: isMobile
+                                      ? 140
+                                      : isTablet
+                                      ? 150
+                                      : 160,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
 
-                            BlocBuilder<
-                              OperativeSummaryCountsBloc,
-                              OperativeSummaryCountsState
-                            >(
-                              builder: (context, state) {
-                                if (state is GetOperativeSummaryCountsLoading) {
-                                  return HomeSkeleton();
-                                }
+                        const SizedBox(height: 30),
 
-                                if (state is GetOperativeSummaryCountsSuccess) {
-                                  return Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      // Peri-Operative Score
-                                      KText(
-                                        textAlign: TextAlign.start,
-                                        text: appLoc.periOperativeScore,
-                                        fontSize: isMobile
-                                            ? 20
-                                            : isTablet
-                                            ? 22
-                                            : 24,
-                                        fontWeight: FontWeight.w700,
-                                        color: AppColorConstants.titleColor,
-                                      ),
-
-                                      const SizedBox(height: 20),
-
-                                      PeriOperativeScoreCard(
-                                        totalCount:
-                                            state.submittedCountsOperative,
-                                        scoreCardTitle: appLoc.totalFormSubmit,
-                                        icon: Icons.speaker_notes,
-                                      ),
-                                      const SizedBox(height: 15),
-
-                                      PeriOperativeScoreCard(
-                                        totalCount: state.preOperativeCounts,
-                                        scoreCardTitle: appLoc.preOpSubmit,
-                                        icon: Icons.speaker_notes,
-                                      ),
-                                      const SizedBox(height: 15),
-
-                                      PeriOperativeScoreCard(
-                                        totalCount: state.postOperativeCounts,
-                                        scoreCardTitle: appLoc.postOpSubmit,
-                                        icon: Icons.speaker_notes,
-                                      ),
-                                    ],
-                                  );
-                                }
-
-                                if (state is GetOperativeSummaryCountsFailure) {
-                                  AppLoggerHelper.logError(state.message);
-                                }
-
-                                return const SizedBox.shrink();
-                              },
-                            ),
-                            const SizedBox(height: 30),
-
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Peri-Operative Score
                             KText(
                               textAlign: TextAlign.start,
-                              text: appLoc.patientCorner,
+                              text: appLoc.periOperativeScore,
                               fontSize: isMobile
                                   ? 20
                                   : isTablet
@@ -453,9 +448,99 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
 
                             const SizedBox(height: 20),
+
+                            BlocBuilder<
+                              OperativeSummaryCountsBloc,
+                              OperativeSummaryCountsState
+                            >(
+                              builder: (context, state) {
+                                // Loading State
+                                if (state is GetOperativeSummaryCountsLoading) {
+                                  return Row(
+                                    spacing: 15,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Expanded(child: KSkeletonRectangle()),
+                                      Expanded(child: KSkeletonRectangle()),
+                                      Expanded(child: KSkeletonRectangle()),
+                                    ],
+                                  );
+                                }
+
+                                // Success State
+                                if (state is GetOperativeSummaryCountsSuccess) {
+                                  return Row(
+                                    spacing: 15,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: PeriOperativeScoreCard(
+                                          totalCount:
+                                              state.submittedCountsOperative,
+                                          scoreCardTitle:
+                                              appLoc.totalFormSubmit,
+                                          icon: Icons.speaker_notes,
+                                        ),
+                                      ),
+
+                                      Expanded(
+                                        child: PeriOperativeScoreCard(
+                                          totalCount: state.preOperativeCounts,
+                                          scoreCardTitle: appLoc.preOpSubmit,
+                                          icon: Icons.speaker_notes,
+                                        ),
+                                      ),
+
+                                      Expanded(
+                                        child: PeriOperativeScoreCard(
+                                          totalCount: state.postOperativeCounts,
+                                          scoreCardTitle: appLoc.postOpSubmit,
+                                          icon: Icons.speaker_notes,
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }
+
+                                // Failure State
+                                if (state is GetOperativeSummaryCountsFailure) {
+                                  return Center(
+                                    child: SizedBox(
+                                      height: screenHeight * 0.3,
+                                      child: KNoItemsFound(
+                                        noItemsSvg: AppAssetsConstants.failure,
+                                        noItemsFoundText:
+                                            appLoc.somethingWentWrong,
+                                      ),
+                                    ),
+                                  );
+                                }
+
+                                return SizedBox.shrink();
+                              },
+                            ),
                           ],
-                        );
-                      },
+                        ),
+                        const SizedBox(height: 30),
+
+                        KText(
+                          textAlign: TextAlign.start,
+                          text: appLoc.patientCorner,
+                          fontSize: isMobile
+                              ? 20
+                              : isTablet
+                              ? 22
+                              : 24,
+                          fontWeight: FontWeight.w700,
+                          color: AppColorConstants.titleColor,
+                        ),
+
+                        const SizedBox(height: 20),
+                      ],
                     ),
                   ),
                 ),

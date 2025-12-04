@@ -31,7 +31,6 @@ class _StatusSummaryScreenState extends State<StatusSummaryScreen> {
     super.initState();
   }
 
-  // Fetch Patient Operative Summary
   // Fetch Patient Operative Summary using userAuthData
   Future<void> _fetchPatientOperativeSummary() async {
     try {
@@ -70,10 +69,6 @@ class _StatusSummaryScreenState extends State<StatusSummaryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Responsive
-    final isTablet = Responsive.isTablet(context);
-    final isMobile = Responsive.isMobile(context);
-
     // App Localization
     final appLoc = AppLocalizations.of(context)!;
 
@@ -104,6 +99,19 @@ class _StatusSummaryScreenState extends State<StatusSummaryScreen> {
                   ViewSubmittedFormDetailsSectionState
                 >(
                   builder: (context, state) {
+                    // Loading State
+                    if (state is GetViewSubmittedFormDetailsSectionLoading) {
+                      return ListView.separated(
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        separatorBuilder: (context, index) =>
+                            SizedBox(height: 10),
+                        itemCount: 20,
+                        itemBuilder: (context, index) => KSkeletonRectangle(),
+                      );
+                    }
+
+                    // Success State
                     if (state is GetViewSubmittedFormDetailsSectionSuccess) {
                       final submittedForm = state.formDetails;
 
@@ -174,14 +182,18 @@ class _StatusSummaryScreenState extends State<StatusSummaryScreen> {
                           ],
                         ),
                       );
-                    } else if (state
-                        is GetViewSubmittedFormDetailsSectionFailure) {
+                    }
+
+                    // Failure State
+                    if (state is GetViewSubmittedFormDetailsSectionFailure) {
                       AppLoggerHelper.logError("Error: ${state.message}");
 
-                      return Center(
+                      return Align(
+                        alignment: Alignment.center,
+                        heightFactor: 3,
                         child: KNoItemsFound(
-                          noItemsFoundText: appLoc.somethingWentWrong,
                           noItemsSvg: AppAssetsConstants.failure,
+                          noItemsFoundText: appLoc.somethingWentWrong,
                         ),
                       );
                     }

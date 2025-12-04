@@ -8,6 +8,7 @@ import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
 import 'package:meshal_doctor_booking_app/core/service/service.dart';
+import 'package:meshal_doctor_booking_app/main.dart';
 
 class AuthLogin extends StatefulWidget {
   const AuthLogin({super.key});
@@ -240,7 +241,7 @@ class _AuthLoginState extends State<AuthLogin> {
                   btnTitle: appLoc.login,
                   btnBgColor: AppColorConstants.primaryColor,
                   btnTitleColor: AppColorConstants.secondaryColor,
-                  onTap: () {
+                  onTap: () async {
                     if (_formKey.currentState!.validate()) {
                       final connectivityState = context
                           .read<ConnectivityBloc>()
@@ -254,10 +255,12 @@ class _AuthLoginState extends State<AuthLogin> {
                       AppLoggerHelper.logInfo(
                         "Attempting login for email: ${_authEmailLoginController.text.trim()}",
                       );
+
                       context.read<EmailAuthBloc>().add(
                         EmailAuthLoginEvent(
                           email: _authEmailLoginController.text.trim(),
                           password: _authPasswordLoginController.text.trim(),
+                          fcmToken: globalFcmToken,
                         ),
                       );
                     }

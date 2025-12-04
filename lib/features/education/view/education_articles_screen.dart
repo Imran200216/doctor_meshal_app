@@ -8,6 +8,7 @@ import 'package:meshal_doctor_booking_app/core/service/service.dart';
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 import 'package:meshal_doctor_booking_app/features/education/education.dart';
 import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
+import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 
 class EducationArticlesScreen extends StatefulWidget {
   final String educationArticleId;
@@ -70,51 +71,66 @@ class _EducationArticlesScreenState extends State<EducationArticlesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Responsive
     final isTablet = Responsive.isTablet(context);
     final isMobile = Responsive.isMobile(context);
 
-    return BlocBuilder<EducationArticlesBloc, EducationArticlesState>(
-      builder: (context, state) {
-        String appBarTitle = "";
+    // App localization
+    final appLoc = AppLocalizations.of(context)!;
 
-        if (state is EducationArticlesSuccess && state.topics.isNotEmpty) {
-          appBarTitle = state.topics.first.subTitleName;
-        }
+    return Scaffold(
+      backgroundColor: AppColorConstants.secondaryColor,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(56),
+        child: BlocBuilder<EducationArticlesBloc, EducationArticlesState>(
+          builder: (context, state) {
+            String appBarTitle = "";
 
-        return Scaffold(
-          backgroundColor: AppColorConstants.secondaryColor,
-          appBar: KAppBar(
-            title: appBarTitle,
-            onBack: () => GoRouter.of(context).pop(),
-            backgroundColor: AppColorConstants.primaryColor,
-          ),
+            if (state is EducationArticlesSuccess && state.topics.isNotEmpty) {
+              appBarTitle = state.topics.first.subTitleName;
+            }
 
-          body: RefreshIndicator.adaptive(
-            color: AppColorConstants.secondaryColor,
-            backgroundColor: AppColorConstants.primaryColor,
-            onRefresh: () async {
-              // Get Education Article
-              _fetchEducationArticles();
-            },
+            if (state is EducationArticlesFailure) {
+              appBarTitle = "";
+            }
 
-            child: BlocBuilder<ConnectivityBloc, ConnectivityState>(
-              builder: (context, connectivityState) {
-                if (connectivityState is ConnectivityFailure) {
-                  return Align(
-                    alignment: Alignment.center,
-                    heightFactor: 3,
-                    child: const KInternetFound(),
-                  );
-                } else if (connectivityState is ConnectivitySuccess) {
-                  return _buildBody(state, isMobile, isTablet);
-                } else {
-                  return SizedBox.shrink();
-                }
-              },
-            ),
-          ),
-        );
-      },
+            return KAppBar(
+              title: appBarTitle,
+              onBack: () => GoRouter.of(context).pop(),
+              backgroundColor: AppColorConstants.primaryColor,
+            );
+          },
+        ),
+      ),
+
+      body: RefreshIndicator.adaptive(
+        color: AppColorConstants.secondaryColor,
+        backgroundColor: AppColorConstants.primaryColor,
+        onRefresh: () async {
+          // Get Education Article
+          _fetchEducationArticles();
+        },
+
+        child: BlocBuilder<ConnectivityBloc, ConnectivityState>(
+          builder: (context, connectivityState) {
+            if (connectivityState is ConnectivityFailure) {
+              return Align(
+                alignment: Alignment.center,
+                heightFactor: 3,
+                child: const KInternetFound(),
+              );
+            } else if (connectivityState is ConnectivitySuccess) {
+              return BlocBuilder<EducationArticlesBloc, EducationArticlesState>(
+                builder: (context, state) {
+                  return _buildBody(state, isMobile, isTablet, appLoc);
+                },
+              );
+            } else {
+              return SizedBox.shrink();
+            }
+          },
+        ),
+      ),
     );
   }
 
@@ -125,7 +141,9 @@ class _EducationArticlesScreenState extends State<EducationArticlesScreen> {
     EducationArticlesState state,
     bool isMobile,
     bool isTablet,
+    AppLocalizations appLoc,
   ) {
+    // Loading State
     if (state is EducationArticlesLoading) {
       return isTablet
           ? GridView.builder(
@@ -163,6 +181,7 @@ class _EducationArticlesScreenState extends State<EducationArticlesScreen> {
             );
     }
 
+    // Success State
     if (state is EducationArticlesSuccess) {
       final educationArticles = state.topics;
 
@@ -218,8 +237,16 @@ class _EducationArticlesScreenState extends State<EducationArticlesScreen> {
             );
     }
 
+    // Failure State
     if (state is EducationArticlesFailure) {
-      return Center(child: Text(state.message));
+      return Align(
+        alignment: Alignment.center,
+        heightFactor: 3,
+        child: KNoItemsFound(
+          noItemsSvg: AppAssetsConstants.failure,
+          noItemsFoundText: appLoc.somethingWentWrong,
+        ),
+      );
     }
 
     return const SizedBox.shrink();

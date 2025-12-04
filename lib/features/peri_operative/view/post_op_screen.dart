@@ -265,7 +265,14 @@ class _PostOpScreenState extends State<PostOpScreen> {
                   }
 
                   if (state is OperativeFormFailure) {
-                    return Center(child: Text(state.message));
+                    return Align(
+                      alignment: Alignment.center,
+                      heightFactor: 3,
+                      child: KNoItemsFound(
+                        noItemsSvg: AppAssetsConstants.failure,
+                        noItemsFoundText: appLoc.somethingWentWrong,
+                      ),
+                    );
                   }
 
                   return const SizedBox.shrink();

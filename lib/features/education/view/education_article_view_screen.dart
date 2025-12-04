@@ -229,6 +229,7 @@ class _EducationArticleViewScreenState
                   EducationFullViewArticleState
                 >(
                   builder: (context, state) {
+                    // Education Full View Article Loading
                     if (state is EducationFullViewArticleLoading) {
                       return Padding(
                         padding: EdgeInsets.symmetric(
@@ -247,6 +248,7 @@ class _EducationArticleViewScreenState
                       );
                     }
 
+                    // Education Full View Article Success
                     if (state is EducationFullViewArticleSuccess) {
                       final educationFullViewArticle = state.article;
 
@@ -370,8 +372,16 @@ class _EducationArticleViewScreenState
                       );
                     }
 
+                    // Education Full View Article Error
                     if (state is EducationFullViewArticleError) {
-                      return Center(child: Text(state.message));
+                      return Align(
+                        alignment: Alignment.center,
+                        heightFactor: 3,
+                        child: KNoItemsFound(
+                          noItemsSvg: AppAssetsConstants.failure,
+                          noItemsFoundText: appLoc.somethingWentWrong,
+                        ),
+                      );
                     }
 
                     return const SizedBox.shrink();
