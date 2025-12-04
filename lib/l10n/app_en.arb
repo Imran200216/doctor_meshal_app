@@ -158,7 +158,7 @@
   "reviewedCounts": "Reviewed Counts",
   "approvedCounts": "Approved Counts",
   "rejectedCounts": "Rejected Counts",
-  "totalPatient": "Total Patient",
+  "totalPatient": "Total Patient\nCount",
   "totalEducationArticles": "Total Education Articles",
   "patients": "Patients",
   "patientStatus": "Patient Status",
@@ -175,7 +175,6 @@
   "submit": "Submit",
   "viewPatientFeedback": "View Patient Feedback",
   "loading": "Loading...",
-
   "traumaService1": "All kinds of Shoulder, Clavicle, Scapula, Humerus, Elbow, Forearm, Wrist fracture or dislocation and soft tissue trauma.",
   "traumaService2": "Acromioclavicular and Sternoclavicular joint dislocations.",
   "traumaService3": "Pelvis and acetabulum fractures.",
@@ -196,9 +195,6 @@
   "traumaService18": "Joint dislocation and ligamentous injuries.",
   "traumaService19": "Osteoporosis.",
   "traumaService20": "All kinds of geriatric fractures.",
-
-
-
   "footAnkleService1": "All kinds of non-operative treatment of foot and ankle pathologies.",
   "footAnkleService2": "All kinds of surgeries of Forefoot, Midfoot, Hindfoot, and Ankle.",
   "footAnkleService3": "Hallux valgus.",
@@ -221,14 +217,13 @@
   "footAnkleService20": "Arthroscopy of foot and ankle.",
   "footAnkleService21": "Minimal invasive foot and ankle surgery.",
   "footAnkleService22": "All kinds of foot and ankle fractures and dislocations.",
-
-
   "traumaServicesTitle": "Trauma Services",
   "traumaServicesDescription": "All forms of fractures ranging from minor to severe, high complexity fractures, or fractures with complications.",
-
   "footAnkleServicesTitle": "Foot & Ankle Services",
-  "footAnkleServicesDescription": "All forms of foot & ankle pathology ranging from minor to severe, high complex cases, or cases with complications."
-
-
-
+  "footAnkleServicesDescription": "All forms of foot & ankle pathology ranging from minor to severe, high complex cases, or cases with complications.",
+  "notificationTitle": "Notification",
+  "pending": "Pending",
+  "rejected": "Rejected",
+  "completed": "Completed",
+  "meshalApp": "Dr. Meshal App"
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
@@ -28,8 +29,12 @@ class _EducationArticleViewScreenState
   // User Id
   String? userId;
 
+  // Controller
+  late ScrollController _scrollController;
+
   @override
   void initState() {
+    _scrollController = ScrollController();
     _fetchEducationArticlesView();
 
     super.initState();
@@ -79,6 +84,13 @@ class _EducationArticleViewScreenState
   double _titleFontSize = 18;
 
   @override
+  void dispose() {
+    _scrollController.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     // Responsive
     final isTablet = Responsive.isTablet(context);
@@ -91,46 +103,85 @@ class _EducationArticleViewScreenState
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: AppColorConstants.secondaryColor,
-        floatingActionButton: Column(
-          spacing: 12,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Zoom In
-            KFloatingActionBtn(
-              onTap: () {
-                setState(() {
-                  _contentFontSize += 2;
-                  _titleFontSize += 2;
-                });
-              },
-              fabIconPath: AppAssetsConstants.zoomIn,
-              heroTag: "zoomIn",
-            ),
 
-            // Zoom Out
-            KFloatingActionBtn(
-              onTap: () {
-                setState(() {
-                  if (_contentFontSize > 8) _contentFontSize -= 2;
-                  if (_titleFontSize > 10) _titleFontSize -= 2;
-                });
-              },
-              fabIconPath: AppAssetsConstants.zoomOut,
-              heroTag: "zoomOUt",
-            ),
+        bottomNavigationBar: Container(
+          height: isMobile
+              ? 80
+              : isTablet
+              ? 100
+              : 120,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          decoration: BoxDecoration(color: AppColorConstants.primaryColor),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Zoom In
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _contentFontSize += 2;
+                    _titleFontSize += 2;
+                  });
+                },
+                child: SvgPicture.asset(
+                  AppAssetsConstants.zoomIn,
+                  color: AppColorConstants.secondaryColor,
+                  width: 30,
+                  height: 30,
+                ),
+              ),
 
-            // Reset
-            KFloatingActionBtn(
-              onTap: () {
-                setState(() {
-                  _contentFontSize = 16;
-                  _titleFontSize = 18;
-                });
-              },
-              fabIconPath: AppAssetsConstants.reset,
-              heroTag: "reset",
-            ),
-          ],
+              // Zoom Out
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    if (_contentFontSize > 8) _contentFontSize -= 2;
+                    if (_titleFontSize > 10) _titleFontSize -= 2;
+                  });
+                },
+                child: SvgPicture.asset(
+                  AppAssetsConstants.zoomOut,
+                  color: AppColorConstants.secondaryColor,
+                  width: 30,
+                  height: 30,
+                ),
+              ),
+
+              // Reset
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _contentFontSize = 16;
+                    _titleFontSize = 18;
+                  });
+                },
+                child: SvgPicture.asset(
+                  AppAssetsConstants.reset,
+                  color: AppColorConstants.secondaryColor,
+                  width: 30,
+                  height: 30,
+                ),
+              ),
+
+              // Scroll Up
+              GestureDetector(
+                onTap: () {
+                  _scrollController.animateTo(
+                    0, // scroll to top
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.easeInOut,
+                  );
+                },
+                child: SvgPicture.asset(
+                  AppAssetsConstants.scrollUp,
+                  color: AppColorConstants.secondaryColor,
+                  width: 30,
+                  height: 30,
+                ),
+              ),
+            ],
+          ),
         ),
 
         appBar: PreferredSize(
@@ -200,6 +251,7 @@ class _EducationArticleViewScreenState
                       final educationFullViewArticle = state.article;
 
                       return SingleChildScrollView(
+                        controller: _scrollController,
                         scrollDirection: Axis.vertical,
                         child: Container(
                           width: double.maxFinite,

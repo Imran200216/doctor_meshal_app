@@ -33,14 +33,14 @@ class DashboardCountsSummary {
 
   factory DashboardCountsSummary.fromJson(Map<String, dynamic> json) {
     return DashboardCountsSummary(
-      postOperative: json['post_operative_submited'] != null
+      postOperative: json['post_operative_submited'] is Map
           ? StatusCount.fromJson(json['post_operative_submited'])
           : null,
-      preOperative: json['pre_operative_submited'] != null
+      preOperative: json['pre_operative_submited'] is Map
           ? StatusCount.fromJson(json['pre_operative_submited'])
           : null,
-      totalEducationArticles: json['total_education_articles'],
-      totalPatient: json['total_patient'],
+      totalEducationArticles: json['total_education_articles']?.toString(),
+      totalPatient: json['total_patient']?.toString(),
     );
   }
 
@@ -55,37 +55,21 @@ class DashboardCountsSummary {
 }
 
 class StatusCount {
-  final int? submitted;
-  final int? resubmitted;
-  final int? reviewed;
-  final int? approved;
+  final int? pending;
+  final int? completed;
   final int? rejected;
 
-  StatusCount({
-    this.submitted,
-    this.resubmitted,
-    this.reviewed,
-    this.approved,
-    this.rejected,
-  });
+  StatusCount({this.pending, this.completed, this.rejected});
 
   factory StatusCount.fromJson(Map<String, dynamic> json) {
     return StatusCount(
-      submitted: json['SUBMITTED'],
-      resubmitted: json['RESUBMITTED'],
-      reviewed: json['REVIEWED'],
-      approved: json['APPROVED'],
-      rejected: json['REJECTED'],
+      pending: json['Pending'],
+      completed: json['Completed'],
+      rejected: json['Rejected'],
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'SUBMITTED': submitted,
-      'RESUBMITTED': resubmitted,
-      'REVIEWED': reviewed,
-      'APPROVED': approved,
-      'REJECTED': rejected,
-    };
+    return {'Pending': pending, 'Completed': completed, 'Rejected': rejected};
   }
 }

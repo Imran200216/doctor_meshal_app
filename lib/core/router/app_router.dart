@@ -11,6 +11,7 @@ import 'package:meshal_doctor_booking_app/features/education/education.dart';
 import 'package:meshal_doctor_booking_app/features/feedback/feedback.dart';
 import 'package:meshal_doctor_booking_app/features/intro/intro.dart';
 import 'package:meshal_doctor_booking_app/features/localization/localization.dart';
+import 'package:meshal_doctor_booking_app/features/notification/notification.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/peri_operative.dart';
 import 'package:meshal_doctor_booking_app/features/personal_details/personal_details.dart';
 import 'package:meshal_doctor_booking_app/features/splash/splash.dart';
@@ -372,6 +373,15 @@ GoRouter appRouter = GoRouter(
           patientSubmittedDate: extra["feedBackSubmittedDate"],
           patientFeedback: extra["patientFeedbackContent"],
         );
+      },
+    ),
+
+    // Notification Screen
+    GoRoute(
+      path: '/notification',
+      name: AppRouterConstants.notification,
+      builder: (context, state) {
+        return NotificationScreen();
       },
     ),
   ],

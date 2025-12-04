@@ -78,6 +78,9 @@ dependencies:
   # flutter image compress
   flutter_image_compress: ^2.4.0
 
+  # package info plus
+  package_info_plus: ^9.0.0
+
 
 dev_dependencies:
   flutter_test:

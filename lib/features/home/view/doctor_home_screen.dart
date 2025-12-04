@@ -231,10 +231,64 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
     // Localization
     final appLoc = AppLocalizations.of(context)!;
 
+    // Screen Height
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Scaffold(
         backgroundColor: AppColorConstants.secondaryColor,
+
+        // App Bar
+        appBar: AppBar(
+          backgroundColor: AppColorConstants.primaryColor,
+          leading: Builder(
+            builder: (context) {
+              return IconButton(
+                onPressed: () {
+                  // Open Drawer
+                  Scaffold.of(context).openDrawer();
+                },
+                icon: Icon(Icons.menu, color: AppColorConstants.secondaryColor),
+              );
+            },
+          ),
+          title: Text(appLoc.meshalApp),
+          titleTextStyle: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: isMobile
+                ? 20
+                : isTablet
+                ? 22
+                : 24,
+            color: AppColorConstants.secondaryColor,
+            fontFamily: "OpenSans",
+          ),
+          centerTitle: true,
+          actions: [
+            IconButton(
+              onPressed: () {
+                GoRouter.of(context).pushNamed(AppRouterConstants.notification);
+              },
+              icon: Badge(
+                label: Text(
+                  "3",
+                  style: TextStyle(color: Colors.white, fontSize: 10),
+                ),
+                backgroundColor: AppColorConstants.notificationBgColor,
+                child: Icon(
+                  Icons.notifications,
+                  color: AppColorConstants.secondaryColor,
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        // Drawer
+        drawer: HomeDrawer(),
+
+        // FAB
         floatingActionButton:
             BlocBuilder<ViewUserChatRoomBloc, ViewUserChatRoomState>(
               builder: (context, state) {
@@ -360,151 +414,290 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                     ),
 
                     // Doctor Dashboard SUMMARY COUNTS
+                    KText(
+                      textAlign: TextAlign.start,
+                      text: appLoc.dashboardSummary,
+                      fontSize: isMobile
+                          ? 20
+                          : isTablet
+                          ? 22
+                          : 24,
+                      fontWeight: FontWeight.w700,
+                      color: AppColorConstants.titleColor,
+                    ),
+
+                    const SizedBox(height: 20),
+
                     BlocBuilder<
                       DoctorDashboardSummaryCountsBloc,
                       DoctorDashboardSummaryCountsState
                     >(
                       builder: (context, state) {
+                        // Loading State
                         if (state is GetDashboardSummaryCountsLoading) {
-                          return HomeSkeleton();
+                          return Row(
+                            spacing: 15,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(child: KSkeletonRectangle()),
+                              Expanded(child: KSkeletonRectangle()),
+                            ],
+                          );
                         }
 
+                        // Success State
                         if (state is GetDashboardSummaryCountsSuccess) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          return Row(
+                            spacing: 15,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              KText(
-                                textAlign: TextAlign.start,
-                                text: appLoc.dashboardSummary,
-                                fontSize: isMobile
-                                    ? 20
-                                    : isTablet
-                                    ? 22
-                                    : 24,
-                                fontWeight: FontWeight.w700,
-                                color: AppColorConstants.titleColor,
+                              Expanded(
+                                child: PeriOperativeScoreCard(
+                                  totalCount: state
+                                      .getDashboardCountsSummaryModel
+                                      .summary!
+                                      .totalPatient
+                                      .toString(),
+                                  scoreCardTitle: appLoc.totalPatient,
+                                  icon: Icons.person,
+                                ),
                               ),
 
-                              const SizedBox(height: 20),
-
-                              PeriOperativeScoreCard(
-                                totalCount: state
-                                    .getDashboardCountsSummaryModel
-                                    .summary!
-                                    .totalPatient
-                                    .toString(),
-                                scoreCardTitle: appLoc.totalPatient,
-                                icon: Icons.person,
-                              ),
-
-                              const SizedBox(height: 15),
-
-                              PeriOperativeScoreCard(
-                                totalCount: state
-                                    .getDashboardCountsSummaryModel
-                                    .summary!
-                                    .totalEducationArticles
-                                    .toString(),
-                                scoreCardTitle: appLoc.totalEducationArticles,
-                                icon: Icons.school,
-                              ),
-
-                              const SizedBox(height: 30),
-
-                              KText(
-                                textAlign: TextAlign.start,
-                                text: appLoc.operativeSummary,
-                                fontSize: isMobile
-                                    ? 20
-                                    : isTablet
-                                    ? 22
-                                    : 24,
-                                fontWeight: FontWeight.w700,
-                                color: AppColorConstants.titleColor,
-                              ),
-
-                              const SizedBox(height: 20),
-
-                              // Post Operative
-                              DoctorDashboardOperativeFormCounts(
-                                formName: "Post Operative",
-                                submittedCounts: state
-                                    .getDashboardCountsSummaryModel
-                                    .summary!
-                                    .postOperative!
-                                    .submitted
-                                    .toString(),
-                                reSubmittedCounts: state
-                                    .getDashboardCountsSummaryModel
-                                    .summary!
-                                    .postOperative!
-                                    .resubmitted
-                                    .toString(),
-                                reviewedCounts: state
-                                    .getDashboardCountsSummaryModel
-                                    .summary!
-                                    .postOperative!
-                                    .reviewed
-                                    .toString(),
-                                approvedCounts: state
-                                    .getDashboardCountsSummaryModel
-                                    .summary!
-                                    .postOperative!
-                                    .approved
-                                    .toString(),
-                                rejectedCounts: state
-                                    .getDashboardCountsSummaryModel
-                                    .summary!
-                                    .postOperative!
-                                    .rejected
-                                    .toString(),
-                              ),
-
-                              const SizedBox(height: 20),
-
-                              // Pre Operative
-                              DoctorDashboardOperativeFormCounts(
-                                formName: "Pre Operative",
-                                submittedCounts: state
-                                    .getDashboardCountsSummaryModel
-                                    .summary!
-                                    .preOperative!
-                                    .submitted
-                                    .toString(),
-                                reSubmittedCounts: state
-                                    .getDashboardCountsSummaryModel
-                                    .summary!
-                                    .preOperative!
-                                    .resubmitted
-                                    .toString(),
-                                reviewedCounts: state
-                                    .getDashboardCountsSummaryModel
-                                    .summary!
-                                    .preOperative!
-                                    .reviewed
-                                    .toString(),
-                                approvedCounts: state
-                                    .getDashboardCountsSummaryModel
-                                    .summary!
-                                    .preOperative!
-                                    .approved
-                                    .toString(),
-                                rejectedCounts: state
-                                    .getDashboardCountsSummaryModel
-                                    .summary!
-                                    .preOperative!
-                                    .rejected
-                                    .toString(),
+                              Expanded(
+                                child: PeriOperativeScoreCard(
+                                  totalCount: state
+                                      .getDashboardCountsSummaryModel
+                                      .summary!
+                                      .totalEducationArticles
+                                      .toString(),
+                                  scoreCardTitle: appLoc.totalEducationArticles,
+                                  icon: Icons.school,
+                                ),
                               ),
                             ],
                           );
                         }
 
+                        // Failure State
                         if (state is GetDashboardSummaryCountsFailure) {
-                          AppLoggerHelper.logError(state.message);
+                          AppLoggerHelper.logError(
+                            "Dashboard Summary Failure: ${state.message}",
+                          );
+
+                          return Center(
+                            child: SizedBox(
+                              height: screenHeight * 0.3,
+                              child: KNoItemsFound(
+                                noItemsSvg: AppAssetsConstants.failure,
+                                noItemsFoundText: appLoc.somethingWentWrong,
+                              ),
+                            ),
+                          );
                         }
 
-                        return const SizedBox.shrink();
+                        return SizedBox.shrink();
+                      },
+                    ),
+
+                    const SizedBox(height: 30),
+
+                    KText(
+                      textAlign: TextAlign.start,
+                      text: appLoc.preOperativeSummary,
+                      fontSize: isMobile
+                          ? 20
+                          : isTablet
+                          ? 22
+                          : 24,
+                      fontWeight: FontWeight.w700,
+                      color: AppColorConstants.titleColor,
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    BlocBuilder<
+                      DoctorDashboardSummaryCountsBloc,
+                      DoctorDashboardSummaryCountsState
+                    >(
+                      builder: (context, state) {
+                        // Loading State
+                        if (state is GetDashboardSummaryCountsLoading) {
+                          return Row(
+                            spacing: 12,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(child: KSkeletonRectangle()),
+                              Expanded(child: KSkeletonRectangle()),
+                              Expanded(child: KSkeletonRectangle()),
+                            ],
+                          );
+                        }
+
+                        if (state is GetDashboardSummaryCountsSuccess) {
+                          return Row(
+                            spacing: 12,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: PeriOperativeScoreCard(
+                                  totalCount: state
+                                      .getDashboardCountsSummaryModel
+                                      .summary!
+                                      .preOperative!
+                                      .pending
+                                      .toString(),
+                                  scoreCardTitle: appLoc.pending,
+                                  icon: Icons.pending_actions,
+                                ),
+                              ),
+
+                              Expanded(
+                                child: PeriOperativeScoreCard(
+                                  totalCount: state
+                                      .getDashboardCountsSummaryModel
+                                      .summary!
+                                      .preOperative!
+                                      .rejected
+                                      .toString(),
+                                  scoreCardTitle: appLoc.rejected,
+                                  icon: Icons.clear,
+                                ),
+                              ),
+
+                              Expanded(
+                                child: PeriOperativeScoreCard(
+                                  totalCount: state
+                                      .getDashboardCountsSummaryModel
+                                      .summary!
+                                      .preOperative!
+                                      .completed
+                                      .toString(),
+                                  scoreCardTitle: appLoc.completed,
+                                  icon: Icons.check_circle,
+                                ),
+                              ),
+                            ],
+                          );
+                        }
+
+                        // Failure State
+                        if (state is GetDashboardSummaryCountsFailure) {
+                          return Center(
+                            child: SizedBox(
+                              height: screenHeight * 0.3,
+                              child: KNoItemsFound(
+                                noItemsSvg: AppAssetsConstants.failure,
+                                noItemsFoundText: appLoc.somethingWentWrong,
+                              ),
+                            ),
+                          );
+                        }
+
+                        return SizedBox.shrink();
+                      },
+                    ),
+
+                    const SizedBox(height: 30),
+
+                    KText(
+                      textAlign: TextAlign.start,
+                      text: appLoc.postOperativeSummary,
+                      fontSize: isMobile
+                          ? 20
+                          : isTablet
+                          ? 22
+                          : 24,
+                      fontWeight: FontWeight.w700,
+                      color: AppColorConstants.titleColor,
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    BlocBuilder<
+                      DoctorDashboardSummaryCountsBloc,
+                      DoctorDashboardSummaryCountsState
+                    >(
+                      builder: (context, state) {
+                        // Loading State
+                        if (state is GetDashboardSummaryCountsLoading) {
+                          return Row(
+                            spacing: 12,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(child: KSkeletonRectangle()),
+                              Expanded(child: KSkeletonRectangle()),
+                              Expanded(child: KSkeletonRectangle()),
+                            ],
+                          );
+                        }
+
+                        if (state is GetDashboardSummaryCountsSuccess) {
+                          return Row(
+                            spacing: 12,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: PeriOperativeScoreCard(
+                                  totalCount: state
+                                      .getDashboardCountsSummaryModel
+                                      .summary!
+                                      .postOperative!
+                                      .pending
+                                      .toString(),
+                                  scoreCardTitle: appLoc.pending,
+                                  icon: Icons.pending_actions,
+                                ),
+                              ),
+
+                              Expanded(
+                                child: PeriOperativeScoreCard(
+                                  totalCount: state
+                                      .getDashboardCountsSummaryModel
+                                      .summary!
+                                      .postOperative!
+                                      .rejected
+                                      .toString(),
+                                  scoreCardTitle: appLoc.rejected,
+                                  icon: Icons.clear,
+                                ),
+                              ),
+
+                              Expanded(
+                                child: PeriOperativeScoreCard(
+                                  totalCount: state
+                                      .getDashboardCountsSummaryModel
+                                      .summary!
+                                      .postOperative!
+                                      .completed
+                                      .toString(),
+                                  scoreCardTitle: appLoc.completed,
+                                  icon: Icons.check_circle,
+                                ),
+                              ),
+                            ],
+                          );
+                        }
+
+                        // Failure State
+                        if (state is GetDashboardSummaryCountsFailure) {
+                          return Center(
+                            child: SizedBox(
+                              height: screenHeight * 0.3,
+                              child: KNoItemsFound(
+                                noItemsSvg: AppAssetsConstants.failure,
+                                noItemsFoundText: appLoc.somethingWentWrong,
+                              ),
+                            ),
+                          );
+                        }
+
+                        return SizedBox.shrink();
                       },
                     ),
                   ],

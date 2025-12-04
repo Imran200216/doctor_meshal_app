@@ -3,7 +3,6 @@ import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
 import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 
-
 class PeriOperativeScoreCard extends StatelessWidget {
   final String totalCount;
   final String scoreCardTitle;
@@ -34,8 +33,8 @@ class PeriOperativeScoreCard extends StatelessWidget {
         ),
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
           // Icon
@@ -63,8 +62,10 @@ class PeriOperativeScoreCard extends StatelessWidget {
 
           // Count
           KText(
-            textAlign: TextAlign.start,
+            textAlign: TextAlign.center,
             text: totalCount,
+            maxLines: 3,
+            softWrap: true,
             fontSize: isMobile
                 ? 24
                 : isTablet
@@ -78,8 +79,10 @@ class PeriOperativeScoreCard extends StatelessWidget {
 
           // Total Form Submits
           KText(
-            textAlign: TextAlign.start,
+            textAlign: TextAlign.center,
             text: scoreCardTitle,
+            maxLines: 3,
+            softWrap: true,
             fontSize: isMobile
                 ? 14
                 : isTablet

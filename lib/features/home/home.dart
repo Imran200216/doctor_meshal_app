@@ -11,6 +11,8 @@ export 'view_model/bloc/user_chat_room/view_user_chat_room_bloc.dart';
 export 'widgets/doctor_dashboard_operative_form_counts.dart';
 export 'widgets/home_skeleton.dart';
 export 'widgets/peri_operative_score_card.dart';
+export 'widgets/home_drawer.dart';
+export 'widgets/home_drawer_list_tile.dart';
 
 // Model
 export 'model/get_dashboard_counts_summary_model.dart';

@@ -486,7 +486,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get rejectedCounts => 'عدد المرفوض';
 
   @override
-  String get totalPatient => 'إجمالي المرضى';
+  String get totalPatient => 'إجمالي عدد\nالمرضى';
 
   @override
   String get totalEducationArticles => 'إجمالي المقالات التعليمية';
@@ -673,4 +673,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get footAnkleServicesDescription => 'جميع حالات أمراض القدم والكاحل من البسيطة إلى الشديدة، والحالات عالية التعقيد، أو الحالات المصحوبة بمضاعفات.';
+
+  @override
+  String get notificationTitle => 'الإشعارات';
+
+  @override
+  String get pending => 'قيد الانتظار';
+
+  @override
+  String get rejected => 'مرفوض';
+
+  @override
+  String get completed => 'مكتمل';
+
+  @override
+  String get meshalApp => 'تطبيق د. مشعل';
 }

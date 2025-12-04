@@ -486,7 +486,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rejectedCounts => 'Rejected Counts';
 
   @override
-  String get totalPatient => 'Total Patient';
+  String get totalPatient => 'Total Patient\nCount';
 
   @override
   String get totalEducationArticles => 'Total Education Articles';
@@ -673,4 +673,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get footAnkleServicesDescription => 'All forms of foot & ankle pathology ranging from minor to severe, high complex cases, or cases with complications.';
+
+  @override
+  String get notificationTitle => 'Notification';
+
+  @override
+  String get pending => 'Pending';
+
+  @override
+  String get rejected => 'Rejected';
+
+  @override
+  String get completed => 'Completed';
+
+  @override
+  String get meshalApp => 'Dr. Meshal App';
 }

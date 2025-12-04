@@ -1052,7 +1052,7 @@ abstract class AppLocalizations {
   /// No description provided for @totalPatient.
   ///
   /// In en, this message translates to:
-  /// **'Total Patient'**
+  /// **'Total Patient\nCount'**
   String get totalPatient;
 
   /// No description provided for @totalEducationArticles.
@@ -1426,6 +1426,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All forms of foot & ankle pathology ranging from minor to severe, high complex cases, or cases with complications.'**
   String get footAnkleServicesDescription;
+
+  /// No description provided for @notificationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification'**
+  String get notificationTitle;
+
+  /// No description provided for @pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pending;
+
+  /// No description provided for @rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get rejected;
+
+  /// No description provided for @completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completed;
+
+  /// No description provided for @meshalApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Dr. Meshal App'**
+  String get meshalApp;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

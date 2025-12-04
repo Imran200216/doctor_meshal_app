@@ -89,5 +89,9 @@ class AppRouterConstants {
   // feedback
   static const String writeFeedback = "writeFeedback";
   static const String viewDoctorFeedback = "viewDoctorFeedback";
-  static const String viewFullDoctorFeedbackContent = "viewFullDoctorFeedbackContent";
+  static const String viewFullDoctorFeedbackContent =
+      "viewFullDoctorFeedbackContent";
+
+  // Notification
+  static const String notification = "notification";
 }

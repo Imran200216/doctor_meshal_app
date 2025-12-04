@@ -146,8 +146,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // General Section
                   _buildGeneralSection(context, appLoc, isMobile, isTablet),
 
-                  // Doctor Bio Section
-                  _buildDoctorBioSection(context, appLoc, isMobile, isTablet),
+                  // // Doctor Bio Section
+                  // _buildDoctorBioSection(context, appLoc, isMobile, isTablet),
 
                   // Support Section
                   _buildSupportSection(context, appLoc, isMobile, isTablet),
@@ -164,61 +164,61 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // Build Doctor Bio Section
-  Widget _buildDoctorBioSection(
-    BuildContext context,
-    AppLocalizations appLoc,
-    bool isMobile,
-    bool isTablet,
-  ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 20,
-      children: [
-        KText(
-          text: appLoc.doctorInfo,
-          fontSize: isMobile
-              ? 20
-              : isTablet
-              ? 22
-              : 24,
-          fontWeight: FontWeight.w700,
-          color: AppColorConstants.titleColor,
-        ),
-
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: AppColorConstants.subTitleColor.withOpacity(0.05),
-          ),
-          child: Column(
-            spacing: 10,
-            children: [
-              ProfileListTile(
-                prefixIcon: Icons.description_outlined,
-                title: appLoc.bio,
-                onTap: () {
-                  // Doctor Bio Screen
-                  GoRouter.of(context).pushNamed(AppRouterConstants.bio);
-                },
-              ),
-
-              ProfileListTile(
-                prefixIcon: Icons.health_and_safety_outlined,
-                title: appLoc.services,
-                onTap: () {
-                  // Doctor Services Screen
-                  GoRouter.of(
-                    context,
-                  ).pushNamed(AppRouterConstants.doctorServices);
-                },
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
+  // Widget _buildDoctorBioSection(
+  //   BuildContext context,
+  //   AppLocalizations appLoc,
+  //   bool isMobile,
+  //   bool isTablet,
+  // ) {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     spacing: 20,
+  //     children: [
+  //       KText(
+  //         text: appLoc.doctorInfo,
+  //         fontSize: isMobile
+  //             ? 20
+  //             : isTablet
+  //             ? 22
+  //             : 24,
+  //         fontWeight: FontWeight.w700,
+  //         color: AppColorConstants.titleColor,
+  //       ),
+  //
+  //       Container(
+  //         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+  //         decoration: BoxDecoration(
+  //           borderRadius: BorderRadius.circular(12),
+  //           color: AppColorConstants.subTitleColor.withOpacity(0.05),
+  //         ),
+  //         child: Column(
+  //           spacing: 10,
+  //           children: [
+  //             ProfileListTile(
+  //               prefixIcon: Icons.description_outlined,
+  //               title: appLoc.bio,
+  //               onTap: () {
+  //                 // Doctor Bio Screen
+  //                 GoRouter.of(context).pushNamed(AppRouterConstants.bio);
+  //               },
+  //             ),
+  //
+  //             ProfileListTile(
+  //               prefixIcon: Icons.health_and_safety_outlined,
+  //               title: appLoc.services,
+  //               onTap: () {
+  //                 // Doctor Services Screen
+  //                 GoRouter.of(
+  //                   context,
+  //                 ).pushNamed(AppRouterConstants.doctorServices);
+  //               },
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   // General Section
   Widget _buildGeneralSection(

@@ -75,5 +75,7 @@ class AppAssetsConstants {
 
   static const String failure = "assets/icons/svg/failure.svg";
 
+  static const String scrollUp = "assets/icons/svg/scroll-up.svg";
+
 
 }
