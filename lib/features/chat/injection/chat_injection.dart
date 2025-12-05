@@ -44,4 +44,11 @@ void initChatInjection() {
       chatGraphQLHttpService: getIt<ChatGraphQLHttpService>(),
     ),
   );
+
+  // Stop Chat Message Subscription Bloc
+  getIt.registerFactory(
+    () => StopChatMessageSubscriptionsBloc(
+      chatGraphQLHttpService: getIt<ChatGraphQLHttpService>(),
+    ),
+  );
 }

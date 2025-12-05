@@ -181,4 +181,9 @@ List<BlocProvider> appBlocProviders = [
   BlocProvider<ViewNotificationUnReadCountBloc>(
     create: (context) => getIt<ViewNotificationUnReadCountBloc>(),
   ),
+
+  // Stop Message Subscription Bloc
+  BlocProvider<StopChatMessageSubscriptionsBloc>(
+    create: (context) => getIt<StopChatMessageSubscriptionsBloc>(),
+  ),
 ];

@@ -8,7 +8,6 @@ import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
 import 'package:meshal_doctor_booking_app/core/service/service.dart';
-import 'package:meshal_doctor_booking_app/main.dart';
 
 class AuthLogin extends StatefulWidget {
   const AuthLogin({super.key});
@@ -260,7 +259,7 @@ class _AuthLoginState extends State<AuthLogin> {
                         EmailAuthLoginEvent(
                           email: _authEmailLoginController.text.trim(),
                           password: _authPasswordLoginController.text.trim(),
-                          fcmToken: globalFcmToken,
+                          fcmToken: FCMService.globalFcmToken,
                         ),
                       );
                     }

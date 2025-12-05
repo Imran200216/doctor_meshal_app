@@ -235,78 +235,51 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
           textDirection: TextDirection.ltr,
           child: BlocBuilder<DoctorListBloc, DoctorListState>(
             builder: (context, state) {
+              List doctorsList = [];
+              bool isSearching = false;
+
+              /// ---- Handle States ----
               if (state is GetDoctorListLoading) {
-                return Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: horizontalPadding,
-                    vertical: skeletonVerticalPadding,
-                  ),
-                  child: const DoctorListSkeleton(),
-                );
-              }
-
-              if (state is GetDoctorListSuccess ||
-                  state is SearchDoctorListLoading ||
-                  state is SearchDoctorListSuccess ||
-                  state is SearchDoctorListFailure) {
-                List doctorsList = [];
-                bool isSearching = false;
-
-                if (state is GetDoctorListSuccess) {
-                  doctorsList = state.doctorList;
-                } else if (state is SearchDoctorListSuccess) {
-                  doctorsList = state.doctorList;
-                } else if (state is SearchDoctorListLoading) {
-                  isSearching = true;
-                } else if (state is SearchDoctorListFailure) {
-                  AppLoggerHelper.logError(state.message);
-                }
-
-                return SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: horizontalPadding,
-                      vertical: verticalPadding,
-                    ),
-                    child: Column(
-                      spacing: 20,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        _buildSearchField(appLoc),
-
-                        if (isSearching)
-                          _buildLoadingSkeleton()
-                        else if (doctorsList.isEmpty)
-                          _buildNoItemsFound(appLoc, height)
-                        else
-                          _buildDoctorList(doctorsList, isMobile, isTablet),
-                      ],
-                    ),
-                  ),
-                );
-              }
-
-              if (state is GetDoctorListFailure) {
+                // show list skeleton but NOT search field
+              } else if (state is GetDoctorListSuccess) {
+                doctorsList = state.doctorList;
+              } else if (state is SearchDoctorListLoading) {
+                isSearching = true;
+              } else if (state is SearchDoctorListSuccess) {
+                doctorsList = state.doctorList;
+              } else if (state is SearchDoctorListFailure) {
                 AppLoggerHelper.logError(state.message);
-                return Padding(
+              }
+
+              return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Padding(
                   padding: EdgeInsets.symmetric(
                     horizontal: horizontalPadding,
                     vertical: verticalPadding,
                   ),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      /// ⭐ Search Field ALWAYS visible
                       _buildSearchField(appLoc),
                       const SizedBox(height: 20),
-                      Text(appLoc.noDoctorsFound),
+
+                      /// ⭐ CONTENT BELOW
+                      if (state is GetDoctorListLoading)
+                        _buildLoadingSkeleton()
+                      else if (isSearching)
+                        _buildLoadingSkeleton()
+                      else if (state is GetDoctorListFailure)
+                        _buildNoItemsFound(appLoc, height)
+                      else if (doctorsList.isEmpty)
+                        _buildNoItemsFound(appLoc, height)
+                      else
+                        _buildDoctorList(doctorsList, isMobile, isTablet),
                     ],
                   ),
-                );
-              }
-
-              return const SizedBox.shrink();
+                ),
+              );
             },
           ),
         ),

@@ -69,9 +69,6 @@ dependencies:
   # chat bubbles
   chat_bubbles: ^1.7.0
 
-  # badges
-  badges: ^3.1.2
-
   # image picker
   image_picker: ^1.2.1
 

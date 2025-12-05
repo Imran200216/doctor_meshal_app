@@ -19,8 +19,47 @@ class ChatListScreen extends StatefulWidget {
 }
 
 class _ChatListScreenState extends State<ChatListScreen> {
+  // User Id
   String? userId;
+
+  // Controller
   final TextEditingController _searchController = TextEditingController();
+
+  // Fetch User Id
+  Future<void> _fetchUserId() async {
+    try {
+      // Fetch stored userAuthData
+      final storedUserMapRaw = await HiveService.getData(
+        boxName: AppDBConstants.userBox,
+        key: AppDBConstants.userAuthData,
+      );
+
+      if (storedUserMapRaw != null) {
+        // Safely convert dynamic map → Map<String, dynamic>
+        final storedUserMap = Map<String, dynamic>.from(storedUserMapRaw);
+
+        // Convert Map → UserAuthModel
+        final storedUser = UserAuthModel.fromJson(storedUserMap);
+        setState(() {
+          userId = storedUser.id;
+        });
+
+        AppLoggerHelper.logInfo("User ID from userAuthData: $userId");
+      } else {
+        AppLoggerHelper.logError("No user data found in Hive");
+      }
+    } catch (e, stackTrace) {
+      AppLoggerHelper.logError("Error fetching user ID: $e");
+      AppLoggerHelper.logError("Stack trace: $stackTrace");
+    }
+  }
+
+  @override
+  void initState() {
+    _fetchUserId();
+
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -62,8 +101,16 @@ class _ChatListScreenState extends State<ChatListScreen> {
               return KAppBar(
                 title: title,
                 onBack: () {
+                  // Haptics
                   HapticFeedback.heavyImpact();
-                  GoRouter.of(context).pop();
+
+                  // Stop Chat Message Subscription Bloc
+                  context.read<StopChatMessageSubscriptionsBloc>().add(
+                    StopChatMessageSubscription(userId: userId!),
+                  );
+
+                  // Pop
+                  Future.microtask(() => GoRouter.of(context).pop());
                 },
               );
             },

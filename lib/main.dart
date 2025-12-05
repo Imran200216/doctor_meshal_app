@@ -1,12 +1,10 @@
-import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:meshal_doctor_booking_app/core/router/app_router.dart';
-import 'package:meshal_doctor_booking_app/core/utils/app_logger_helper.dart';
+import 'package:meshal_doctor_booking_app/core/service/service.dart';
 import 'package:meshal_doctor_booking_app/di/service_locator.dart';
 import 'package:meshal_doctor_booking_app/firebase_options.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
@@ -14,9 +12,6 @@ import 'package:meshal_doctor_booking_app/providers/app_bloc_providers.dart';
 import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:meshal_doctor_booking_app/features/localization/localization.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
-// Global FCM Token
-String? globalFcmToken;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,41 +31,9 @@ Future<void> main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  // Initialize FCM (APNs + FCM)
-  await initializeFCM();
-
   runApp(const MyApp());
-}
 
-Future<void> initializeFCM() async {
-  final messaging = FirebaseMessaging.instance;
-
-  // Permission for iOS
-  await messaging.requestPermission(alert: true, badge: true, sound: true);
-
-  if (Platform.isIOS) {
-    String? apnsToken;
-    int retries = 0;
-
-    // Wait until APNs token is ready
-    while (apnsToken == null && retries < 10) {
-      await Future.delayed(const Duration(milliseconds: 500));
-      apnsToken = await messaging.getAPNSToken();
-      retries++;
-    }
-
-    AppLoggerHelper.logInfo("🍎 APNS Token: $apnsToken");
-  }
-
-  // Now get FCM token safely
-  globalFcmToken = await messaging.getToken();
-  AppLoggerHelper.logInfo("🔥 FCM Token: $globalFcmToken");
-
-  // Refresh listener
-  FirebaseMessaging.instance.onTokenRefresh.listen((token) {
-    globalFcmToken = token;
-    AppLoggerHelper.logInfo("♻️ FCM Token refreshed: $token");
-  });
+  FCMService.initialize();
 }
 
 class MyApp extends StatelessWidget {

@@ -30,6 +30,11 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
   @override
   void initState() {
     super.initState();
+
+    // Fetch User Auth
+    _fetchUserAuth();
+
+    // Fetch All DAta
     _fetchAllData();
   }
 
@@ -38,7 +43,6 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
     try {
       // Run all futures in parallel
       await Future.wait([
-        _fetchUserAuth(),
         _viewUserChatRoom(),
         _fetchDoctorDashboardSummaryCounts(),
         _initializeUserAndChat(),

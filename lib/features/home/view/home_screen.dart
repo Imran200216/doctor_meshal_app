@@ -30,6 +30,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+
+    // Fetch User auth
+    _fetchUserAuth();
+
+    // Fetch All Data
     _fetchAllData();
   }
 
@@ -39,7 +44,6 @@ class _HomeScreenState extends State<HomeScreen> {
       // Run all futures in parallel
       await Future.wait([
         _fetchUserIdAndLoadEducation(),
-        _fetchUserAuth(),
         _fetchOperativeSummaryCounts(),
         _viewUserChatRoom(),
         _initializeUserAndChat(),

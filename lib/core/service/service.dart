@@ -9,3 +9,6 @@ export 'graphql_service.dart';
 
 // Hive Service
 export 'hive_service.dart';
+
+// FCM Service
+export 'fcm_service.dart';
