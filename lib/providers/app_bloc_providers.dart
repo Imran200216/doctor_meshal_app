@@ -13,6 +13,7 @@ import 'package:meshal_doctor_booking_app/features/feedback/feedback.dart';
 import 'package:meshal_doctor_booking_app/features/home/home.dart';
 import 'package:meshal_doctor_booking_app/features/localization/localization.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/peri_operative.dart';
+import 'package:meshal_doctor_booking_app/features/notification/notification.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -169,5 +170,15 @@ List<BlocProvider> appBlocProviders = [
   // Doctor Feedback Bloc
   BlocProvider<DoctorFeedbackBloc>(
     create: (context) => getIt<DoctorFeedbackBloc>(),
+  ),
+
+  // View All Notification Bloc
+  BlocProvider<ViewAllNotificationBloc>(
+    create: (context) => getIt<ViewAllNotificationBloc>(),
+  ),
+
+  // View All Notification Un Read Count Bloc
+  BlocProvider<ViewNotificationUnReadCountBloc>(
+    create: (context) => getIt<ViewNotificationUnReadCountBloc>(),
   ),
 ];

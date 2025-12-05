@@ -10,6 +10,7 @@ import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
 import 'package:meshal_doctor_booking_app/features/home/home.dart';
 import 'package:meshal_doctor_booking_app/features/chat/chat.dart';
+import 'package:meshal_doctor_booking_app/features/notification/notification.dart';
 
 class DoctorHomeScreen extends StatefulWidget {
   const DoctorHomeScreen({super.key});
@@ -270,17 +271,38 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
               onPressed: () {
                 GoRouter.of(context).pushNamed(AppRouterConstants.notification);
               },
-              icon: Badge(
-                label: Text(
-                  "3",
-                  style: TextStyle(color: Colors.white, fontSize: 10),
-                ),
-                backgroundColor: AppColorConstants.notificationBgColor,
-                child: Icon(
-                  Icons.notifications,
-                  color: AppColorConstants.secondaryColor,
-                ),
-              ),
+              icon:
+                  BlocBuilder<
+                    ViewNotificationUnReadCountBloc,
+                    ViewNotificationUnReadCountState
+                  >(
+                    builder: (context, state) {
+                      // 1️⃣ Only Loaded → Show count with badge
+                      if (state is ViewNotificationUnReadCountLoaded) {
+                        return Badge(
+                          backgroundColor:
+                              AppColorConstants.notificationBgColor,
+                          label: Text(
+                            state.unreadNotificationCount.toString(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.notifications,
+                            color: AppColorConstants.secondaryColor,
+                          ),
+                        );
+                      }
+
+                      // 2️⃣ Initial or Failure → Show only notification icon
+                      return Icon(
+                        Icons.notifications,
+                        color: AppColorConstants.secondaryColor,
+                      );
+                    },
+                  ),
             ),
           ],
         ),

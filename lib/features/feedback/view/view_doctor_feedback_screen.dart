@@ -85,8 +85,16 @@ class _ViewDoctorFeedbackScreenState extends State<ViewDoctorFeedbackScreen> {
         color: AppColorConstants.secondaryColor,
         backgroundColor: AppColorConstants.primaryColor,
         onRefresh: () async {
-          // Fetch User Auth Data and Doctor Patient Feedbacks
-          _fetchUserIdAndLoadDoctorPatientFeedbacks();
+          final internetState = context.read<ConnectivityBloc>().state;
+
+          if (internetState is ConnectivityFailure) {
+            KSnackBar.error(context, appLoc.noItemsFound);
+            return;
+          }
+
+          if (internetState is ConnectivitySuccess) {
+            await _fetchUserIdAndLoadDoctorPatientFeedbacks();
+          }
         },
 
         child: BlocBuilder<ConnectivityBloc, ConnectivityState>(
@@ -118,6 +126,16 @@ class _ViewDoctorFeedbackScreenState extends State<ViewDoctorFeedbackScreen> {
                   }
 
                   if (state is GetPatientFeedbacksSuccess) {
+                    final item = state.feedbacks;
+
+                    if (item.isEmpty) {
+                      return Align(
+                        heightFactor: 0.4,
+                        alignment: Alignment.center,
+                        child: KNoItemsFound(),
+                      );
+                    }
+
                     return ListView.separated(
                       padding: EdgeInsets.symmetric(
                         horizontal: 20,
@@ -183,7 +201,7 @@ class _ViewDoctorFeedbackScreenState extends State<ViewDoctorFeedbackScreen> {
             if (connectivityState is ConnectivityFailure) {
               return Center(
                 child: SizedBox(
-                  height: screenHeight * 0.6,
+                  height: screenHeight * 0.4,
                   child: KNoItemsFound(
                     noItemsSvg: AppAssetsConstants.noInternetFound,
                     noItemsFoundText: appLoc.noInternet,

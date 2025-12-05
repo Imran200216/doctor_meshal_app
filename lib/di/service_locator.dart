@@ -12,6 +12,7 @@ import 'package:meshal_doctor_booking_app/features/education/education.dart';
 import 'package:meshal_doctor_booking_app/features/feedback/injection/feedback_injection.dart';
 import 'package:meshal_doctor_booking_app/features/home/home.dart';
 import 'package:meshal_doctor_booking_app/features/localization/localization.dart';
+import 'package:meshal_doctor_booking_app/features/notification/notification.dart';
 import 'package:meshal_doctor_booking_app/features/peri_operative/peri_operative.dart';
 import 'package:meshal_doctor_booking_app/features/bio/bio.dart';
 
@@ -84,4 +85,7 @@ void setUpServiceLocators() {
 
   // Feedback Injection
   initFeedbackInjection();
+
+  // Notification Injection
+  initNotificationInjection();
 }

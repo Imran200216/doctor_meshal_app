@@ -44,6 +44,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
     final appLoc = AppLocalizations.of(context)!;
 
     return Drawer(
+      backgroundColor: AppColorConstants.secondaryColor,
       child: Column(
         children: [
           // Drawer Header

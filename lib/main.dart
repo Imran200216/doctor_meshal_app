@@ -15,14 +15,14 @@ import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:meshal_doctor_booking_app/features/localization/localization.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+// Global FCM Token
 String? globalFcmToken;
-
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Firebase Initialize
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
 
   // Hive Initialization
   await Hive.initFlutter();

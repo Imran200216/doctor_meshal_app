@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meshal_doctor_booking_app/features/notification/notification.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
@@ -42,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _fetchOperativeSummaryCounts(),
         _viewUserChatRoom(),
         _initializeUserAndChat(),
+        _fetchUserIdAndLoadNotificationsUnReadCount(),
       ]);
 
       AppLoggerHelper.logInfo("All data fetched successfully!");
@@ -214,6 +216,40 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // Fetch User Auth Data and Doctor Patient Feedbacks
+  Future<void> _fetchUserIdAndLoadNotificationsUnReadCount() async {
+    try {
+      // Open the Hive box if not already opened
+      await HiveService.openBox(AppDBConstants.userBox);
+
+      // Read full userAuthData from Hive (no generic type)
+      final storedUserMapRaw = await HiveService.getData(
+        boxName: AppDBConstants.userBox,
+        key: AppDBConstants.userAuthData,
+      );
+
+      if (storedUserMapRaw != null) {
+        // Safely convert dynamic map → Map<String, dynamic>
+        final storedUserMap = Map<String, dynamic>.from(storedUserMapRaw);
+
+        // Convert Map → UserAuthModel
+        final storedUser = UserAuthModel.fromJson(storedUserMap);
+        userId = storedUser.id;
+
+        AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
+
+        // Trigger View All Notification
+        context.read<ViewNotificationUnReadCountBloc>().add(
+          GetViewNotificationUnReadCountEvent(userId: userId!),
+        );
+      } else {
+        AppLoggerHelper.logError("No userAuthData found in Hive!");
+      }
+    } catch (e) {
+      AppLoggerHelper.logError("Error fetching User ID from userAuthData: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Responsive
@@ -265,17 +301,38 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 GoRouter.of(context).pushNamed(AppRouterConstants.notification);
               },
-              icon: Badge(
-                label: Text(
-                  "3",
-                  style: TextStyle(color: Colors.white, fontSize: 10),
-                ),
-                backgroundColor: AppColorConstants.notificationBgColor,
-                child: Icon(
-                  Icons.notifications,
-                  color: AppColorConstants.secondaryColor,
-                ),
-              ),
+              icon:
+                  BlocBuilder<
+                    ViewNotificationUnReadCountBloc,
+                    ViewNotificationUnReadCountState
+                  >(
+                    builder: (context, state) {
+                      // 1️⃣ Only Loaded → Show count with badge
+                      if (state is ViewNotificationUnReadCountLoaded) {
+                        return Badge(
+                          backgroundColor:
+                              AppColorConstants.notificationBgColor,
+                          label: Text(
+                            state.unreadNotificationCount.toString(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.notifications,
+                            color: AppColorConstants.secondaryColor,
+                          ),
+                        );
+                      }
+
+                      // 2️⃣ Initial or Failure → Show only notification icon
+                      return Icon(
+                        Icons.notifications,
+                        color: AppColorConstants.secondaryColor,
+                      );
+                    },
+                  ),
             ),
           ],
         ),
