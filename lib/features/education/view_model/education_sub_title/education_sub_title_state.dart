@@ -27,6 +27,19 @@ class EducationSubTitleSuccess extends EducationSubTitleState {
   List<Object> get props => [subtitles, mainTitle];
 }
 
+class EducationSubTitleOfflineSuccess extends EducationSubTitleState {
+  final List<EducationSubTitleModel> subtitles;
+  final String mainTitle;
+
+  const EducationSubTitleOfflineSuccess({
+    required this.subtitles,
+    required this.mainTitle,
+  });
+
+  @override
+  List<Object> get props => [subtitles, mainTitle];
+}
+
 final class EducationSubTitleFailure extends EducationSubTitleState {
   final String message;
 

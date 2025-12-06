@@ -29,6 +29,22 @@ final class GetDashboardSummaryCountsSuccess
   List<Object?> get props => [getDashboardCountsSummaryModel];
 }
 
+// GetDashboardSummaryCountsOfflineSuccess
+final class GetDashboardSummaryCountsOfflineSuccess
+    extends DoctorDashboardSummaryCountsState {
+  final GetDashboardCountsSummaryModel getDashboardCountsSummaryModel;
+
+  const GetDashboardSummaryCountsOfflineSuccess({
+    required this.getDashboardCountsSummaryModel,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [getDashboardCountsSummaryModel];
+}
+
+
+
 final class GetDashboardSummaryCountsFailure
     extends DoctorDashboardSummaryCountsState {
   final String message;

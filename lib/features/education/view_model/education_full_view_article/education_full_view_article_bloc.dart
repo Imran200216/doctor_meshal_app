@@ -1,8 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:meshal_doctor_booking_app/core/service/graphql_service.dart';
-import 'package:meshal_doctor_booking_app/core/utils/app_logger_helper.dart';
-import 'package:meshal_doctor_booking_app/features/education/model/education_full_view_article_model.dart';
+import 'package:meshal_doctor_booking_app/core/service/service.dart';
+import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
+import 'package:meshal_doctor_booking_app/features/education/education.dart';
+import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 
 part 'education_full_view_article_event.dart';
 
@@ -15,8 +16,38 @@ class EducationFullViewArticleBloc
   EducationFullViewArticleBloc({required this.graphQLService})
     : super(EducationFullViewArticleInitial()) {
     on<GetEducationFullViewArticleEvent>((event, emit) async {
-      emit(EducationFullViewArticleLoading());
+      EducationFullViewArticle? offlineArticle;
 
+      // -------------------------
+      // 1️⃣ Load cached article from Hive
+      // -------------------------
+      try {
+        final saved = await HiveService.getData(
+          boxName: AppDBConstants.educationFullViewArticleBox,
+          key: event.id,
+        );
+
+        if (saved != null) {
+          final savedMap = Map<String, dynamic>.from(saved);
+
+          offlineArticle = EducationFullViewArticle.fromJson(savedMap);
+
+          emit(EducationFullViewArticleOfflineSuccess(article: offlineArticle));
+
+          AppLoggerHelper.logInfo(
+            "📴 Loaded full article from Hive for id: ${event.id}",
+          );
+        } else {
+          emit(EducationFullViewArticleLoading());
+        }
+      } catch (e) {
+        emit(EducationFullViewArticleLoading());
+        AppLoggerHelper.logError("⚠️ Hive load failed for full article: $e");
+      }
+
+      // -------------------------
+      // 2️⃣ Fetch online from GraphQL
+      // -------------------------
       try {
         String query =
             '''
@@ -33,30 +64,44 @@ class EducationFullViewArticleBloc
 
         final result = await graphQLService.performQuery(query);
 
-        // Logging the raw result
-        AppLoggerHelper.logInfo("GraphQL Raw Result: $result");
-
-        // result is likely a QueryResult
-        final data = result.data?['View_education_article_by_topic_'];
-
-        if (data != null) {
-          AppLoggerHelper.logInfo("GraphQL Data: $data");
-
-          final article = EducationFullViewArticle.fromJson(data);
-
-          emit(EducationFullViewArticleSuccess(article: article));
-          AppLoggerHelper.logInfo("EducationFullViewArticleSuccess emitted");
-        } else {
-          AppLoggerHelper.logError("No article data found in GraphQL response");
-          emit(
-            const EducationFullViewArticleError(
-              message: "No article data found",
-            ),
+        if (result.hasException ||
+            result.data?['View_education_article_by_topic_'] == null) {
+          AppLoggerHelper.logError(
+            "⚠️ Online fetch failed for full article id: ${event.id}",
           );
+
+          // fallback to offline if exists
+          if (offlineArticle == null) {
+            emit(
+              EducationFullViewArticleError(
+                message: "Failed to fetch full article",
+              ),
+            );
+          }
+          return;
         }
-      } catch (e) {
-        AppLoggerHelper.logError("Error fetching article: $e");
-        emit(EducationFullViewArticleError(message: e.toString()));
+
+        final data = result.data!['View_education_article_by_topic_'];
+        final article = EducationFullViewArticle.fromJson(data);
+
+        // Save online data to Hive
+        await HiveService.saveData(
+          boxName: AppDBConstants.educationFullViewArticleBox,
+          key: event.id,
+          value: article.toJson(),
+        );
+
+        emit(EducationFullViewArticleSuccess(article: article));
+        AppLoggerHelper.logInfo(
+          "✅ Full article fetched successfully (ONLINE) for id: ${event.id}",
+        );
+      } catch (e, stack) {
+        AppLoggerHelper.logError("🔥 Online fetch error: $e");
+        AppLoggerHelper.logError(stack.toString());
+
+        if (offlineArticle == null) {
+          emit(EducationFullViewArticleError(message: e.toString()));
+        }
       }
     });
   }

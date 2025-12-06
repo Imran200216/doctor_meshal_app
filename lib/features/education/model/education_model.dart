@@ -22,4 +22,14 @@ class Education {
       articleCounts: json['articles_counts']?.toString() ?? '0',
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'image': image,
+      'title': title,
+      'sub_title_counts': subTitleCounts,
+      'articles_counts': articleCounts,
+    };
+  }
 }

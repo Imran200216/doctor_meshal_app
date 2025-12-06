@@ -10,10 +10,19 @@ class EducationArticleTopic {
   factory EducationArticleTopic.fromJson(Map<String, dynamic> json) {
     return EducationArticleTopic(
       subTitleName: json['sub_title_name'] ?? "",
-      educationArticles: (json['education_articles_lists'] as List<dynamic>? ?? [])
+      educationArticles:
+      (json['education_articles_lists'] as List<dynamic>? ?? [])
           .map((e) => EducationArticle.fromJson(e))
           .toList(),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "sub_title_name": subTitleName,
+      "education_articles_lists":
+      educationArticles.map((e) => e.toJson()).toList(),
+    };
   }
 }
 
@@ -31,5 +40,12 @@ class EducationArticle {
       id: json['id'] ?? "",
       articleName: json['article_name'] ?? "",
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "article_name": articleName,
+    };
   }
 }

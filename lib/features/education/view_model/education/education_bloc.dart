@@ -2,7 +2,9 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meshal_doctor_booking_app/core/service/graphql_service.dart';
 import 'package:meshal_doctor_booking_app/core/utils/app_logger_helper.dart';
+import 'package:meshal_doctor_booking_app/core/service/hive_service.dart';
 import 'package:meshal_doctor_booking_app/features/education/model/education_model.dart';
+import 'package:meshal_doctor_booking_app/core/constants/app_db_constants.dart';
 
 part 'education_event.dart';
 
@@ -12,11 +14,36 @@ class EducationBloc extends Bloc<EducationEvent, EducationState> {
   final GraphQLService graphQLService;
 
   EducationBloc({required this.graphQLService}) : super(EducationInitial()) {
-    // Get Education Event
     on<GetEducationEvent>((event, emit) async {
-      emit(EducationLoading());
+      List<Education>? offlineList;
 
       try {
+        // 1️⃣ Load offline data from Hive first
+        final saved = await HiveService.getData(
+          boxName: AppDBConstants.educationBox,
+          key: AppDBConstants.educationList,
+        );
+
+        if (saved != null) {
+          // Hive might store List<Map<String, dynamic>>
+          offlineList = (saved as List)
+              .map((e) => Education.fromJson(Map<String, dynamic>.from(e)))
+              .toList();
+
+          emit(EducationOfflineSuccess(educations: offlineList));
+          AppLoggerHelper.logInfo(
+            "📴 Loaded education articles from Hive (offline first)",
+          );
+        } else {
+          emit(EducationLoading());
+        }
+      } catch (e) {
+        emit(EducationLoading());
+        AppLoggerHelper.logError("⚠️ Hive load failed: $e");
+      }
+
+      try {
+        // 2️⃣ Fetch online data (background refresh)
         final String query =
             '''
       query Get_education_articles_title_list_ {
@@ -30,48 +57,45 @@ class EducationBloc extends Bloc<EducationEvent, EducationState> {
       }
     ''';
 
+        AppLoggerHelper.logInfo(
+          "📥 Fetching education articles online for userId: ${event.userId}",
+        );
+
         final result = await graphQLService.performQuery(query);
 
-        final articles =
-            result.data?['Get_education_articles_title_list_'] as List?;
-
-        if (articles == null) {
-          AppLoggerHelper.logError("❌ No articles found in response");
-          emit(EducationFailure(message: "No articles found"));
+        if (result.hasException ||
+            result.data?['Get_education_articles_title_list_'] == null) {
+          AppLoggerHelper.logError("⚠️ Online fetch failed");
+          if (offlineList == null) {
+            emit(
+              EducationFailure(message: "Failed to fetch education articles"),
+            );
+          }
           return;
         }
 
-        AppLoggerHelper.logInfo(
-          "📊 Total Education Records Fetched: ${articles.length}",
-        );
+        final articles =
+            result.data!['Get_education_articles_title_list_'] as List;
+        final educationList = articles
+            .map((e) => Education.fromJson(e))
+            .toList();
 
-        // Log each raw item
-        for (var i = 0; i < articles.length; i++) {
-          AppLoggerHelper.logInfo("🔍 Article[$i]: ${articles[i]}");
-        }
-
-        final educationList = articles.map((e) {
-          // Log before parsing
-          AppLoggerHelper.logInfo(
-            "➡️ Parsing Article: "
-            "id=${e['id']}, "
-            "title=${e['title']}, "
-            "sub_title_counts=${e['sub_title_counts']}, "
-            "articles_counts=${e['articles_counts']}",
-          );
-
-          return Education.fromJson(e);
-        }).toList();
-
-        // Log final parsed list
-        AppLoggerHelper.logInfo(
-          "✅ Parsed ${educationList.length} education items successfully",
+        // Save online data to Hive
+        await HiveService.saveData(
+          boxName: AppDBConstants.educationBox,
+          key: AppDBConstants.educationList,
+          value: educationList.map((e) => e.toJson()).toList(),
         );
 
         emit(EducationSuccess(educationList));
+        AppLoggerHelper.logInfo(
+          "✅ Education articles fetched successfully (ONLINE)",
+        );
       } catch (e) {
-        AppLoggerHelper.logError("🔥 Education Error: $e");
-        emit(EducationFailure(message: e.toString()));
+        AppLoggerHelper.logError("🔥 Online fetch error: $e");
+        if (offlineList == null) {
+          emit(EducationFailure(message: e.toString()));
+        }
       }
     });
   }

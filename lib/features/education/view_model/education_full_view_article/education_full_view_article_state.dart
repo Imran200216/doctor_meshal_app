@@ -27,6 +27,17 @@ final class EducationFullViewArticleSuccess
   List<Object?> get props => [article];
 }
 
+final class EducationFullViewArticleOfflineSuccess
+    extends EducationFullViewArticleState {
+  final EducationFullViewArticle article;
+
+  const EducationFullViewArticleOfflineSuccess({required this.article});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [article];
+}
+
 final class EducationFullViewArticleError
     extends EducationFullViewArticleState {
   final String message;

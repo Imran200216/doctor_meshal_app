@@ -30,5 +30,15 @@ final class EducationFailure extends EducationState {
 
   @override
   // TODO: implement props
-  List<Object?> get props =>[message];
+  List<Object?> get props => [message];
+}
+
+final class EducationOfflineSuccess extends EducationState {
+  final List<Education> educations;
+
+  const EducationOfflineSuccess({required this.educations});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [educations];
 }

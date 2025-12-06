@@ -9,12 +9,14 @@ final class OperativeSummaryCountsInitial extends OperativeSummaryCountsState {
   List<Object> get props => [];
 }
 
-final class GetOperativeSummaryCountsLoading extends OperativeSummaryCountsState {
+final class GetOperativeSummaryCountsLoading
+    extends OperativeSummaryCountsState {
   @override
   List<Object> get props => [];
 }
 
-final class GetOperativeSummaryCountsSuccess extends OperativeSummaryCountsState {
+final class GetOperativeSummaryCountsSuccess
+    extends OperativeSummaryCountsState {
   final String preOperativeCounts;
   final String postOperativeCounts;
   final String submittedCountsOperative;
@@ -33,7 +35,8 @@ final class GetOperativeSummaryCountsSuccess extends OperativeSummaryCountsState
   ];
 }
 
-final class GetOperativeSummaryCountsFailure extends OperativeSummaryCountsState {
+final class GetOperativeSummaryCountsFailure
+    extends OperativeSummaryCountsState {
   final String message;
 
   const GetOperativeSummaryCountsFailure({required this.message});
@@ -41,4 +44,24 @@ final class GetOperativeSummaryCountsFailure extends OperativeSummaryCountsState
   @override
   // TODO: implement props
   List<Object?> get props => [message];
+}
+
+final class GetOperativeSummaryCountsOfflineSuccess
+    extends OperativeSummaryCountsState {
+  final String preOperativeCounts;
+  final String postOperativeCounts;
+  final String submittedCountsOperative;
+
+  const GetOperativeSummaryCountsOfflineSuccess({
+    required this.preOperativeCounts,
+    required this.postOperativeCounts,
+    required this.submittedCountsOperative,
+  });
+
+  @override
+  List<Object> get props => [
+    preOperativeCounts,
+    postOperativeCounts,
+    submittedCountsOperative,
+  ];
 }

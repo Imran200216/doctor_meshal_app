@@ -77,9 +77,18 @@ class _EducationScreenState extends State<EducationScreen> {
         color: AppColorConstants.secondaryColor,
         backgroundColor: AppColorConstants.primaryColor,
         onRefresh: () async {
-          // Trigger EducationBloc to fetch data
-          _fetchUserIdAndLoadEducation();
+          final connectivityState = context.read<ConnectivityBloc>().state;
+
+          if (connectivityState is ConnectivityFailure) {
+            // NO INTERNET → show error toast/snackbar
+            KSnackBar.error(context, appLoc.noInternet);
+            return;
+          }
+
+          // INTERNET AVAILABLE → fetch userId & load education
+          await _fetchUserIdAndLoadEducation();
         },
+
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           child: Container(
@@ -113,148 +122,132 @@ class _EducationScreenState extends State<EducationScreen> {
                 // Wrap only the list/grid with BlocBuilder
                 BlocBuilder<ConnectivityBloc, ConnectivityState>(
                   builder: (context, connectivityState) {
-                    if (connectivityState is ConnectivityFailure) {
-                      return Align(
-                        alignment: Alignment.center,
-                        heightFactor: 3,
-                        child: const KInternetFound(),
-                      );
-                    } else if (connectivityState is ConnectivitySuccess) {
-                      // Internet available, show Education
-                      return BlocBuilder<EducationBloc, EducationState>(
-                        builder: (context, state) {
-                          // Success State
-                          if (state is EducationLoading) {
-                            return isTablet
-                                ? GridView.builder(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemCount: 20,
-                                    gridDelegate:
-                                        const SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 2,
-                                          crossAxisSpacing: 18,
-                                          mainAxisSpacing: 18,
-                                          childAspectRatio: 1.6,
-                                        ),
-                                    itemBuilder: (context, index) {
-                                      return KSkeletonRectangle(
-                                        width: double.maxFinite,
-                                        radius: 12,
-                                        height: 160,
-                                      );
-                                    },
-                                  )
-                                : ListView.separated(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemCount: 20,
-                                    separatorBuilder: (_, __) =>
-                                        const SizedBox(height: 18),
-                                    itemBuilder: (context, index) {
-                                      return KSkeletonRectangle(
-                                        width: double.maxFinite,
-                                        radius: 12,
-                                        height: 180,
-                                      );
-                                    },
-                                  );
-                          }
+                    // ❗ DO NOT SHOW No Internet UI — just log it.
+                    final bool isOffline =
+                        connectivityState is ConnectivityFailure;
 
-                          // Success State
-                          if (state is EducationSuccess) {
-                            final educations = state.educations;
-                            if (educations.isEmpty) {
-                              return const KNoItemsFound();
-                            }
+                    // Continue showing Education list using offline data
+                    return BlocBuilder<EducationBloc, EducationState>(
+                      builder: (context, state) {
+                        // LOADING
+                        if (state is EducationLoading) {
+                          return isTablet
+                              ? GridView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: 20,
+                                  gridDelegate:
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                        crossAxisSpacing: 18,
+                                        mainAxisSpacing: 18,
+                                        childAspectRatio: 1.6,
+                                      ),
+                                  itemBuilder: (_, __) => KSkeletonRectangle(
+                                    width: double.maxFinite,
+                                    radius: 12,
+                                    height: 160,
+                                  ),
+                                )
+                              : ListView.separated(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: 20,
+                                  separatorBuilder: (_, __) =>
+                                      const SizedBox(height: 18),
+                                  itemBuilder: (_, __) => KSkeletonRectangle(
+                                    width: double.maxFinite,
+                                    radius: 12,
+                                    height: 180,
+                                  ),
+                                );
+                        }
 
-                            return isTablet
-                                ? GridView.builder(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemCount: educations.length,
-                                    gridDelegate:
-                                        const SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 2,
-                                          crossAxisSpacing: 18,
-                                          mainAxisSpacing: 18,
-                                          childAspectRatio: 1.6,
-                                        ),
-                                    itemBuilder: (context, index) {
-                                      final edu = educations[index];
-                                      return PatientCornerCard(
-                                        onTap: () {
-                                          GoRouter.of(context).pushNamed(
-                                            AppRouterConstants
-                                                .educationSubTopics,
-                                            extra: edu.id,
-                                          );
-                                        },
-                                        imageUrl: edu.image,
-                                        title: edu.title,
-                                        noOfArticles: edu.articleCounts
-                                            .toString(),
-                                        noOfTopics: edu.subTitleCounts
-                                            .toString(),
-                                      );
-                                    },
-                                  )
-                                : ListView.separated(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemCount: educations.length,
-                                    separatorBuilder: (_, __) =>
-                                        const SizedBox(height: 18),
-                                    itemBuilder: (context, index) {
-                                      final edu = educations[index];
-                                      return PatientCornerCard(
-                                        onTap: () {
-                                          GoRouter.of(context).pushNamed(
-                                            AppRouterConstants
-                                                .educationSubTopics,
-                                            extra: edu.id,
-                                          );
-                                        },
-                                        imageUrl: edu.image,
-                                        title: edu.title,
-                                        noOfArticles: edu.articleCounts
-                                            .toString(),
-                                        noOfTopics: edu.subTitleCounts
-                                            .toString(),
-                                      );
-                                    },
-                                  );
-                          }
+                        // SUCCESS (ONLINE) or OFFLINE
+                        if (state is EducationSuccess ||
+                            state is EducationOfflineSuccess) {
+                          final educations = state is EducationSuccess
+                              ? state.educations
+                              : (state as EducationOfflineSuccess).educations;
 
-                          // Failure State
-                          if (state is EducationFailure) {
-                            return Center(
-                              child: SizedBox(
-                                height: screenHeight * 0.3,
-                                child: KNoItemsFound(
-                                  noItemsSvg: AppAssetsConstants.failure,
-                                  noItemsFoundText: appLoc.somethingWentWrong,
-                                ),
-                              ),
+                          if (educations.isEmpty) {
+                            return Align(
+                              alignment: Alignment.center,
+                              heightFactor: 3,
+                              child: KNoItemsFound(),
                             );
                           }
 
-                          return const SizedBox.shrink();
-                        },
-                      );
-                    } else if (connectivityState is ConnectivityFailure) {
-                      return Align(
-                        alignment: Alignment.center,
-                        heightFactor: 3,
-                        child: const KInternetFound(),
-                      );
-                    }
+                          return isTablet
+                              ? GridView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: educations.length,
+                                  gridDelegate:
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                        crossAxisSpacing: 18,
+                                        mainAxisSpacing: 18,
+                                        childAspectRatio: 1.6,
+                                      ),
+                                  itemBuilder: (context, index) {
+                                    final edu = educations[index];
+                                    return PatientCornerCard(
+                                      onTap: () =>
+                                          GoRouter.of(context).pushNamed(
+                                            AppRouterConstants
+                                                .educationSubTopics,
+                                            extra: edu.id,
+                                          ),
+                                      imageUrl: edu.image,
+                                      title: edu.title,
+                                      noOfArticles: edu.articleCounts,
+                                      noOfTopics: edu.subTitleCounts,
+                                    );
+                                  },
+                                )
+                              : ListView.separated(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: educations.length,
+                                  separatorBuilder: (_, __) =>
+                                      const SizedBox(height: 18),
+                                  itemBuilder: (context, index) {
+                                    final edu = educations[index];
+                                    return PatientCornerCard(
+                                      onTap: () =>
+                                          GoRouter.of(context).pushNamed(
+                                            AppRouterConstants
+                                                .educationSubTopics,
+                                            extra: edu.id,
+                                          ),
+                                      imageUrl: edu.image,
+                                      title: edu.title,
+                                      noOfArticles: edu.articleCounts,
+                                      noOfTopics: edu.subTitleCounts,
+                                    );
+                                  },
+                                );
+                        }
 
-                    return const SizedBox.shrink();
+                        // FAILURE (ONLY when online + offline empty)
+                        if (state is EducationFailure) {
+                          return Align(
+                            alignment: Alignment.center,
+                            heightFactor: 3,
+                            child: SizedBox(
+                              height: screenHeight * 0.3,
+                              child: KNoItemsFound(
+                                noItemsSvg: AppAssetsConstants.failure,
+                                noItemsFoundText: appLoc.somethingWentWrong,
+                              ),
+                            ),
+                          );
+                        }
+
+                        return const SizedBox.shrink();
+                      },
+                    );
                   },
                 ),
               ],

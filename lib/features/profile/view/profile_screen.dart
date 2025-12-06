@@ -30,7 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
   }
 
-  // Fetch Education Articles
+  // Fetch User Auth
   Future<void> _fetchUserAuth() async {
     try {
       await HiveService.openBox(AppDBConstants.userBox);
@@ -71,6 +71,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     // App Localization
     final appLoc = AppLocalizations.of(context)!;
+
+    // Placeholder Image
+    final placeholderImage =
+        "https://e-quester.com/wp-content/uploads/2021/11/placeholder-image-person-jpg.jpg";
 
     return Scaffold(
       backgroundColor: AppColorConstants.secondaryColor,
@@ -126,28 +130,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         );
                       }
 
-                      // Success
-                      if (state is GetUserAuthSuccess) {
-                        final user = state.user;
+                      // ONLINE or OFFLINE success → show data
+                      if (state is GetUserAuthSuccess ||
+                          state is GetUserAuthOfflineSuccess) {
+                        final user = state is GetUserAuthSuccess
+                            ? (state).user
+                            : (state as GetUserAuthOfflineSuccess).user;
+
                         return ProfileDetailsContainer(
                           profileImageUrl: user.profileImage.isNotEmpty
                               ? user.profileImage
-                              : "https://e-quester.com/wp-content/uploads/2021/11/placeholder-image-person-jpg.jpg",
+                              : placeholderImage,
                           name: "${user.firstName} ${user.lastName}",
                           email: user.email,
                         );
                       }
 
-                      // Failure / Unknown state
-                      return SizedBox.shrink(); // Or any fallback widget
+                      // Failure
+                      if (state is GetUserAuthFailure) {
+                        if (state.message.contains("No user data")) {
+                          return Center(
+                            child: Text(
+                              "No cached user data. Connect to internet.",
+                            ),
+                          );
+                        }
+                        return Center(child: Text("Failed to load user"));
+                      }
+
+                      return SizedBox.shrink();
                     },
                   ),
 
                   // General Section
                   _buildGeneralSection(context, appLoc, isMobile, isTablet),
-
-                  // // Doctor Bio Section
-                  // _buildDoctorBioSection(context, appLoc, isMobile, isTablet),
 
                   // Support Section
                   _buildSupportSection(context, appLoc, isMobile, isTablet),
@@ -162,63 +178,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
-
-  // Build Doctor Bio Section
-  // Widget _buildDoctorBioSection(
-  //   BuildContext context,
-  //   AppLocalizations appLoc,
-  //   bool isMobile,
-  //   bool isTablet,
-  // ) {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     spacing: 20,
-  //     children: [
-  //       KText(
-  //         text: appLoc.doctorInfo,
-  //         fontSize: isMobile
-  //             ? 20
-  //             : isTablet
-  //             ? 22
-  //             : 24,
-  //         fontWeight: FontWeight.w700,
-  //         color: AppColorConstants.titleColor,
-  //       ),
-  //
-  //       Container(
-  //         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-  //         decoration: BoxDecoration(
-  //           borderRadius: BorderRadius.circular(12),
-  //           color: AppColorConstants.subTitleColor.withOpacity(0.05),
-  //         ),
-  //         child: Column(
-  //           spacing: 10,
-  //           children: [
-  //             ProfileListTile(
-  //               prefixIcon: Icons.description_outlined,
-  //               title: appLoc.bio,
-  //               onTap: () {
-  //                 // Doctor Bio Screen
-  //                 GoRouter.of(context).pushNamed(AppRouterConstants.bio);
-  //               },
-  //             ),
-  //
-  //             ProfileListTile(
-  //               prefixIcon: Icons.health_and_safety_outlined,
-  //               title: appLoc.services,
-  //               onTap: () {
-  //                 // Doctor Services Screen
-  //                 GoRouter.of(
-  //                   context,
-  //                 ).pushNamed(AppRouterConstants.doctorServices);
-  //               },
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
 
   // General Section
   Widget _buildGeneralSection(

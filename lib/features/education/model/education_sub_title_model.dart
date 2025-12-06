@@ -18,8 +18,17 @@ class EducationSubTitleModel extends Equatable {
       id: json['id'] ?? '',
       image: json['image'] ?? '',
       subTitleName: json['sub_title_name'] ?? '',
-      educationArticleCounts: json['education_article_counts'] ?? '0',
+      educationArticleCounts: json['education_article_counts']?.toString() ?? '0',
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'image': image,
+      'sub_title_name': subTitleName,
+      'education_article_counts': educationArticleCounts,
+    };
   }
 
   @override

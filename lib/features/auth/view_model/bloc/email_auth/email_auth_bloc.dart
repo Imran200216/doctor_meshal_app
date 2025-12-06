@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:meshal_doctor_booking_app/core/service/graphql_service.dart';
-import 'package:meshal_doctor_booking_app/core/utils/app_logger_helper.dart';
+import 'package:meshal_doctor_booking_app/core/service/service.dart';
+import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 
 part 'email_auth_event.dart';
 
@@ -107,7 +107,6 @@ class EmailAuthBloc extends Bloc<EmailAuthEvent, EmailAuthState> {
               token: data['token'],
               id: data['id'],
               success: data['success'],
-
             ),
           );
           AppLoggerHelper.logInfo(
@@ -393,7 +392,6 @@ class EmailAuthBloc extends Bloc<EmailAuthEvent, EmailAuthState> {
           ''';
 
         AppLoggerHelper.logInfo("GraphQL Query: $query");
-
 
         final result = await graphQLService.performQuery(query);
 

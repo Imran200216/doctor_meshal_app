@@ -24,6 +24,16 @@ final class EducationArticlesSuccess extends EducationArticlesState {
   List<Object?> get props => [topics];
 }
 
+final class EducationArticlesOfflineSuccess extends EducationArticlesState {
+  final List<EducationArticleTopic> topics;
+
+  const EducationArticlesOfflineSuccess({required this.topics});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [topics];
+}
+
 final class EducationArticlesFailure extends EducationArticlesState {
   final String message;
 

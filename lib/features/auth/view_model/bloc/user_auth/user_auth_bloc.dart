@@ -1,10 +1,12 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:meshal_doctor_booking_app/core/service/graphql_service.dart';
-import 'package:meshal_doctor_booking_app/core/utils/app_logger_helper.dart';
-import 'package:meshal_doctor_booking_app/features/auth/model/user_auth_model.dart';
+import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
+import 'package:meshal_doctor_booking_app/core/service/service.dart';
+import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
+import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
 
 part 'user_auth_event.dart';
+
 part 'user_auth_state.dart';
 
 class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState> {
@@ -12,13 +14,39 @@ class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState> {
 
   UserAuthBloc(this.graphQLService) : super(UserAuthInitial()) {
     on<GetUserAuthEvent>((event, emit) async {
-      emit(GetUserAuthLoading());
-      AppLoggerHelper.logInfo("Fetching user data for id: ${event.id}");
+      UserAuthModel? offlineUser;
 
+      // -----------------------------
+      // 1️⃣ Load offline Hive data first
+      // -----------------------------
       try {
-        final String query = '''
+        final saved = await HiveService.getData(
+          boxName: AppDBConstants.profileUserBox,
+          key: AppDBConstants.profileUser,
+        );
+
+        if (saved != null) {
+          // Cast to Map<String, dynamic> safely
+          final map = Map<String, dynamic>.from(saved as Map);
+          offlineUser = UserAuthModel.fromJson(map);
+          emit(GetUserAuthOfflineSuccess(user: offlineUser));
+          AppLoggerHelper.logInfo("📴 Loaded user from Hive (offline first)");
+        } else {
+          emit(GetUserAuthLoading());
+        }
+      } catch (e) {
+        emit(GetUserAuthLoading());
+        AppLoggerHelper.logError("⚠️ Hive load failed: $e");
+      }
+
+      // -----------------------------
+      // 2️⃣ Fetch online data in background
+      // -----------------------------
+      try {
+        final query =
+            '''
         query Get_user_by_id_auth_ {
-          get_user_by_id_auth_(id: "${event.id}", token: "${event.token}") {
+          get_user_by_id_auth_(id: "${event.id}", token: "") {
             id
             profile_image
             first_name
@@ -40,25 +68,37 @@ class UserAuthBloc extends Bloc<UserAuthEvent, UserAuthState> {
         }
         ''';
 
-        AppLoggerHelper.logInfo("GraphQL Query: $query");
+        AppLoggerHelper.logInfo("📥 GraphQL Query: $query");
 
         final result = await graphQLService.performQuery(query);
 
-        final userData = result.data?['get_user_by_id_auth_'];
-        AppLoggerHelper.logInfo("GraphQL Response Data: $userData");
-
-        if (userData == null) {
-          AppLoggerHelper.logError("No user data found for id: ${event.id}");
-          emit(GetUserAuthFailure(message: "No user data found"));
+        if (result.hasException ||
+            result.data?['get_user_by_id_auth_'] == null) {
+          AppLoggerHelper.logError("⚠️ Online fetch failed");
+          if (offlineUser == null) {
+            emit(GetUserAuthFailure(message: "Failed to fetch user online"));
+          }
           return;
         }
 
-        final user = UserAuthModel.fromJson(userData);
-        emit(GetUserAuthSuccess(user: user));
-        AppLoggerHelper.logInfo("User data fetched successfully for id: ${event.id}");
+        final onlineUser = UserAuthModel.fromJson(
+          Map<String, dynamic>.from(result.data!['get_user_by_id_auth_']),
+        );
+
+        // Save online data to Hive
+        await HiveService.saveData(
+          boxName: AppDBConstants.profileUserBox,
+          key: AppDBConstants.profileUser,
+          value: onlineUser.toJson(),
+        );
+
+        emit(GetUserAuthSuccess(user: onlineUser));
+        AppLoggerHelper.logInfo("✅ User data fetched successfully (ONLINE)");
       } catch (e) {
-        AppLoggerHelper.logError("Error fetching user data for id: ${event.id}, Error: $e");
-        emit(GetUserAuthFailure(message: e.toString()));
+        AppLoggerHelper.logError("⚠️ Online fetch error: $e");
+        if (offlineUser == null) {
+          emit(GetUserAuthFailure(message: e.toString()));
+        }
       }
     });
   }

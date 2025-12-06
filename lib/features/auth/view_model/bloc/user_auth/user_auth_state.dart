@@ -24,6 +24,16 @@ final class GetUserAuthSuccess extends UserAuthState {
   List<Object?> get props => [user];
 }
 
+class GetUserAuthOfflineSuccess extends UserAuthState {
+  final UserAuthModel user;
+
+  const GetUserAuthOfflineSuccess({required this.user});
+
+  @override
+  List<Object> get props => [user];
+}
+
+
 final class GetUserAuthFailure extends UserAuthState {
   final String message;
 

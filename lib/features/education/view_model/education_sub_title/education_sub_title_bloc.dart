@@ -1,8 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:meshal_doctor_booking_app/core/service/graphql_service.dart';
-import 'package:meshal_doctor_booking_app/features/education/model/education_sub_title_model.dart';
+import 'package:meshal_doctor_booking_app/core/service/service.dart';
+import 'package:meshal_doctor_booking_app/features/education/education.dart';
 import 'package:meshal_doctor_booking_app/core/utils/app_logger_helper.dart';
+import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 
 part 'education_sub_title_event.dart';
 
@@ -15,15 +16,50 @@ class EducationSubTitleBloc
   EducationSubTitleBloc({required this.graphQLService})
     : super(EducationSubTitleInitial()) {
     on<GetEducationSubTitleEvent>((event, emit) async {
-      emit(EducationSubTitleLoading());
-      AppLoggerHelper.logInfo(
-        "Fetching subtitles for educationTitleId: ${event.educationTitleId}",
-      );
+      List<EducationSubTitleModel>? offlineList;
+      String offlineTitle = '';
 
+      // 1️⃣ Load cached data from Hive first
+      try {
+        final saved = await HiveService.getData(
+          boxName: AppDBConstants.educationSubTitleBox,
+          key: event.educationTitleId,
+        );
+
+        if (saved != null) {
+          final savedMap = Map<String, dynamic>.from(saved);
+          offlineTitle = savedMap['mainTitle'] ?? '';
+          offlineList = (savedMap['subtitles'] as List)
+              .map(
+                (e) => EducationSubTitleModel.fromJson(
+                  Map<String, dynamic>.from(e),
+                ),
+              )
+              .toList();
+
+          emit(
+            EducationSubTitleOfflineSuccess(
+              mainTitle: offlineTitle,
+              subtitles: offlineList,
+            ),
+          );
+
+          AppLoggerHelper.logInfo(
+            "📴 Loaded subtitles and mainTitle from Hive for titleId: ${event.educationTitleId}",
+          );
+        } else {
+          emit(EducationSubTitleLoading());
+        }
+      } catch (e) {
+        emit(EducationSubTitleLoading());
+        AppLoggerHelper.logError("⚠️ Hive load failed: $e");
+      }
+
+      // 2️⃣ Fetch online data
       try {
         final String query =
             '''
-          query Get_education_articles_sub_title_list_s {
+         query Get_education_articles_sub_title_list_s {
             Get_education_articles_sub_title_list_s(
               id_: "${event.educationTitleId}"
               user_id: "${event.userId}"
@@ -41,48 +77,53 @@ class EducationSubTitleBloc
 
         final result = await graphQLService.performQuery(query);
 
-        // Debug logs
-        AppLoggerHelper.logInfo("GraphQL Response: ${result.data}");
-
-        // Check for GraphQL or network errors
-        if (result.hasException) {
-          final errorMessage =
-              result.exception?.graphqlErrors.isNotEmpty == true
-              ? result.exception?.graphqlErrors.first.message
-              : "Unknown GraphQL error";
-          AppLoggerHelper.logError("GraphQL Exception: $errorMessage");
-          emit(EducationSubTitleFailure(message: errorMessage ?? "Error"));
-          return;
-        }
-
-        final data = result.data?['Get_education_articles_sub_title_list_s'];
-        if (data == null) {
-          AppLoggerHelper.logError("Response data is null");
-          emit(
-            const EducationSubTitleFailure(
-              message: "No data found for this education title.",
-            ),
+        if (result.hasException ||
+            result.data?['Get_education_articles_sub_title_list_s'] == null) {
+          AppLoggerHelper.logError(
+            "⚠️ Online fetch failed for titleId: ${event.educationTitleId}",
           );
+          if (offlineList == null) {
+            emit(
+              EducationSubTitleFailure(message: "Failed to fetch subtitles"),
+            );
+          }
           return;
         }
+
+        final data = result.data!['Get_education_articles_sub_title_list_s'];
 
         final List<dynamic> subtitleList =
             data['article_subtitles_lists'] ?? [];
 
-        final List<EducationSubTitleModel> subtitles = subtitleList
+        final subtitles = subtitleList
             .map((json) => EducationSubTitleModel.fromJson(json))
             .toList();
 
+        final mainTitle = data['title'] ?? '';
+
+        // Save online data + mainTitle to Hive
+        await HiveService.saveData(
+          boxName: AppDBConstants.educationSubTitleBox,
+          key: event.educationTitleId,
+          value: {
+            'mainTitle': mainTitle,
+            'subtitles': subtitles.map((e) => e.toJson()).toList(),
+          },
+        );
+
         emit(
-          EducationSubTitleSuccess(
-            mainTitle: data['title'] ?? '',
-            subtitles: subtitles,
-          ),
+          EducationSubTitleSuccess(mainTitle: mainTitle, subtitles: subtitles),
+        );
+
+        AppLoggerHelper.logInfo(
+          "✅ Subtitles + mainTitle fetched successfully (ONLINE) for titleId: ${event.educationTitleId}",
         );
       } catch (e, stack) {
-        AppLoggerHelper.logError("Error fetching education subtitles: $e");
+        AppLoggerHelper.logError("🔥 Online fetch error: $e");
         AppLoggerHelper.logError(stack.toString());
-        emit(EducationSubTitleFailure(message: e.toString()));
+        if (offlineList == null) {
+          emit(EducationSubTitleFailure(message: e.toString()));
+        }
       }
     });
   }

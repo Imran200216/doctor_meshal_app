@@ -23,8 +23,6 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
   // User Id
   String? userId;
 
-  String? _lastSavedChatRoomId;
-
   StreamSubscription? _chatSubscription;
 
   @override
@@ -197,36 +195,6 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
     }
   }
 
-  // Save Chat Room Id Hive
-  Future<void> _saveChatRoomIdToHive(String chatRoomId) async {
-    // Prevent saving the same ID multiple times
-    if (_lastSavedChatRoomId == chatRoomId) return;
-
-    try {
-      AppLoggerHelper.logInfo(
-        "📦 Opening Hive box: ${AppDBConstants.chatRoom}",
-      );
-
-      await HiveService.openBox(AppDBConstants.chatRoom);
-
-      await HiveService.saveData(
-        boxName: AppDBConstants.chatRoom,
-        key: AppDBConstants.chatRoomSenderRoomId,
-        value: chatRoomId,
-      );
-
-      _lastSavedChatRoomId = chatRoomId;
-
-      AppLoggerHelper.logInfo(
-        "✅ Hive Save Success → box: ${AppDBConstants.chatRoom}, "
-        "key: ${AppDBConstants.chatRoomSenderRoomId}, "
-        "value: $chatRoomId",
-      );
-    } catch (e) {
-      AppLoggerHelper.logError("❌ Hive Save Failed → Error: $e");
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     // Responsive
@@ -321,9 +289,33 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                 int count = 0;
 
                 if (state is GetViewUserHomeChatRoomSuccess) {
-                  count = int.tryParse(state.notificationCount) ?? 0;
+                  try {
+                    count = int.tryParse(state.notificationCount) ?? 0;
 
-                  _saveChatRoomIdToHive(state.id);
+                    /// Log before opening Hive box
+                    AppLoggerHelper.logInfo(
+                      "Opening Hive box: ${AppDBConstants.chatRoom}",
+                    );
+
+                    HiveService.openBox(AppDBConstants.chatRoom);
+
+                    /// Save Data to Hive
+                    HiveService.saveData(
+                      boxName: AppDBConstants.chatRoom,
+                      key: AppDBConstants.chatRoomSenderRoomId,
+                      value: state.id,
+                    );
+
+                    /// Log success
+                    AppLoggerHelper.logInfo(
+                      "Hive Save Success → box: ${AppDBConstants.chatRoom}, "
+                      "key: ${AppDBConstants.chatRoomSenderRoomId}, "
+                      "value: ${state.id}",
+                    );
+                  } catch (e) {
+                    /// Log error
+                    AppLoggerHelper.logError("Hive Save Failed → Error: $e");
+                  }
                 }
 
                 return FittedBox(
@@ -339,6 +331,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                         fabIconPath: AppAssetsConstants.chats,
                         heroTag: "doctorList",
                       ),
+
                       // Show badge only when count > 0
                       Badge.count(count: count, isLabelVisible: true),
                     ],
@@ -367,47 +360,51 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // USER HEADER
-                    BlocBuilder<UserAuthBloc, UserAuthState>(
-                      builder: (context, state) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // HEADER CONTAINER
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                color: AppColorConstants.primaryColor,
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.center,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // HEADER CONTAINER
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: AppColorConstants.primaryColor,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      KText(
-                                        textAlign: TextAlign.start,
-                                        text: "${getGreetingMessage(appLoc)},",
-                                        fontSize: isMobile
-                                            ? 22
-                                            : isTablet
-                                            ? 24
-                                            : 26,
-                                        fontWeight: FontWeight.w700,
-                                        color: AppColorConstants.secondaryColor,
-                                      ),
-                                      const SizedBox(height: 5),
+                                  KText(
+                                    textAlign: TextAlign.start,
+                                    text: "${getGreetingMessage(appLoc)},",
+                                    fontSize: isMobile
+                                        ? 22
+                                        : isTablet
+                                        ? 24
+                                        : 26,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColorConstants.secondaryColor,
+                                  ),
+                                  const SizedBox(height: 5),
 
-                                      if (state is GetUserAuthSuccess)
-                                        KText(
+                                  BlocBuilder<UserAuthBloc, UserAuthState>(
+                                    builder: (context, state) {
+                                      if (state is GetUserAuthSuccess ||
+                                          state is GetUserAuthOfflineSuccess) {
+                                        final user = state is GetUserAuthSuccess
+                                            ? (state).user
+                                            : (state as GetUserAuthOfflineSuccess)
+                                                  .user;
+
+                                        return KText(
                                           textAlign: TextAlign.start,
                                           text:
-                                              "${state.user.firstName} ${state.user.lastName}",
+                                              "${user.firstName} ${user.lastName}",
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                           fontSize: isMobile
                                               ? 20
                                               : isTablet
@@ -416,30 +413,33 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                                           fontWeight: FontWeight.w700,
                                           color:
                                               AppColorConstants.secondaryColor,
-                                        ),
-                                    ],
-                                  ),
+                                        );
+                                      }
 
-                                  Image.asset(
-                                    AppAssetsConstants.doctorIntro,
-                                    height: isMobile
-                                        ? 160
-                                        : isTablet
-                                        ? 160
-                                        : 180,
-                                    fit: BoxFit.cover,
+                                      return const SizedBox.shrink(); // or a loader if needed
+                                    },
                                   ),
                                 ],
                               ),
-                            ),
 
-                            const SizedBox(height: 30),
-                          ],
-                        );
-                      },
+                              Image.asset(
+                                AppAssetsConstants.doctorIntro,
+                                height: isMobile
+                                    ? 160
+                                    : isTablet
+                                    ? 160
+                                    : 180,
+                                fit: BoxFit.cover,
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 30),
+                      ],
                     ),
 
-                    // Doctor Dashboard SUMMARY COUNTS
+                    // Doctor Dashboard SUMMARY TEXT
                     KText(
                       textAlign: TextAlign.start,
                       text: appLoc.dashboardSummary,
@@ -454,6 +454,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
 
                     const SizedBox(height: 20),
 
+                    // Doctor Dashboard SUMMARY Counts
                     BlocBuilder<
                       DoctorDashboardSummaryCountsBloc,
                       DoctorDashboardSummaryCountsState
@@ -472,8 +473,16 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                           );
                         }
 
-                        // Success State
-                        if (state is GetDashboardSummaryCountsSuccess) {
+                        // Online or Offline Success State
+                        if (state is GetDashboardSummaryCountsSuccess ||
+                            state is GetDashboardSummaryCountsOfflineSuccess) {
+                          final summary =
+                              state is GetDashboardSummaryCountsSuccess
+                              ? state.getDashboardCountsSummaryModel.summary
+                              : (state as GetDashboardSummaryCountsOfflineSuccess)
+                                    .getDashboardCountsSummaryModel
+                                    .summary;
+
                           return Row(
                             spacing: 15,
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -481,11 +490,8 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                             children: [
                               Expanded(
                                 child: PeriOperativeScoreCard(
-                                  totalCount: state
-                                      .getDashboardCountsSummaryModel
-                                      .summary!
-                                      .totalPatient
-                                      .toString(),
+                                  totalCount:
+                                      summary?.totalPatient.toString() ?? '0',
                                   scoreCardTitle: appLoc.totalPatient,
                                   icon: Icons.person,
                                 ),
@@ -493,11 +499,10 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
 
                               Expanded(
                                 child: PeriOperativeScoreCard(
-                                  totalCount: state
-                                      .getDashboardCountsSummaryModel
-                                      .summary!
-                                      .totalEducationArticles
-                                      .toString(),
+                                  totalCount:
+                                      summary?.totalEducationArticles
+                                          .toString() ??
+                                      '0',
                                   scoreCardTitle: appLoc.totalEducationArticles,
                                   icon: Icons.school,
                                 ),
@@ -529,6 +534,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
 
                     const SizedBox(height: 30),
 
+                    // Pre Operative Summary Text
                     KText(
                       textAlign: TextAlign.start,
                       text: appLoc.preOperativeSummary,
@@ -543,6 +549,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
 
                     const SizedBox(height: 20),
 
+                    // Pre Operative Summary Counts
                     BlocBuilder<
                       DoctorDashboardSummaryCountsBloc,
                       DoctorDashboardSummaryCountsState
@@ -562,7 +569,20 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                           );
                         }
 
-                        if (state is GetDashboardSummaryCountsSuccess) {
+                        // Online or Offline Success State
+                        if (state is GetDashboardSummaryCountsSuccess ||
+                            state is GetDashboardSummaryCountsOfflineSuccess) {
+                          final preOperative =
+                              state is GetDashboardSummaryCountsSuccess
+                              ? state
+                                    .getDashboardCountsSummaryModel
+                                    .summary!
+                                    .preOperative
+                              : (state as GetDashboardSummaryCountsOfflineSuccess)
+                                    .getDashboardCountsSummaryModel
+                                    .summary!
+                                    .preOperative;
+
                           return Row(
                             spacing: 12,
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -570,12 +590,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                             children: [
                               Expanded(
                                 child: PeriOperativeScoreCard(
-                                  totalCount: state
-                                      .getDashboardCountsSummaryModel
-                                      .summary!
-                                      .preOperative!
-                                      .pending
-                                      .toString(),
+                                  totalCount: preOperative!.pending.toString(),
                                   scoreCardTitle: appLoc.pending,
                                   icon: Icons.pending_actions,
                                 ),
@@ -583,12 +598,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
 
                               Expanded(
                                 child: PeriOperativeScoreCard(
-                                  totalCount: state
-                                      .getDashboardCountsSummaryModel
-                                      .summary!
-                                      .preOperative!
-                                      .rejected
-                                      .toString(),
+                                  totalCount: preOperative.rejected.toString(),
                                   scoreCardTitle: appLoc.rejected,
                                   icon: Icons.clear,
                                 ),
@@ -596,12 +606,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
 
                               Expanded(
                                 child: PeriOperativeScoreCard(
-                                  totalCount: state
-                                      .getDashboardCountsSummaryModel
-                                      .summary!
-                                      .preOperative!
-                                      .completed
-                                      .toString(),
+                                  totalCount: preOperative.completed.toString(),
                                   scoreCardTitle: appLoc.completed,
                                   icon: Icons.check_circle,
                                 ),
@@ -629,6 +634,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
 
                     const SizedBox(height: 30),
 
+                    // Post Operative Summary Text
                     KText(
                       textAlign: TextAlign.start,
                       text: appLoc.postOperativeSummary,
@@ -643,6 +649,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
 
                     const SizedBox(height: 20),
 
+                    // Post Operative Summary Counts
                     BlocBuilder<
                       DoctorDashboardSummaryCountsBloc,
                       DoctorDashboardSummaryCountsState
@@ -662,7 +669,20 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                           );
                         }
 
-                        if (state is GetDashboardSummaryCountsSuccess) {
+                        // Online or Offline Success State
+                        if (state is GetDashboardSummaryCountsSuccess ||
+                            state is GetDashboardSummaryCountsOfflineSuccess) {
+                          final postOperative =
+                              state is GetDashboardSummaryCountsSuccess
+                              ? state
+                                    .getDashboardCountsSummaryModel
+                                    .summary!
+                                    .postOperative
+                              : (state as GetDashboardSummaryCountsOfflineSuccess)
+                                    .getDashboardCountsSummaryModel
+                                    .summary!
+                                    .postOperative;
+
                           return Row(
                             spacing: 12,
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -670,12 +690,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                             children: [
                               Expanded(
                                 child: PeriOperativeScoreCard(
-                                  totalCount: state
-                                      .getDashboardCountsSummaryModel
-                                      .summary!
-                                      .postOperative!
-                                      .pending
-                                      .toString(),
+                                  totalCount: postOperative!.pending.toString(),
                                   scoreCardTitle: appLoc.pending,
                                   icon: Icons.pending_actions,
                                 ),
@@ -683,12 +698,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
 
                               Expanded(
                                 child: PeriOperativeScoreCard(
-                                  totalCount: state
-                                      .getDashboardCountsSummaryModel
-                                      .summary!
-                                      .postOperative!
-                                      .rejected
-                                      .toString(),
+                                  totalCount: postOperative.rejected.toString(),
                                   scoreCardTitle: appLoc.rejected,
                                   icon: Icons.clear,
                                 ),
@@ -696,11 +706,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
 
                               Expanded(
                                 child: PeriOperativeScoreCard(
-                                  totalCount: state
-                                      .getDashboardCountsSummaryModel
-                                      .summary!
-                                      .postOperative!
-                                      .completed
+                                  totalCount: postOperative.completed
                                       .toString(),
                                   scoreCardTitle: appLoc.completed,
                                   icon: Icons.check_circle,

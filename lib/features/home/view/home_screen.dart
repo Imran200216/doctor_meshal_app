@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meshal_doctor_booking_app/features/home/view_model/bloc/operative_summary_counts/operative_summary_counts_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/notification/notification.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -449,11 +450,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                     BlocBuilder<UserAuthBloc, UserAuthState>(
                                       builder: (context, state) {
-                                        if (state is GetUserAuthSuccess) {
+                                        if (state is GetUserAuthSuccess ||
+                                            state
+                                                is GetUserAuthOfflineSuccess) {
+                                          final user =
+                                              state is GetUserAuthSuccess
+                                              ? (state).user
+                                              : (state as GetUserAuthOfflineSuccess)
+                                                    .user;
+
                                           return KText(
                                             textAlign: TextAlign.start,
                                             text:
-                                                "${state.user.firstName} ${state.user.lastName}",
+                                                "${user.firstName} ${user.lastName}",
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                             fontSize: isMobile
@@ -510,6 +519,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                             const SizedBox(height: 20),
 
+                            // Peri-Operative Score Counts
                             BlocBuilder<
                               OperativeSummaryCountsBloc,
                               OperativeSummaryCountsState
@@ -530,8 +540,31 @@ class _HomeScreenState extends State<HomeScreen> {
                                   );
                                 }
 
-                                // Success State
-                                if (state is GetOperativeSummaryCountsSuccess) {
+                                // Success State (Online or Offline)
+                                if (state is GetOperativeSummaryCountsSuccess ||
+                                    state
+                                        is GetOperativeSummaryCountsOfflineSuccess) {
+                                  final preOperativeCounts =
+                                      state is GetOperativeSummaryCountsSuccess
+                                      ? state.preOperativeCounts
+                                      : (state
+                                                as GetOperativeSummaryCountsOfflineSuccess)
+                                            .preOperativeCounts;
+
+                                  final postOperativeCounts =
+                                      state is GetOperativeSummaryCountsSuccess
+                                      ? state.postOperativeCounts
+                                      : (state
+                                                as GetOperativeSummaryCountsOfflineSuccess)
+                                            .postOperativeCounts;
+
+                                  final submittedCountsOperative =
+                                      state is GetOperativeSummaryCountsSuccess
+                                      ? state.submittedCountsOperative
+                                      : (state
+                                                as GetOperativeSummaryCountsOfflineSuccess)
+                                            .submittedCountsOperative;
+
                                   return Row(
                                     spacing: 15,
                                     crossAxisAlignment:
@@ -540,8 +573,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     children: [
                                       Expanded(
                                         child: PeriOperativeScoreCard(
-                                          totalCount:
-                                              state.submittedCountsOperative,
+                                          totalCount: submittedCountsOperative,
                                           scoreCardTitle:
                                               appLoc.totalFormSubmit,
                                           icon: Icons.speaker_notes,
@@ -550,7 +582,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                       Expanded(
                                         child: PeriOperativeScoreCard(
-                                          totalCount: state.preOperativeCounts,
+                                          totalCount: preOperativeCounts,
                                           scoreCardTitle: appLoc.preOpSubmit,
                                           icon: Icons.speaker_notes,
                                         ),
@@ -558,7 +590,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                       Expanded(
                                         child: PeriOperativeScoreCard(
-                                          totalCount: state.postOperativeCounts,
+                                          totalCount: postOperativeCounts,
                                           scoreCardTitle: appLoc.postOpSubmit,
                                           icon: Icons.speaker_notes,
                                         ),
@@ -609,6 +641,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 // EDUCATION BLOC SECTION
                 BlocBuilder<EducationBloc, EducationState>(
                   builder: (context, state) {
+                    // Loading State
                     if (state is EducationLoading) {
                       return SliverPadding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -616,8 +649,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     }
 
-                    if (state is EducationSuccess) {
-                      final educations = state.educations;
+                    // Success State (Online or Offline)
+                    if (state is EducationSuccess ||
+                        state is EducationOfflineSuccess) {
+                      final educations = state is EducationSuccess
+                          ? state.educations
+                          : (state as EducationOfflineSuccess).educations;
 
                       if (educations.isEmpty) {
                         return const SliverToBoxAdapter(child: KNoItemsFound());
@@ -638,6 +675,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             );
                     }
 
+                    // Failure State
                     if (state is EducationFailure) {
                       return SliverToBoxAdapter(
                         child: Center(child: Text(state.message)),

@@ -194,7 +194,10 @@ class _EducationArticleViewScreenState
                 builder: (context, state) {
                   String appBarTitle = "";
 
+                  // Online or Offline Success
                   if (state is EducationFullViewArticleSuccess) {
+                    appBarTitle = state.article.articleName;
+                  } else if (state is EducationFullViewArticleOfflineSuccess) {
                     appBarTitle = state.article.articleName;
                   }
 
@@ -211,27 +214,57 @@ class _EducationArticleViewScreenState
           color: AppColorConstants.secondaryColor,
           backgroundColor: AppColorConstants.primaryColor,
           onRefresh: () async {
+            final connectivityState = context.read<ConnectivityBloc>().state;
+
+            if (connectivityState is ConnectivityFailure) {
+              // NO INTERNET → show error toast/snackbar
+              KSnackBar.error(context, appLoc.noInternet);
+              return;
+            }
+
             // Get Education Article View
-            _fetchEducationArticlesView();
+            await _fetchEducationArticlesView();
           },
 
-          child: BlocBuilder<ConnectivityBloc, ConnectivityState>(
-            builder: (context, connectivityState) {
-              if (connectivityState is ConnectivityFailure) {
-                return Align(
-                  alignment: Alignment.center,
-                  heightFactor: 3,
-                  child: const KInternetFound(),
-                );
-              } else if (connectivityState is ConnectivitySuccess) {
-                return BlocBuilder<
-                  EducationFullViewArticleBloc,
-                  EducationFullViewArticleState
-                >(
-                  builder: (context, state) {
-                    // Education Full View Article Loading
-                    if (state is EducationFullViewArticleLoading) {
-                      return Padding(
+          child:
+              BlocBuilder<
+                EducationFullViewArticleBloc,
+                EducationFullViewArticleState
+              >(
+                builder: (context, state) {
+                  // Loading state
+                  if (state is EducationFullViewArticleLoading) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isMobile
+                            ? 20
+                            : isTablet
+                            ? 30
+                            : 40,
+                        vertical: isMobile
+                            ? 20
+                            : isTablet
+                            ? 30
+                            : 40,
+                      ),
+                      child: EducationArticleViewSkeleton(),
+                    );
+                  }
+
+                  // Online or Offline Success
+                  if (state is EducationFullViewArticleSuccess ||
+                      state is EducationFullViewArticleOfflineSuccess) {
+                    final educationFullViewArticle =
+                        state is EducationFullViewArticleSuccess
+                        ? state.article
+                        : (state as EducationFullViewArticleOfflineSuccess)
+                              .article;
+
+                    return SingleChildScrollView(
+                      controller: _scrollController,
+                      scrollDirection: Axis.vertical,
+                      child: Container(
+                        width: double.maxFinite,
                         padding: EdgeInsets.symmetric(
                           horizontal: isMobile
                               ? 20
@@ -244,154 +277,123 @@ class _EducationArticleViewScreenState
                               ? 30
                               : 40,
                         ),
-                        child: EducationArticleViewSkeleton(),
-                      );
-                    }
-
-                    // Education Full View Article Success
-                    if (state is EducationFullViewArticleSuccess) {
-                      final educationFullViewArticle = state.article;
-
-                      return SingleChildScrollView(
-                        controller: _scrollController,
-                        scrollDirection: Axis.vertical,
-                        child: Container(
-                          width: double.maxFinite,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: isMobile
-                                ? 20
-                                : isTablet
-                                ? 30
-                                : 40,
-                            vertical: isMobile
-                                ? 20
-                                : isTablet
-                                ? 30
-                                : 40,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              // Topics
-                              RichText(
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text: "${appLoc.topics}: ",
-                                      style: TextStyle(
-                                        fontFamily: "OpenSans",
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: isMobile
-                                            ? 18
-                                            : isTablet
-                                            ? 20
-                                            : 22,
-                                        color: AppColorConstants.titleColor,
-                                      ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            // Topics
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: "${appLoc.topics}: ",
+                                    style: TextStyle(
+                                      fontFamily: "OpenSans",
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: isMobile
+                                          ? 18
+                                          : isTablet
+                                          ? 20
+                                          : 22,
+                                      color: AppColorConstants.titleColor,
                                     ),
-                                    TextSpan(
-                                      text: educationFullViewArticle.titleName,
-                                      style: TextStyle(
-                                        fontFamily: "OpenSans",
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: isMobile
-                                            ? 18
-                                            : isTablet
-                                            ? 20
-                                            : 22,
-                                        color: AppColorConstants.subTitleColor,
-                                      ),
+                                  ),
+                                  TextSpan(
+                                    text: educationFullViewArticle.titleName,
+                                    style: TextStyle(
+                                      fontFamily: "OpenSans",
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: isMobile
+                                          ? 18
+                                          : isTablet
+                                          ? 20
+                                          : 22,
+                                      color: AppColorConstants.subTitleColor,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
+                            ),
 
-                              const SizedBox(height: 20),
+                            const SizedBox(height: 20),
 
-                              // SubTopics
-                              RichText(
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text: "${appLoc.subTopics}: ",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: isMobile
-                                            ? 18
-                                            : isTablet
-                                            ? 20
-                                            : 22,
-                                        color: AppColorConstants.titleColor,
-                                      ),
+                            // SubTopics
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: "${appLoc.subTopics}: ",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: isMobile
+                                          ? 18
+                                          : isTablet
+                                          ? 20
+                                          : 22,
+                                      color: AppColorConstants.titleColor,
                                     ),
-                                    TextSpan(
-                                      text:
-                                          educationFullViewArticle.subTitleName,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: isMobile
-                                            ? 18
-                                            : isTablet
-                                            ? 20
-                                            : 22,
-                                        color: AppColorConstants.subTitleColor,
-                                      ),
+                                  ),
+                                  TextSpan(
+                                    text: educationFullViewArticle.subTitleName,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: isMobile
+                                          ? 18
+                                          : isTablet
+                                          ? 20
+                                          : 22,
+                                      color: AppColorConstants.subTitleColor,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
+                            ),
 
-                              const SizedBox(height: 40),
+                            const SizedBox(height: 40),
 
-                              // Article
-                              KText(
-                                text: appLoc.articles,
-                                textAlign: TextAlign.start,
-                                overflow: TextOverflow.visible,
-                                fontSize: _titleFontSize,
-                                fontWeight: FontWeight.w700,
-                                color: AppColorConstants.titleColor,
-                              ),
+                            // Article
+                            KText(
+                              text: appLoc.articles,
+                              textAlign: TextAlign.start,
+                              overflow: TextOverflow.visible,
+                              fontSize: _titleFontSize,
+                              fontWeight: FontWeight.w700,
+                              color: AppColorConstants.titleColor,
+                            ),
 
-                              const SizedBox(height: 20),
+                            const SizedBox(height: 20),
 
-                              // Articles
-                              KText(
-                                text: educationFullViewArticle.article,
-                                textAlign: TextAlign.start,
-                                overflow: TextOverflow.visible,
-                                fontSize: _contentFontSize,
-                                fontWeight: FontWeight.w500,
-                                height: 1.2,
-                                color: AppColorConstants.subTitleColor,
-                              ),
-                            ],
-                          ),
+                            // Articles
+                            KText(
+                              text: educationFullViewArticle.article,
+                              textAlign: TextAlign.start,
+                              overflow: TextOverflow.visible,
+                              fontSize: _contentFontSize,
+                              fontWeight: FontWeight.w500,
+                              height: 1.2,
+                              color: AppColorConstants.subTitleColor,
+                            ),
+                          ],
                         ),
-                      );
-                    }
+                      ),
+                    );
+                  }
 
-                    // Education Full View Article Error
-                    if (state is EducationFullViewArticleError) {
-                      return Align(
-                        alignment: Alignment.center,
-                        heightFactor: 3,
-                        child: KNoItemsFound(
-                          noItemsSvg: AppAssetsConstants.failure,
-                          noItemsFoundText: appLoc.somethingWentWrong,
-                        ),
-                      );
-                    }
+                  // Error state
+                  if (state is EducationFullViewArticleError) {
+                    return Align(
+                      alignment: Alignment.center,
+                      heightFactor: 3,
+                      child: KNoItemsFound(
+                        noItemsSvg: AppAssetsConstants.failure,
+                        noItemsFoundText: appLoc.somethingWentWrong,
+                      ),
+                    );
+                  }
 
-                    return const SizedBox.shrink();
-                  },
-                );
-              } else {
-                return const SizedBox.shrink();
-              }
-            },
-          ),
+                  return const SizedBox.shrink();
+                },
+              ),
         ),
       ),
     );
