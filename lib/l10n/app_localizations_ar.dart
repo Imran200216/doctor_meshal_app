@@ -688,4 +688,64 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get meshalApp => 'تطبيق د. مشعل';
+
+  @override
+  String get doctorBioName => 'د. مشعل أحمد الحذود MBBCh, SB-Orth, MBA, MPH';
+
+  @override
+  String get specialization => 'استشاري جراحة العظام\nجراحة إصابات العظام، إعادة بناء القدم والكاحل، وأبحاث جراحة العظام';
+
+  @override
+  String get academicCertificate1 => 'ماجستير الصحة العامة (MPH)، جامعة والدن، مينيابوليس، مينيسوتا، الولايات المتحدة الأمريكية.';
+
+  @override
+  String get academicCertificate2 => 'ماجستير إدارة الأعمال الدولية في إدارة الرعاية الصحية (IHM-MBA)، مدرسة فرانكفورت للتمويل والإدارة.';
+
+  @override
+  String get academicCertificate3 => 'زمالة بحثية سريرية في إعادة بناء القدم والكاحل، مستشفى كوين إليزابيث الثاني، جامعة دالهوزي، هاليفاكس، كندا.';
+
+  @override
+  String get academicCertificate4 => 'زمالة جراحة إعادة بناء القدم والكاحل، مستشفى كوين إليزابيث الثاني، جامعة دالهوزي، هاليفاكس، كندا.';
+
+  @override
+  String get academicCertificate5 => 'زمالة جراحة إصابات العظام، مدينة الملك عبدالعزيز الطبية، مستشفى الحرس الوطني، جامعة الملك سعود بن عبدالعزيز للعلوم الصحية، الرياض، المملكة العربية السعودية.';
+
+  @override
+  String get academicCertificate6 => 'إقامة جراحة العظام، الهيئة السعودية للتخصصات الصحية، مدينة الملك عبدالعزيز الطبية، مستشفى الحرس الوطني، الرياض، المملكة العربية السعودية.';
+
+  @override
+  String get academicCertificate7 => 'بكالوريوس الطب والجراحة، كلية الطب، جامعة القاهرة، القاهرة، مصر.';
+
+  @override
+  String get cvHighlight1 => 'عضو لجنة الطب القائم على الأدلة في الجمعية الأمريكية لجراحة القدم والكاحل (AOFAS).';
+
+  @override
+  String get cvHighlight2 => 'عضو هيئة تدريس AO Trauma.';
+
+  @override
+  String get cvHighlight3 => 'عضو هيئة تدريس AOPEER للأبحاث السريرية.';
+
+  @override
+  String get cvHighlight4 => 'عضو اللجنة الدولية OTA.';
+
+  @override
+  String get cvHighlight5 => 'عضو هيئة تدريس الجمعية الدولية لأبحاث العظام (IBRA).';
+
+  @override
+  String get cvHighlight6 => 'الهيئة الدولية للمتحدثين للجمعية الأمريكية لجراحة القدم والكاحل (AOFAS).';
+
+  @override
+  String get cvHighlight7 => 'أكثر من 30 محاضرة دولية في الولايات المتحدة، المملكة المتحدة، سويسرا، ألمانيا، السعودية، دبي، مصر، وإيطاليا.';
+
+  @override
+  String get cvHighlight8 => '20 منشورًا محكمًا في مجلات علمية.';
+
+  @override
+  String get cvHighlight9 => 'فصلان في كتب علمية.';
+
+  @override
+  String get academicCertificateTitle => 'الشهادات الأكاديمية والتدريب';
+
+  @override
+  String get cvHighlightsTitle => 'أهم الإنجازات والسيرة الذاتية';
 }

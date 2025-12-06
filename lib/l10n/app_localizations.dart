@@ -1456,6 +1456,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dr. Meshal App'**
   String get meshalApp;
+
+  /// No description provided for @doctorBioName.
+  ///
+  /// In en, this message translates to:
+  /// **'Dr. Meshal Ahmad Alhadhoud MBBCh, SB-Orth, MBA, MPH'**
+  String get doctorBioName;
+
+  /// No description provided for @specialization.
+  ///
+  /// In en, this message translates to:
+  /// **'Orthopaedic Consultant\nOrthopedic Trauma Surgery, Reconstructive Foot & Ankle Surgery, and Orthopaedic Surgery Research'**
+  String get specialization;
+
+  /// No description provided for @academicCertificate1.
+  ///
+  /// In en, this message translates to:
+  /// **'Master of Public Health (MPH), Walden University, Minneapolis, Minnesota, United States of America.'**
+  String get academicCertificate1;
+
+  /// No description provided for @academicCertificate2.
+  ///
+  /// In en, this message translates to:
+  /// **'Master of Business Administration International Healthcare Management (IHM-MBA), Frankfurt School of Finance and Management.'**
+  String get academicCertificate2;
+
+  /// No description provided for @academicCertificate3.
+  ///
+  /// In en, this message translates to:
+  /// **'Orthopedic Foot & Ankle Reconstructive Clinical Research Fellowship, Queen Elizabeth II Hospital, Dalhousie University, Halifax, Canada.'**
+  String get academicCertificate3;
+
+  /// No description provided for @academicCertificate4.
+  ///
+  /// In en, this message translates to:
+  /// **'Orthopedic Foot & Ankle Reconstructive Surgery Fellowship, Queen Elizabeth II Hospital, Dalhousie University, Halifax, Canada.'**
+  String get academicCertificate4;
+
+  /// No description provided for @academicCertificate5.
+  ///
+  /// In en, this message translates to:
+  /// **'Orthopedic Trauma Surgery Fellowship, King Abdelaziz Medical City, National Guard Hospital, King Saud bin Abdelaziz University for Health Sciences, Riyadh, Saudi Arabia.'**
+  String get academicCertificate5;
+
+  /// No description provided for @academicCertificate6.
+  ///
+  /// In en, this message translates to:
+  /// **'Orthopedic Surgery Residency, Saudi Commission for Health Specialties, King Abdelaziz Medical City, National Guard Hospital, Riyadh, Saudi Arabia.'**
+  String get academicCertificate6;
+
+  /// No description provided for @academicCertificate7.
+  ///
+  /// In en, this message translates to:
+  /// **'Bachelor of Medicine and Bachelor of Surgery, Cairo University Faculty of Medicine, Cairo, Egypt.'**
+  String get academicCertificate7;
+
+  /// No description provided for @cvHighlight1.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence-Based Medicine Committee Member in American Orthopedic Foot and Ankle Society (AOFAS).'**
+  String get cvHighlight1;
+
+  /// No description provided for @cvHighlight2.
+  ///
+  /// In en, this message translates to:
+  /// **'AO Trauma Faculty Member.'**
+  String get cvHighlight2;
+
+  /// No description provided for @cvHighlight3.
+  ///
+  /// In en, this message translates to:
+  /// **'AOPEER Clinical Research Faculty Member.'**
+  String get cvHighlight3;
+
+  /// No description provided for @cvHighlight4.
+  ///
+  /// In en, this message translates to:
+  /// **'International OTA Committee Member.'**
+  String get cvHighlight4;
+
+  /// No description provided for @cvHighlight5.
+  ///
+  /// In en, this message translates to:
+  /// **'IBRA International Bone Research Association Faculty.'**
+  String get cvHighlight5;
+
+  /// No description provided for @cvHighlight6.
+  ///
+  /// In en, this message translates to:
+  /// **'American Orthopedic Foot & Ankle (AOFAS) International Speaker Bureau.'**
+  String get cvHighlight6;
+
+  /// No description provided for @cvHighlight7.
+  ///
+  /// In en, this message translates to:
+  /// **'30+ International guest lectures across USA, UK, Switzerland, Germany, Saudi Arabia, Dubai, Egypt, and Italy.'**
+  String get cvHighlight7;
+
+  /// No description provided for @cvHighlight8.
+  ///
+  /// In en, this message translates to:
+  /// **'20 peer-reviewed paper publications.'**
+  String get cvHighlight8;
+
+  /// No description provided for @cvHighlight9.
+  ///
+  /// In en, this message translates to:
+  /// **'2 textbook chapters.'**
+  String get cvHighlight9;
+
+  /// No description provided for @academicCertificateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Academic Certificate & Training'**
+  String get academicCertificateTitle;
+
+  /// No description provided for @cvHighlightsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'CV Highlights'**
+  String get cvHighlightsTitle;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

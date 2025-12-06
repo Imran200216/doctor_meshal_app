@@ -688,4 +688,64 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get meshalApp => 'Dr. Meshal App';
+
+  @override
+  String get doctorBioName => 'Dr. Meshal Ahmad Alhadhoud MBBCh, SB-Orth, MBA, MPH';
+
+  @override
+  String get specialization => 'Orthopaedic Consultant\nOrthopedic Trauma Surgery, Reconstructive Foot & Ankle Surgery, and Orthopaedic Surgery Research';
+
+  @override
+  String get academicCertificate1 => 'Master of Public Health (MPH), Walden University, Minneapolis, Minnesota, United States of America.';
+
+  @override
+  String get academicCertificate2 => 'Master of Business Administration International Healthcare Management (IHM-MBA), Frankfurt School of Finance and Management.';
+
+  @override
+  String get academicCertificate3 => 'Orthopedic Foot & Ankle Reconstructive Clinical Research Fellowship, Queen Elizabeth II Hospital, Dalhousie University, Halifax, Canada.';
+
+  @override
+  String get academicCertificate4 => 'Orthopedic Foot & Ankle Reconstructive Surgery Fellowship, Queen Elizabeth II Hospital, Dalhousie University, Halifax, Canada.';
+
+  @override
+  String get academicCertificate5 => 'Orthopedic Trauma Surgery Fellowship, King Abdelaziz Medical City, National Guard Hospital, King Saud bin Abdelaziz University for Health Sciences, Riyadh, Saudi Arabia.';
+
+  @override
+  String get academicCertificate6 => 'Orthopedic Surgery Residency, Saudi Commission for Health Specialties, King Abdelaziz Medical City, National Guard Hospital, Riyadh, Saudi Arabia.';
+
+  @override
+  String get academicCertificate7 => 'Bachelor of Medicine and Bachelor of Surgery, Cairo University Faculty of Medicine, Cairo, Egypt.';
+
+  @override
+  String get cvHighlight1 => 'Evidence-Based Medicine Committee Member in American Orthopedic Foot and Ankle Society (AOFAS).';
+
+  @override
+  String get cvHighlight2 => 'AO Trauma Faculty Member.';
+
+  @override
+  String get cvHighlight3 => 'AOPEER Clinical Research Faculty Member.';
+
+  @override
+  String get cvHighlight4 => 'International OTA Committee Member.';
+
+  @override
+  String get cvHighlight5 => 'IBRA International Bone Research Association Faculty.';
+
+  @override
+  String get cvHighlight6 => 'American Orthopedic Foot & Ankle (AOFAS) International Speaker Bureau.';
+
+  @override
+  String get cvHighlight7 => '30+ International guest lectures across USA, UK, Switzerland, Germany, Saudi Arabia, Dubai, Egypt, and Italy.';
+
+  @override
+  String get cvHighlight8 => '20 peer-reviewed paper publications.';
+
+  @override
+  String get cvHighlight9 => '2 textbook chapters.';
+
+  @override
+  String get academicCertificateTitle => 'Academic Certificate & Training';
+
+  @override
+  String get cvHighlightsTitle => 'CV Highlights';
 }
