@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
 import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
@@ -161,6 +162,18 @@ class _AuthChangePasswordScreenState extends State<AuthChangePasswordScreen> {
                       btnTitleColor: AppColorConstants.secondaryColor,
                       onTap: () async {
                         if (_formKey.currentState!.validate()) {
+                          final connectivityState = context
+                              .read<ConnectivityBloc>()
+                              .state;
+
+                          // Correct internet check
+                          if (connectivityState is ConnectivityFailure ||
+                              (connectivityState is ConnectivitySuccess &&
+                                  connectivityState.isConnected == false)) {
+                            KSnackBar.error(context, appLoc.noInternet);
+                            return;
+                          }
+
                           // Email Auth Change Password Event
                           context.read<EmailAuthBloc>().add(
                             EmailAuthChangePasswordEvent(

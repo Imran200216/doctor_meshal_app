@@ -245,9 +245,12 @@ class _AuthLoginState extends State<AuthLogin> {
                       final connectivityState = context
                           .read<ConnectivityBloc>()
                           .state;
-                      if (connectivityState is ConnectivityFailure) {
-                        AppLoggerHelper.logError("No internet connection");
-                        KSnackBar.error(context, appLoc.internetConnection);
+
+                      // Correct internet check
+                      if (connectivityState is ConnectivityFailure ||
+                          (connectivityState is ConnectivitySuccess &&
+                              connectivityState.isConnected == false)) {
+                        KSnackBar.error(context, appLoc.noInternet);
                         return;
                       }
 

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 import 'package:pinput/pinput.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
@@ -377,6 +378,20 @@ class _AuthOtpScreenState extends State<AuthOtpScreen> {
 
                       return GestureDetector(
                         onTap: () {
+
+                          final connectivityState = context
+                              .read<ConnectivityBloc>()
+                              .state;
+
+                          // Correct internet check
+                          if (connectivityState is ConnectivityFailure ||
+                              (connectivityState is ConnectivitySuccess &&
+                                  connectivityState.isConnected == false)) {
+                            KSnackBar.error(context, appLoc.noInternet);
+                            return;
+                          }
+
+
                           if (!canResend) {
                             // Error Snack bar
                             KSnackBar.error(context, appLoc.timerIsRunning);
