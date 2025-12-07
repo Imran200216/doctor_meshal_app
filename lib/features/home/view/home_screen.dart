@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/home/view_model/bloc/operative_summary_counts/operative_summary_counts_bloc.dart';
 import 'package:meshal_doctor_booking_app/features/notification/notification.dart';
 import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
@@ -400,293 +401,289 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
 
-        body: SafeArea(
-          child: RefreshIndicator.adaptive(
-            color: AppColorConstants.secondaryColor,
-            backgroundColor: AppColorConstants.primaryColor,
-            onRefresh: () async {
-              // Fetch All Data
-              _fetchAllData();
-            },
+        body: RefreshIndicator.adaptive(
+          color: AppColorConstants.secondaryColor,
+          backgroundColor: AppColorConstants.primaryColor,
+          onRefresh: () async {
+            final connectivityState = context.read<ConnectivityBloc>().state;
 
-            child: CustomScrollView(
-              slivers: [
-                // HEADER SECTION
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 20,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: AppColorConstants.primaryColor,
-                          ),
-                          child: Row(
-                            children: [
-                              /// LEFT SIDE (Text) - Should expand depending on screen size
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    KText(
-                                      textAlign: TextAlign.start,
-                                      text: "${getGreetingMessage(appLoc)},",
-                                      fontSize: isMobile
-                                          ? 22
-                                          : isTablet
-                                          ? 24
-                                          : 26,
-                                      fontWeight: FontWeight.w700,
-                                      color: AppColorConstants.secondaryColor,
-                                    ),
+            // Correct internet check
+            if (connectivityState is ConnectivityFailure ||
+                (connectivityState is ConnectivitySuccess &&
+                    connectivityState.isConnected == false)) {
+              KSnackBar.error(context, appLoc.noInternet);
+              return;
+            }
 
-                                    const SizedBox(height: 5),
+            // Fetch All Data
+            _fetchAllData();
+          },
 
-                                    BlocBuilder<UserAuthBloc, UserAuthState>(
-                                      builder: (context, state) {
-                                        if (state is GetUserAuthSuccess ||
-                                            state
-                                                is GetUserAuthOfflineSuccess) {
-                                          final user =
-                                              state is GetUserAuthSuccess
-                                              ? (state).user
-                                              : (state as GetUserAuthOfflineSuccess)
-                                                    .user;
-
-                                          return KText(
-                                            textAlign: TextAlign.start,
-                                            text:
-                                                "${user.firstName} ${user.lastName}",
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            fontSize: isMobile
-                                                ? 20
-                                                : isTablet
-                                                ? 22
-                                                : 24,
-                                            fontWeight: FontWeight.w700,
-                                            color: AppColorConstants
-                                                .secondaryColor,
-                                          );
-                                        }
-
-                                        return const SizedBox.shrink(); // or a loader if needed
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                              /// RIGHT SIDE (Image)
-                              Flexible(
-                                child: Image.asset(
-                                  AppAssetsConstants.doctorIntro,
-                                  height: isMobile
-                                      ? 140
-                                      : isTablet
-                                      ? 150
-                                      : 160,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ],
-                          ),
+          child: CustomScrollView(
+            slivers: [
+              // HEADER SECTION
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 20,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: AppColorConstants.primaryColor,
                         ),
-
-                        const SizedBox(height: 30),
-
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Row(
                           children: [
-                            // Peri-Operative Score
-                            KText(
-                              textAlign: TextAlign.start,
-                              text: appLoc.periOperativeScore,
-                              fontSize: isMobile
-                                  ? 20
-                                  : isTablet
-                                  ? 22
-                                  : 24,
-                              fontWeight: FontWeight.w700,
-                              color: AppColorConstants.titleColor,
+                            /// LEFT SIDE (Text) - Should expand depending on screen size
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  KText(
+                                    textAlign: TextAlign.start,
+                                    text: "${getGreetingMessage(appLoc)},",
+                                    fontSize: isMobile
+                                        ? 22
+                                        : isTablet
+                                        ? 24
+                                        : 26,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColorConstants.secondaryColor,
+                                  ),
+
+                                  const SizedBox(height: 5),
+
+                                  BlocBuilder<UserAuthBloc, UserAuthState>(
+                                    builder: (context, state) {
+                                      if (state is GetUserAuthSuccess ||
+                                          state is GetUserAuthOfflineSuccess) {
+                                        final user = state is GetUserAuthSuccess
+                                            ? (state).user
+                                            : (state as GetUserAuthOfflineSuccess)
+                                                  .user;
+
+                                        return KText(
+                                          textAlign: TextAlign.start,
+                                          text:
+                                              "${user.firstName} ${user.lastName}",
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          fontSize: isMobile
+                                              ? 20
+                                              : isTablet
+                                              ? 22
+                                              : 24,
+                                          fontWeight: FontWeight.w700,
+                                          color:
+                                              AppColorConstants.secondaryColor,
+                                        );
+                                      }
+
+                                      return const SizedBox.shrink(); // or a loader if needed
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
 
-                            const SizedBox(height: 20),
-
-                            // Peri-Operative Score Counts
-                            BlocBuilder<
-                              OperativeSummaryCountsBloc,
-                              OperativeSummaryCountsState
-                            >(
-                              builder: (context, state) {
-                                // Loading State
-                                if (state is GetOperativeSummaryCountsLoading) {
-                                  return Row(
-                                    spacing: 15,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Expanded(child: KSkeletonRectangle()),
-                                      Expanded(child: KSkeletonRectangle()),
-                                      Expanded(child: KSkeletonRectangle()),
-                                    ],
-                                  );
-                                }
-
-                                // Success State (Online or Offline)
-                                if (state is GetOperativeSummaryCountsSuccess ||
-                                    state
-                                        is GetOperativeSummaryCountsOfflineSuccess) {
-                                  final preOperativeCounts =
-                                      state is GetOperativeSummaryCountsSuccess
-                                      ? state.preOperativeCounts
-                                      : (state
-                                                as GetOperativeSummaryCountsOfflineSuccess)
-                                            .preOperativeCounts;
-
-                                  final postOperativeCounts =
-                                      state is GetOperativeSummaryCountsSuccess
-                                      ? state.postOperativeCounts
-                                      : (state
-                                                as GetOperativeSummaryCountsOfflineSuccess)
-                                            .postOperativeCounts;
-
-                                  final submittedCountsOperative =
-                                      state is GetOperativeSummaryCountsSuccess
-                                      ? state.submittedCountsOperative
-                                      : (state
-                                                as GetOperativeSummaryCountsOfflineSuccess)
-                                            .submittedCountsOperative;
-
-                                  return Row(
-                                    spacing: 15,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: PeriOperativeScoreCard(
-                                          totalCount: submittedCountsOperative,
-                                          scoreCardTitle:
-                                              appLoc.totalFormSubmit,
-                                          icon: Icons.speaker_notes,
-                                        ),
-                                      ),
-
-                                      Expanded(
-                                        child: PeriOperativeScoreCard(
-                                          totalCount: preOperativeCounts,
-                                          scoreCardTitle: appLoc.preOpSubmit,
-                                          icon: Icons.speaker_notes,
-                                        ),
-                                      ),
-
-                                      Expanded(
-                                        child: PeriOperativeScoreCard(
-                                          totalCount: postOperativeCounts,
-                                          scoreCardTitle: appLoc.postOpSubmit,
-                                          icon: Icons.speaker_notes,
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                }
-
-                                // Failure State
-                                if (state is GetOperativeSummaryCountsFailure) {
-                                  return Center(
-                                    child: SizedBox(
-                                      height: screenHeight * 0.3,
-                                      child: KNoItemsFound(
-                                        noItemsSvg: AppAssetsConstants.failure,
-                                        noItemsFoundText:
-                                            appLoc.somethingWentWrong,
-                                      ),
-                                    ),
-                                  );
-                                }
-
-                                return SizedBox.shrink();
-                              },
+                            /// RIGHT SIDE (Image)
+                            Flexible(
+                              child: Image.asset(
+                                AppAssetsConstants.doctorIntro,
+                                height: isMobile
+                                    ? 140
+                                    : isTablet
+                                    ? 150
+                                    : 160,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 30),
+                      ),
 
-                        KText(
-                          textAlign: TextAlign.start,
-                          text: appLoc.patientCorner,
-                          fontSize: isMobile
-                              ? 20
-                              : isTablet
-                              ? 22
-                              : 24,
-                          fontWeight: FontWeight.w700,
-                          color: AppColorConstants.titleColor,
-                        ),
+                      const SizedBox(height: 30),
 
-                        const SizedBox(height: 20),
-                      ],
-                    ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Peri-Operative Score
+                          KText(
+                            textAlign: TextAlign.start,
+                            text: appLoc.periOperativeScore,
+                            fontSize: isMobile
+                                ? 20
+                                : isTablet
+                                ? 22
+                                : 24,
+                            fontWeight: FontWeight.w700,
+                            color: AppColorConstants.titleColor,
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          // Peri-Operative Score Counts
+                          BlocBuilder<
+                            OperativeSummaryCountsBloc,
+                            OperativeSummaryCountsState
+                          >(
+                            builder: (context, state) {
+                              // Loading State
+                              if (state is GetOperativeSummaryCountsLoading) {
+                                return Row(
+                                  spacing: 15,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Expanded(child: KSkeletonRectangle()),
+                                    Expanded(child: KSkeletonRectangle()),
+                                    Expanded(child: KSkeletonRectangle()),
+                                  ],
+                                );
+                              }
+
+                              // Success State (Online or Offline)
+                              if (state is GetOperativeSummaryCountsSuccess ||
+                                  state
+                                      is GetOperativeSummaryCountsOfflineSuccess) {
+                                final preOperativeCounts =
+                                    state is GetOperativeSummaryCountsSuccess
+                                    ? state.preOperativeCounts
+                                    : (state as GetOperativeSummaryCountsOfflineSuccess)
+                                          .preOperativeCounts;
+
+                                final postOperativeCounts =
+                                    state is GetOperativeSummaryCountsSuccess
+                                    ? state.postOperativeCounts
+                                    : (state as GetOperativeSummaryCountsOfflineSuccess)
+                                          .postOperativeCounts;
+
+                                final submittedCountsOperative =
+                                    state is GetOperativeSummaryCountsSuccess
+                                    ? state.submittedCountsOperative
+                                    : (state as GetOperativeSummaryCountsOfflineSuccess)
+                                          .submittedCountsOperative;
+
+                                return Row(
+                                  spacing: 15,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: PeriOperativeScoreCard(
+                                        totalCount: submittedCountsOperative,
+                                        scoreCardTitle: appLoc.totalFormSubmit,
+                                        icon: Icons.speaker_notes,
+                                      ),
+                                    ),
+
+                                    Expanded(
+                                      child: PeriOperativeScoreCard(
+                                        totalCount: preOperativeCounts,
+                                        scoreCardTitle: appLoc.preOpSubmit,
+                                        icon: Icons.speaker_notes,
+                                      ),
+                                    ),
+
+                                    Expanded(
+                                      child: PeriOperativeScoreCard(
+                                        totalCount: postOperativeCounts,
+                                        scoreCardTitle: appLoc.postOpSubmit,
+                                        icon: Icons.speaker_notes,
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }
+
+                              // Failure State
+                              if (state is GetOperativeSummaryCountsFailure) {
+                                return Center(
+                                  child: SizedBox(
+                                    height: screenHeight * 0.3,
+                                    child: KNoItemsFound(
+                                      noItemsSvg: AppAssetsConstants.failure,
+                                      noItemsFoundText:
+                                          appLoc.somethingWentWrong,
+                                    ),
+                                  ),
+                                );
+                              }
+
+                              return SizedBox.shrink();
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 30),
+
+                      KText(
+                        textAlign: TextAlign.start,
+                        text: appLoc.patientCorner,
+                        fontSize: isMobile
+                            ? 20
+                            : isTablet
+                            ? 22
+                            : 24,
+                        fontWeight: FontWeight.w700,
+                        color: AppColorConstants.titleColor,
+                      ),
+
+                      const SizedBox(height: 20),
+                    ],
                   ),
                 ),
+              ),
 
-                // EDUCATION BLOC SECTION
-                BlocBuilder<EducationBloc, EducationState>(
-                  builder: (context, state) {
-                    // Loading State
-                    if (state is EducationLoading) {
-                      return SliverPadding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        sliver: _buildEducationLoadingSliver(isTablet),
-                      );
+              // EDUCATION BLOC SECTION
+              BlocBuilder<EducationBloc, EducationState>(
+                builder: (context, state) {
+                  // Loading State
+                  if (state is EducationLoading) {
+                    return SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      sliver: _buildEducationLoadingSliver(isTablet),
+                    );
+                  }
+
+                  // Success State (Online or Offline)
+                  if (state is EducationSuccess ||
+                      state is EducationOfflineSuccess) {
+                    final educations = state is EducationSuccess
+                        ? state.educations
+                        : (state as EducationOfflineSuccess).educations;
+
+                    if (educations.isEmpty) {
+                      return const SliverToBoxAdapter(child: KNoItemsFound());
                     }
 
-                    // Success State (Online or Offline)
-                    if (state is EducationSuccess ||
-                        state is EducationOfflineSuccess) {
-                      final educations = state is EducationSuccess
-                          ? state.educations
-                          : (state as EducationOfflineSuccess).educations;
+                    return isTablet
+                        ? SliverPadding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            sliver: _buildEducationGridSliver(educations),
+                          )
+                        : SliverPadding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            sliver: _buildEducationListSliver(educations),
+                          );
+                  }
 
-                      if (educations.isEmpty) {
-                        return const SliverToBoxAdapter(child: KNoItemsFound());
-                      }
+                  // Failure State
+                  if (state is EducationFailure) {
+                    return SliverToBoxAdapter(
+                      child: Center(child: Text(state.message)),
+                    );
+                  }
 
-                      return isTablet
-                          ? SliverPadding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                              ),
-                              sliver: _buildEducationGridSliver(educations),
-                            )
-                          : SliverPadding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                              ),
-                              sliver: _buildEducationListSliver(educations),
-                            );
-                    }
-
-                    // Failure State
-                    if (state is EducationFailure) {
-                      return SliverToBoxAdapter(
-                        child: Center(child: Text(state.message)),
-                      );
-                    }
-
-                    return const SliverToBoxAdapter(child: SizedBox.shrink());
-                  },
-                ),
-              ],
-            ),
+                  return const SliverToBoxAdapter(child: SizedBox.shrink());
+                },
+              ),
+            ],
           ),
         ),
       ),

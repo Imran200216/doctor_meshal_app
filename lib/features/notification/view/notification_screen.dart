@@ -180,7 +180,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     // Failure State
                     if (state is ViewAllNotificationFailure) {
                       return Align(
-                        heightFactor: 0.4,
+                        heightFactor: 4,
                         alignment: Alignment.center,
                         child: KNoItemsFound(
                           noItemsSvg: AppAssetsConstants.failure,

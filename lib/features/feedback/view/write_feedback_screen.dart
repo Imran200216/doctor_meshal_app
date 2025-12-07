@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
+import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
 import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 import 'package:meshal_doctor_booking_app/features/feedback/feedback.dart';
@@ -17,6 +18,9 @@ class WriteFeedbackScreen extends StatefulWidget {
 }
 
 class _WriteFeedbackScreenState extends State<WriteFeedbackScreen> {
+  // Form Key
+  final _formKey = GlobalKey<FormState>();
+
   // UserId
   String? userId;
 
@@ -94,71 +98,95 @@ class _WriteFeedbackScreenState extends State<WriteFeedbackScreen> {
                 ? 30
                 : 40,
           ),
-          child: Column(
-            spacing: 50,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              // Feedback Controller
-              KTextFormField(
-                maxLength: 100,
-                controller: _feedbackController,
-                hintText: appLoc.enterFeedback,
-                labelText: appLoc.feedback,
-                maxLines: 8,
-                keyboardType: TextInputType.multiline,
-                autofillHints: [AutofillHints.email],
-              ),
-
-              // Submit
-              BlocListener<DoctorFeedbackBloc, DoctorFeedbackState>(
-                listener: (context, state) {
-                  if (state is WriteDoctorFeedbackSuccess) {
-                    // Success Snack bar
-                    KSnackBar.success(context, "Feedback has been sent");
-
-                    // Pop Back
-                    GoRouter.of(context).pop();
-
-                    // Clear Controller
-                    _feedbackController.clear();
-                  } else if (state is WriteDoctorFeedbackFailure) {
-                    KSnackBar.error(context, state.message);
-                  }
-                },
-                child: BlocBuilder<DoctorFeedbackBloc, DoctorFeedbackState>(
-                  builder: (context, state) {
-                    return KFilledBtn(
-                      isLoading: state is WriteDoctorFeedbackLoading,
-                      btnTitle: appLoc.submit,
-                      btnBgColor: AppColorConstants.primaryColor,
-                      btnTitleColor: AppColorConstants.secondaryColor,
-                      onTap: () {
-                        // Write Doctor Feedback Event
-                        context.read<DoctorFeedbackBloc>().add(
-                          WriteDoctorFeedbackEvent(
-                            userId: userId!,
-                            feedBack: _feedbackController.text,
-                          ),
-                        );
-                      },
-                      borderRadius: 12,
-                      fontSize: isMobile
-                          ? 16
-                          : isTablet
-                          ? 18
-                          : 20,
-                      btnHeight: isMobile
-                          ? 50
-                          : isTablet
-                          ? 52
-                          : 54,
-                      btnWidth: double.maxFinite,
-                    );
-                  },
+          child: Form(
+            key: _formKey,
+            child: Column(
+              spacing: 50,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                // Feedback Controller
+                KTextFormField(
+                  maxLength: 100,
+                  controller: _feedbackController,
+                  hintText: appLoc.enterFeedback,
+                  labelText: appLoc.feedback,
+                  maxLines: 8,
+                  keyboardType: TextInputType.multiline,
+                  autofillHints: [AutofillHints.email],
+                  validator: (value) =>
+                      AppValidators.empty(context, value, appLoc.enterFeedback),
                 ),
-              ),
-            ],
+
+                // Submit
+                BlocListener<DoctorFeedbackBloc, DoctorFeedbackState>(
+                  listener: (context, state) {
+                    if (state is WriteDoctorFeedbackSuccess) {
+                      // Success Snack bar
+                      KSnackBar.success(context, "Feedback has been sent");
+
+                      // Pop Back
+                      GoRouter.of(context).pop();
+
+                      // Clear Controller
+                      _feedbackController.clear();
+                    } else if (state is WriteDoctorFeedbackFailure) {
+                      KSnackBar.error(context, state.message);
+                    }
+                  },
+                  child: BlocBuilder<DoctorFeedbackBloc, DoctorFeedbackState>(
+                    builder: (context, state) {
+                      return KFilledBtn(
+                        isLoading: state is WriteDoctorFeedbackLoading,
+                        btnTitle: appLoc.submit,
+                        btnBgColor: AppColorConstants.primaryColor,
+                        btnTitleColor: AppColorConstants.secondaryColor,
+                        onTap: () {
+                          if (!_formKey.currentState!.validate()) {
+                            return;
+                          }
+
+                          final connectivityState = context
+                              .read<ConnectivityBloc>()
+                              .state;
+
+                          final rootContext = GoRouter.of(
+                            context,
+                          ).routerDelegate.navigatorKey.currentContext!;
+
+                          if (connectivityState is ConnectivityFailure ||
+                              (connectivityState is ConnectivitySuccess &&
+                                  connectivityState.isConnected == false)) {
+                            KSnackBar.error(rootContext, appLoc.noInternet);
+                            return;
+                          }
+
+                          // Write Doctor Feedback Event
+                          context.read<DoctorFeedbackBloc>().add(
+                            WriteDoctorFeedbackEvent(
+                              userId: userId!,
+                              feedBack: _feedbackController.text,
+                            ),
+                          );
+                        },
+                        borderRadius: 12,
+                        fontSize: isMobile
+                            ? 16
+                            : isTablet
+                            ? 18
+                            : 20,
+                        btnHeight: isMobile
+                            ? 50
+                            : isTablet
+                            ? 52
+                            : 54,
+                        btnWidth: double.maxFinite,
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

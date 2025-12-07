@@ -169,7 +169,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                             .read<ConnectivityBloc>()
                             .state;
 
-                        if (connectivityState is ConnectivityFailure) {
+                        if (connectivityState is ConnectivityFailure ||
+                            (connectivityState is ConnectivitySuccess &&
+                                connectivityState.isConnected == false)) {
                           Future.microtask(() {
                             KSnackBar.error(context, "No Internet Connection");
                           });

@@ -115,6 +115,16 @@ class _DoctorPreOpScreenState extends State<DoctorPreOpScreen> {
         color: AppColorConstants.secondaryColor,
         backgroundColor: AppColorConstants.primaryColor,
         onRefresh: () async {
+          final connectivityState = context.read<ConnectivityBloc>().state;
+
+          // Correct internet check
+          if (connectivityState is ConnectivityFailure ||
+              (connectivityState is ConnectivitySuccess &&
+                  connectivityState.isConnected == false)) {
+            KSnackBar.error(context, appLoc.noInternet);
+            return;
+          }
+
           // Fetch Peri Operative Form
           _fetchDoctorPreOperative();
         },

@@ -87,11 +87,14 @@ class _EducationScreenState extends State<EducationScreen> {
           onRefresh: () async {
             final connectivityState = context.read<ConnectivityBloc>().state;
 
-            if (connectivityState is ConnectivityFailure) {
-              // NO INTERNET → show error toast/snackbar
+            // Correct internet check
+            if (connectivityState is ConnectivityFailure ||
+                (connectivityState is ConnectivitySuccess &&
+                    connectivityState.isConnected == false)) {
               KSnackBar.error(context, appLoc.noInternet);
               return;
             }
+
 
             // INTERNET AVAILABLE → fetch userId & load education
             await _fetchUserIdAndLoadEducation();

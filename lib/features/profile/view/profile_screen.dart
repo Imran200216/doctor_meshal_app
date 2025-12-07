@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
+import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
 import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:meshal_doctor_booking_app/core/service/service.dart';
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
@@ -84,89 +85,97 @@ class _ProfileScreenState extends State<ProfileScreen> {
         titleColor: AppColorConstants.titleColor,
       ),
 
-      body: SafeArea(
-        child: RefreshIndicator.adaptive(
-          color: AppColorConstants.secondaryColor,
-          backgroundColor: AppColorConstants.primaryColor,
-          onRefresh: () async {
-            // Fetch User Auth
-            _fetchUserAuth();
-          },
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: isMobile
-                    ? 20
-                    : isTablet
-                    ? 30
-                    : 40,
-                vertical: isMobile
-                    ? 20
-                    : isTablet
-                    ? 30
-                    : 40,
-              ),
-              child: Column(
-                spacing: 20,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Profile
-                  BlocBuilder<UserAuthBloc, UserAuthState>(
-                    builder: (context, state) {
-                      // Loading
-                      if (state is GetUserAuthLoading ||
-                          state is UserAuthInitial) {
-                        return KSkeletonRectangle(
-                          height: isMobile
-                              ? 150
-                              : isTablet
-                              ? 200
-                              : 240,
+      body: RefreshIndicator.adaptive(
+        color: AppColorConstants.secondaryColor,
+        backgroundColor: AppColorConstants.primaryColor,
+        onRefresh: () async {
+          final connectivityState = context.read<ConnectivityBloc>().state;
+
+          // Correct internet check
+          if (connectivityState is ConnectivityFailure ||
+              (connectivityState is ConnectivitySuccess &&
+                  connectivityState.isConnected == false)) {
+            KSnackBar.error(context, appLoc.noInternet);
+            return;
+          }
+
+          // Fetch User Auth
+          _fetchUserAuth();
+        },
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: isMobile
+                  ? 20
+                  : isTablet
+                  ? 30
+                  : 40,
+              vertical: isMobile
+                  ? 20
+                  : isTablet
+                  ? 30
+                  : 40,
+            ),
+            child: Column(
+              spacing: 20,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Profile
+                BlocBuilder<UserAuthBloc, UserAuthState>(
+                  builder: (context, state) {
+                    // Loading
+                    if (state is GetUserAuthLoading ||
+                        state is UserAuthInitial) {
+                      return KSkeletonRectangle(
+                        height: isMobile
+                            ? 150
+                            : isTablet
+                            ? 200
+                            : 240,
+                      );
+                    }
+
+                    // ONLINE or OFFLINE success → show data
+                    if (state is GetUserAuthSuccess ||
+                        state is GetUserAuthOfflineSuccess) {
+                      final user = state is GetUserAuthSuccess
+                          ? (state).user
+                          : (state as GetUserAuthOfflineSuccess).user;
+
+                      return ProfileDetailsContainer(
+                        profileImageUrl: user.profileImage.isNotEmpty
+                            ? user.profileImage
+                            : placeholderImage,
+                        name: "${user.firstName} ${user.lastName}",
+                        email: user.email,
+                      );
+                    }
+
+                    // Failure
+                    if (state is GetUserAuthFailure) {
+                      if (state.message.contains("No user data")) {
+                        return Center(
+                          child: Text(
+                            "No cached user data. Connect to internet.",
+                          ),
                         );
                       }
+                      return Center(child: Text("Failed to load user"));
+                    }
 
-                      // ONLINE or OFFLINE success → show data
-                      if (state is GetUserAuthSuccess ||
-                          state is GetUserAuthOfflineSuccess) {
-                        final user = state is GetUserAuthSuccess
-                            ? (state).user
-                            : (state as GetUserAuthOfflineSuccess).user;
+                    return SizedBox.shrink();
+                  },
+                ),
 
-                        return ProfileDetailsContainer(
-                          profileImageUrl: user.profileImage.isNotEmpty
-                              ? user.profileImage
-                              : placeholderImage,
-                          name: "${user.firstName} ${user.lastName}",
-                          email: user.email,
-                        );
-                      }
+                // General Section
+                _buildGeneralSection(context, appLoc, isMobile, isTablet),
 
-                      // Failure
-                      if (state is GetUserAuthFailure) {
-                        if (state.message.contains("No user data")) {
-                          return Center(
-                            child: Text(
-                              "No cached user data. Connect to internet.",
-                            ),
-                          );
-                        }
-                        return Center(child: Text("Failed to load user"));
-                      }
+                // Support Section
+                _buildSupportSection(context, appLoc, isMobile, isTablet),
 
-                      return SizedBox.shrink();
-                    },
-                  ),
-
-                  // General Section
-                  _buildGeneralSection(context, appLoc, isMobile, isTablet),
-
-                  // Support Section
-                  _buildSupportSection(context, appLoc, isMobile, isTablet),
-
-                  // Logout Section
-                  _buildLogoutSection(context, appLoc),
-                ],
-              ),
+                // Logout Section
+                _buildLogoutSection(context, appLoc),
+              ],
             ),
           ),
         ),
@@ -298,16 +307,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // Feedback
               BlocBuilder<UserAuthBloc, UserAuthState>(
                 builder: (context, state) {
-                  if (state is GetUserAuthSuccess) {
+                  if (state is GetUserAuthSuccess ||
+                      state is GetUserAuthOfflineSuccess) {
+                    final user = state is GetUserAuthSuccess
+                        ? state.user
+                        : (state as GetUserAuthOfflineSuccess).user;
+
                     return ProfileListTile(
                       prefixIcon: Icons.feedback_outlined,
-                      title: state.user.userType == "patient"
+                      title: user.userType == "patient"
                           ? appLoc.writeFeedback
                           : appLoc.patientFeedbacks,
                       onTap: () {
-                        // Screen
                         GoRouter.of(context).pushNamed(
-                          state.user.userType == "patient"
+                          user.userType == "patient"
                               ? AppRouterConstants.writeFeedback
                               : AppRouterConstants.viewDoctorFeedback,
                         );
@@ -408,7 +421,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       onSubmitLoading:
                           context.watch<EmailAuthBloc>().state
                               is EmailAuthLogoutLoading,
-                      onSubmitTap: () {
+                      onSubmitTap: () async {
+                        final connectivityState = context
+                            .read<ConnectivityBloc>()
+                            .state;
+
+                        // Correct internet check
+                        if (connectivityState is ConnectivityFailure ||
+                            (connectivityState is ConnectivitySuccess &&
+                                connectivityState.isConnected == false)) {
+                          KSnackBar.error(context, appLoc.noInternet);
+                          return;
+                        }
+
                         // Logout Functionality
                         context.read<EmailAuthBloc>().add(
                           EmailAuthLogoutEvent(userId: userId!),

@@ -53,8 +53,9 @@ class _DoctorOperativeSummaryScreenState
 
       if (storedUserMapDynamic != null) {
         // Convert to Map<String, dynamic>
-        final Map<String, dynamic> storedUserMap =
-        Map<String, dynamic>.from(storedUserMapDynamic);
+        final Map<String, dynamic> storedUserMap = Map<String, dynamic>.from(
+          storedUserMapDynamic,
+        );
 
         // Convert Map → UserAuthModel
         final storedUser = UserAuthModel.fromJson(storedUserMap);
@@ -77,7 +78,6 @@ class _DoctorOperativeSummaryScreenState
       AppLoggerHelper.logError("Error fetching User ID from userAuthData: $e");
     }
   }
-
 
   @override
   void dispose() {
@@ -200,6 +200,16 @@ class _DoctorOperativeSummaryScreenState
         color: AppColorConstants.secondaryColor,
         backgroundColor: AppColorConstants.primaryColor,
         onRefresh: () async {
+          final connectivityState = context.read<ConnectivityBloc>().state;
+
+          // Correct internet check
+          if (connectivityState is ConnectivityFailure ||
+              (connectivityState is ConnectivitySuccess &&
+                  connectivityState.isConnected == false)) {
+            KSnackBar.error(context, appLoc.noInternet);
+            return;
+          }
+
           _fetchDoctorOperativeSummary();
         },
         child: Directionality(

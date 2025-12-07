@@ -209,7 +209,7 @@ class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 spacing: 20,
                 children: [
-                  // Profil Img
+                  // Profile Img
                   Column(
                     spacing: 10,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -435,7 +435,10 @@ class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
                               .read<ConnectivityBloc>()
                               .state;
 
-                          if (connectivityState is ConnectivityFailure) {
+                          // Correct internet check
+                          if (connectivityState is ConnectivityFailure ||
+                              (connectivityState is ConnectivitySuccess &&
+                                  connectivityState.isConnected == false)) {
                             Future.microtask(() {
                               KSnackBar.error(
                                 context,

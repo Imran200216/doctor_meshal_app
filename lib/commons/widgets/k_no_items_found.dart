@@ -35,6 +35,8 @@ class KNoItemsFound extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 20, right: 20),
             child: KText(
+              softWrap: true,
+              maxLines: 3,
               text: noItemsFoundText ?? appLoc.noItemsFound,
               fontSize: isMobile
                   ? 18

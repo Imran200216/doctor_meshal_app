@@ -90,8 +90,10 @@ class _EducationSubTopicsScreenState extends State<EducationSubTopicsScreen> {
         onRefresh: () async {
           final connectivityState = context.read<ConnectivityBloc>().state;
 
-          if (connectivityState is ConnectivityFailure) {
-            // NO INTERNET → show error toast/snackbar
+          // Correct internet check
+          if (connectivityState is ConnectivityFailure ||
+              (connectivityState is ConnectivitySuccess &&
+                  connectivityState.isConnected == false)) {
             KSnackBar.error(context, appLoc.noInternet);
             return;
           }

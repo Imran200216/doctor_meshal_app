@@ -19,6 +19,7 @@ class ViewDoctorFeedbackScreen extends StatefulWidget {
 }
 
 class _ViewDoctorFeedbackScreenState extends State<ViewDoctorFeedbackScreen> {
+
   // UserId
   String? userId;
 
@@ -74,144 +75,149 @@ class _ViewDoctorFeedbackScreenState extends State<ViewDoctorFeedbackScreen> {
     final isTablet = Responsive.isTablet(context);
     final isMobile = Responsive.isMobile(context);
 
-    return Scaffold(
-      backgroundColor: AppColorConstants.secondaryColor,
-      appBar: KAppBar(
-        title: appLoc.patientFeedbacks,
-        onBack: () => GoRouter.of(context).pop(),
-        backgroundColor: AppColorConstants.primaryColor,
-      ),
-      body: RefreshIndicator.adaptive(
-        color: AppColorConstants.secondaryColor,
-        backgroundColor: AppColorConstants.primaryColor,
-        onRefresh: () async {
-          final internetState = context.read<ConnectivityBloc>().state;
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Scaffold(
+        backgroundColor: AppColorConstants.secondaryColor,
+        appBar: KAppBar(
+          title: appLoc.patientFeedbacks,
+          onBack: () => GoRouter.of(context).pop(),
+          backgroundColor: AppColorConstants.primaryColor,
+        ),
+        body: RefreshIndicator.adaptive(
+          color: AppColorConstants.secondaryColor,
+          backgroundColor: AppColorConstants.primaryColor,
+          onRefresh: () async {
+            final connectivityState = context.read<ConnectivityBloc>().state;
 
-          if (internetState is ConnectivityFailure) {
-            KSnackBar.error(context, appLoc.noItemsFound);
-            return;
-          }
+            // Correct internet check
+            if (connectivityState is ConnectivityFailure ||
+                (connectivityState is ConnectivitySuccess &&
+                    connectivityState.isConnected == false)) {
+              KSnackBar.error(context, appLoc.noInternet);
+              return;
+            }
 
-          if (internetState is ConnectivitySuccess) {
             await _fetchUserIdAndLoadDoctorPatientFeedbacks();
-          }
-        },
+          },
 
-        child: BlocBuilder<ConnectivityBloc, ConnectivityState>(
-          builder: (context, connectivityState) {
-            if (connectivityState is ConnectivitySuccess) {
-              return BlocBuilder<DoctorFeedbackBloc, DoctorFeedbackState>(
-                builder: (context, state) {
-                  if (state is GetPatientFeedbacksLoading) {
-                    return ListView.separated(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 20,
-                      ),
-                      itemCount: 30,
-                      separatorBuilder: (context, index) {
-                        return SizedBox(height: 12);
-                      },
-                      itemBuilder: (context, index) {
-                        return KSkeletonRectangle(
-                          height: isMobile
-                              ? 80
-                              : isTablet
-                              ? 90
-                              : 100,
-                          width: double.maxFinite,
-                        );
-                      },
-                    );
-                  }
-
-                  if (state is GetPatientFeedbacksSuccess) {
-                    final item = state.feedbacks;
-
-                    if (item.isEmpty) {
-                      return Align(
-                        heightFactor: 0.4,
-                        alignment: Alignment.center,
-                        child: KNoItemsFound(),
+          child: BlocBuilder<ConnectivityBloc, ConnectivityState>(
+            builder: (context, connectivityState) {
+              if (connectivityState is ConnectivitySuccess) {
+                return BlocBuilder<DoctorFeedbackBloc, DoctorFeedbackState>(
+                  builder: (context, state) {
+                    if (state is GetPatientFeedbacksLoading) {
+                      return ListView.separated(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 20,
+                        ),
+                        itemCount: 30,
+                        separatorBuilder: (context, index) {
+                          return SizedBox(height: 12);
+                        },
+                        itemBuilder: (context, index) {
+                          return KSkeletonRectangle(
+                            height: isMobile
+                                ? 80
+                                : isTablet
+                                ? 90
+                                : 100,
+                            width: double.maxFinite,
+                          );
+                        },
                       );
                     }
 
-                    return ListView.separated(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 20,
-                      ),
-                      scrollDirection: Axis.vertical,
-                      physics: AlwaysScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        final feedBackItems = state.feedbacks[index];
+                    if (state is GetPatientFeedbacksSuccess) {
+                      final item = state.feedbacks;
 
-                        return FeedbackListTile(
-                          patientName:
-                              "${feedBackItems.patient.firstName} ${feedBackItems.patient.lastName}",
-                          patientImageUrl: feedBackItems.patient.profileImage,
-                          feedbackDateSubmitted: feedBackItems.createdAt,
-                          onTap: () {
-                            // View Full Doctor Feedback Content Screen
-                            GoRouter.of(context).pushNamed(
-                              AppRouterConstants.viewFullDoctorFeedbackContent,
-                              extra: {
-                                "patientName":
-                                    "${feedBackItems.patient.firstName} ${feedBackItems.patient.lastName}",
-                                "feedBackSubmittedDate":
-                                    feedBackItems.createdAt,
-                                "patientFeedbackContent":
-                                    feedBackItems.feedBack,
-                              },
-                            );
-                          },
-                          patientFeedbackContent: feedBackItems.feedBack,
+                      if (item.isEmpty) {
+                        return Align(
+                          heightFactor: 0.4,
+                          alignment: Alignment.center,
+                          child: KNoItemsFound(),
                         );
-                      },
-                      separatorBuilder: (context, index) {
-                        return Divider(
-                          height: 1,
-                          color: AppColorConstants.subTitleColor.withOpacity(
-                            0.2,
-                          ),
-                        );
-                      },
-                      itemCount: state.feedbacks.length,
-                    );
-                  }
+                      }
 
-                  if (state is GetPatientFeedbacksFailure) {
-                    AppLoggerHelper.logError(state.message);
-                    return Center(
-                      child: SizedBox(
-                        height: screenHeight * 0.6,
-                        child: KNoItemsFound(
-                          noItemsSvg: AppAssetsConstants.failure,
-                          noItemsFoundText: appLoc.somethingWentWrong,
+                      return ListView.separated(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 20,
                         ),
-                      ),
-                    );
-                  }
+                        scrollDirection: Axis.vertical,
+                        physics: AlwaysScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          final feedBackItems = state.feedbacks[index];
 
-                  return SizedBox.shrink();
-                },
-              );
-            }
+                          return FeedbackListTile(
+                            patientName:
+                                "${feedBackItems.patient.firstName} ${feedBackItems.patient.lastName}",
+                            patientImageUrl: feedBackItems.patient.profileImage,
+                            feedbackDateSubmitted: feedBackItems.createdAt,
+                            onTap: () {
+                              // View Full Doctor Feedback Content Screen
+                              GoRouter.of(context).pushNamed(
+                                AppRouterConstants
+                                    .viewFullDoctorFeedbackContent,
+                                extra: {
+                                  "patientName":
+                                      "${feedBackItems.patient.firstName} ${feedBackItems.patient.lastName}",
+                                  "feedBackSubmittedDate":
+                                      feedBackItems.createdAt,
+                                  "patientFeedbackContent":
+                                      feedBackItems.feedBack,
+                                },
+                              );
+                            },
+                            patientFeedbackContent: feedBackItems.feedBack,
+                          );
+                        },
+                        separatorBuilder: (context, index) {
+                          return Divider(
+                            height: 1,
+                            color: AppColorConstants.subTitleColor.withOpacity(
+                              0.2,
+                            ),
+                          );
+                        },
+                        itemCount: state.feedbacks.length,
+                      );
+                    }
 
-            if (connectivityState is ConnectivityFailure) {
-              return Center(
-                child: SizedBox(
-                  height: screenHeight * 0.4,
-                  child: KNoItemsFound(
-                    noItemsSvg: AppAssetsConstants.noInternetFound,
-                    noItemsFoundText: appLoc.noInternet,
+                    if (state is GetPatientFeedbacksFailure) {
+                      AppLoggerHelper.logError(state.message);
+                      return Center(
+                        child: SizedBox(
+                          height: screenHeight * 0.6,
+                          child: KNoItemsFound(
+                            noItemsSvg: AppAssetsConstants.failure,
+                            noItemsFoundText: appLoc.somethingWentWrong,
+                          ),
+                        ),
+                      );
+                    }
+
+                    return SizedBox.shrink();
+                  },
+                );
+              }
+
+              if (connectivityState is ConnectivityFailure) {
+                return Center(
+                  child: SizedBox(
+                    height: screenHeight * 0.4,
+                    child: KNoItemsFound(
+                      noItemsSvg: AppAssetsConstants.noInternetFound,
+                      noItemsFoundText: appLoc.noInternet,
+                    ),
                   ),
-                ),
-              );
-            }
+                );
+              }
 
-            return SizedBox.shrink();
-          },
+              return SizedBox.shrink();
+            },
+          ),
         ),
       ),
     );
