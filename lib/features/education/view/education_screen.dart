@@ -74,21 +74,10 @@ class _EducationScreenState extends State<EducationScreen> {
     return Scaffold(
       backgroundColor: AppColorConstants.secondaryColor,
 
-      appBar: AppBar(
-        centerTitle: false,
+      appBar: KAppBarTitle(
+        title: appLoc.patientCorner,
         backgroundColor: AppColorConstants.secondaryColor,
-        elevation: 0,
-        title: Text(appLoc.patientCorner),
-        titleTextStyle: TextStyle(
-          fontFamily: "OpenSans",
-          fontSize: isMobile
-              ? 20
-              : isTablet
-              ? 22
-              : 24,
-          fontWeight: FontWeight.w700,
-          color: AppColorConstants.titleColor,
-        ),
+        titleColor: AppColorConstants.titleColor,
       ),
 
       body: SafeArea(

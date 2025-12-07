@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/k_text.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_assets_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_color_constants.dart';
 import 'package:meshal_doctor_booking_app/core/constants/app_router_constants.dart';
@@ -41,6 +40,26 @@ class PeriOperativeScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColorConstants.secondaryColor,
+
+      appBar: AppBar(
+        centerTitle: false,
+        surfaceTintColor: AppColorConstants.secondaryColor,
+        shadowColor: AppColorConstants.secondaryColor,
+        backgroundColor: AppColorConstants.secondaryColor,
+        elevation: 0,
+        title: Text(appLoc.operativeForms),
+        titleTextStyle: TextStyle(
+          fontFamily: "OpenSans",
+          fontSize: isMobile
+              ? 20
+              : isTablet
+              ? 22
+              : 24,
+          fontWeight: FontWeight.w700,
+          color: AppColorConstants.titleColor,
+        ),
+      ),
+
       body: Padding(
         padding: EdgeInsets.symmetric(
           horizontal: isMobile
@@ -57,20 +76,6 @@ class PeriOperativeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Title
-            KText(
-              textAlign: TextAlign.start,
-              text: appLoc.operativeForms,
-              fontSize: isMobile
-                  ? 20
-                  : isTablet
-                  ? 22
-                  : 24,
-              fontWeight: FontWeight.w600,
-              color: AppColorConstants.titleColor,
-            ),
-            const SizedBox(height: 30),
-
             // Card List/Grid
             Expanded(
               child: isTablet

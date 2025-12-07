@@ -18,3 +18,4 @@ export 'k_snack_bar.dart';
 export 'k_text.dart';
 export 'k_text_form_field.dart';
 export 'k_text_rich.dart';
+export 'k_app_bar_title.dart';

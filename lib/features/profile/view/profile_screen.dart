@@ -78,21 +78,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Scaffold(
       backgroundColor: AppColorConstants.secondaryColor,
-      appBar: AppBar(
-        centerTitle: false,
+      appBar: KAppBarTitle(
+        title: appLoc.myAccount,
         backgroundColor: AppColorConstants.secondaryColor,
-        elevation: 0,
-        title: Text(appLoc.myAccount),
-        titleTextStyle: TextStyle(
-          fontFamily: "OpenSans",
-          fontSize: isMobile
-              ? 20
-              : isTablet
-              ? 22
-              : 24,
-          fontWeight: FontWeight.w700,
-          color: AppColorConstants.titleColor,
-        ),
+        titleColor: AppColorConstants.titleColor,
       ),
 
       body: SafeArea(
