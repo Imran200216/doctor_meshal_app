@@ -29,6 +29,7 @@ class ProfileLogOutBottomSheet extends StatelessWidget {
       width: double.maxFinite,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+        color: AppColorConstants.secondaryColor,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

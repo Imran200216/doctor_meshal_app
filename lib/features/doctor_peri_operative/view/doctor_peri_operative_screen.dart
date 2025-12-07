@@ -34,6 +34,24 @@ class DoctorPeriOperativeScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColorConstants.secondaryColor,
+
+      appBar: AppBar(
+        centerTitle: false,
+        backgroundColor: AppColorConstants.secondaryColor,
+        elevation: 0,
+        title: Text(appLoc.operativeForms),
+        titleTextStyle: TextStyle(
+          fontFamily: "OpenSans",
+          fontSize: isMobile
+              ? 20
+              : isTablet
+              ? 22
+              : 24,
+          fontWeight: FontWeight.w700,
+          color: AppColorConstants.titleColor,
+        ),
+      ),
+
       body: Padding(
         padding: EdgeInsets.symmetric(
           horizontal: isMobile
@@ -50,20 +68,6 @@ class DoctorPeriOperativeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Title
-            KText(
-              textAlign: TextAlign.start,
-              text: appLoc.operativeForms,
-              fontSize: isMobile
-                  ? 20
-                  : isTablet
-                  ? 22
-                  : 24,
-              fontWeight: FontWeight.w600,
-              color: AppColorConstants.titleColor,
-            ),
-            const SizedBox(height: 30),
-
             // Card List/Grid
             Expanded(
               child: isTablet
@@ -80,7 +84,8 @@ class DoctorPeriOperativeScreen extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final item = formItems[index];
                         return OperativeFormCard(
-                          operationCardStartFormOrViewFormText: appLoc.viewForm,
+                          operationCardStartFormOrViewFormText:
+                              appLoc.viewForm,
                           icon: item['icon'] as String,
                           title: item['title'] as String,
                           onTap: () => GoRouter.of(
@@ -96,7 +101,8 @@ class DoctorPeriOperativeScreen extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final item = formItems[index];
                         return OperativeFormCard(
-                          operationCardStartFormOrViewFormText: appLoc.viewForm,
+                          operationCardStartFormOrViewFormText:
+                              appLoc.viewForm,
                           icon: item['icon'] as String,
                           title: item['title'] as String,
                           onTap: () => GoRouter.of(

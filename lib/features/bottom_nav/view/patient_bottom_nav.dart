@@ -40,9 +40,7 @@ class _PatientBottomNavState extends State<PatientBottomNav> {
 
         return Scaffold(
           backgroundColor: AppColorConstants.secondaryColor,
-          body: SafeArea(
-            child: IndexedStack(index: selectedIndex, children: screens),
-          ),
+          body: IndexedStack(index: selectedIndex, children: screens),
 
           bottomNavigationBar: Directionality(
             textDirection: TextDirection.ltr,

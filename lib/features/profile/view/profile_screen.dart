@@ -78,6 +78,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Scaffold(
       backgroundColor: AppColorConstants.secondaryColor,
+      appBar: AppBar(
+        centerTitle: false,
+        backgroundColor: AppColorConstants.secondaryColor,
+        elevation: 0,
+        title: Text(appLoc.myAccount),
+        titleTextStyle: TextStyle(
+          fontFamily: "OpenSans",
+          fontSize: isMobile
+              ? 20
+              : isTablet
+              ? 22
+              : 24,
+          fontWeight: FontWeight.w700,
+          color: AppColorConstants.titleColor,
+        ),
+      ),
+
       body: SafeArea(
         child: RefreshIndicator.adaptive(
           color: AppColorConstants.secondaryColor,
@@ -104,17 +121,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 spacing: 20,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // My Account
-                  KText(
-                    text: appLoc.myAccount,
-                    fontSize: isMobile
-                        ? 20
-                        : isTablet
-                        ? 22
-                        : 24,
-                    fontWeight: FontWeight.w700,
-                  ),
-
                   // Profile
                   BlocBuilder<UserAuthBloc, UserAuthState>(
                     builder: (context, state) {
