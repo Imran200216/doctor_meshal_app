@@ -10,7 +10,12 @@ class FCMService {
     final messaging = FirebaseMessaging.instance;
 
     // Permissions (iOS)
-    await messaging.requestPermission(alert: true, sound: true, badge: true);
+    await messaging.requestPermission(
+      alert: true,
+      sound: true,
+      badge: true,
+      announcement: true,
+    );
 
     if (Platform.isIOS) {
       await _waitForAPNSToken(messaging);

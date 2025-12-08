@@ -258,6 +258,9 @@ class _AuthLoginState extends State<AuthLogin> {
                         "Attempting login for email: ${_authEmailLoginController.text.trim()}",
                       );
 
+                      AppLoggerHelper.logInfo(
+                        "Check Token: ${FCMService.globalFcmToken}",
+                      );
                       context.read<EmailAuthBloc>().add(
                         EmailAuthLoginEvent(
                           email: _authEmailLoginController.text.trim(),
