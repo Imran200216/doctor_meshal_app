@@ -48,7 +48,7 @@ class KTextFormField extends StatelessWidget {
             textAlign: TextAlign.start,
             text: labelText!,
             fontSize: isMobile ? 16 : isTablet ? 18 : 20,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
             color: AppColorConstants.titleColor,
           ),
           const SizedBox(height: 10),

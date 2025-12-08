@@ -35,6 +35,9 @@ class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
   final TextEditingController heightController = TextEditingController();
   final TextEditingController weightController = TextEditingController();
 
+  // 🔥 FIX: Add flag to prevent re-initialization
+  bool _hasInitializedControllers = false;
+
   @override
   void initState() {
     _fetchUserIdAndDetails();
@@ -144,35 +147,45 @@ class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
           if (state is GetUserAuthSuccess) {
             final user = state.user;
 
-            // Image
-            profileImg = user.profileImage;
+            // 🔥 FIX: Only initialize once
+            if (!_hasInitializedControllers) {
+              // Image
+              profileImg = user.profileImage;
 
-            // Controllers
-            firstNameController.text = user.firstName;
-            lastNameController.text = user.lastName;
-            dobController.text = user.age;
-            heightController.text = user.height;
-            weightController.text = user.weight;
+              // Controllers
+              firstNameController.text = user.firstName;
+              lastNameController.text = user.lastName;
+              dobController.text = user.age;
+              heightController.text = user.height;
+              weightController.text = user.weight;
 
-            // Check if the value exists in the dropdown options
-            selectedGender =
-                [appLoc.male, appLoc.female, appLoc.other].contains(user.gender)
-                ? user.gender
-                : null;
+              // Check if the value exists in the dropdown options
+              selectedGender =
+                  [
+                    appLoc.male,
+                    appLoc.female,
+                    appLoc.other,
+                  ].contains(user.gender)
+                  ? user.gender
+                  : null;
 
-            selectedBloodGroup =
-                [
-                  "A+",
-                  "A-",
-                  "B+",
-                  "B-",
-                  "AB+",
-                  "AB-",
-                  "O+",
-                  "O-",
-                ].contains(user.bloodGroup)
-                ? user.bloodGroup
-                : null;
+              selectedBloodGroup =
+                  [
+                    "A+",
+                    "A-",
+                    "B+",
+                    "B-",
+                    "AB+",
+                    "AB-",
+                    "O+",
+                    "O-",
+                  ].contains(user.bloodGroup)
+                  ? user.bloodGroup
+                  : null;
+
+              // Mark as initialized
+              _hasInitializedControllers = true;
+            }
           }
 
           if (state is GetUserAuthFailure) {
@@ -226,7 +239,6 @@ class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
                         fontWeight: FontWeight.w600,
                         color: AppColorConstants.titleColor,
                       ),
-
                       Stack(
                         clipBehavior: Clip.none,
                         children: [
@@ -251,7 +263,6 @@ class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
                               );
                             },
                           ),
-
                           // Edit Icon
                           Positioned(
                             bottom: 0,
@@ -404,16 +415,14 @@ class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
                   >(
                     listener: (context, state) {
                       if (state is UpdateUserProfileDetailsSuccess) {
-                        // 1️⃣ Refresh user data on Profile Screen
-                        context.read<UserAuthBloc>().add(
-                          GetUserAuthEvent(id: userId!, token: ""),
-                        );
-
                         // Success Snackbar
                         KSnackBar.success(
                           context,
                           "Updated Profile Successfully",
                         );
+
+                        // 🔥 FIX: Optional - Navigate back after success
+                        // GoRouter.of(context).pop();
                       }
 
                       if (state is UpdateUserProfileDetailsFailure) {

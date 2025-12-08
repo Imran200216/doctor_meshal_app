@@ -98,6 +98,10 @@ class _KPasswordTextFormFieldState extends State<KPasswordTextFormField> {
               ),
             ),
             hintText: widget.hintText,
+            errorStyle: TextStyle(
+              fontFamily: "OpenSans",
+              color: AppColorConstants.errorBorderColor,
+            ),
 
             /// 👁 Toggle visibility icon
             suffixIcon: IconButton(

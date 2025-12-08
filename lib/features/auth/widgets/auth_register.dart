@@ -163,7 +163,7 @@ class _AuthRegisterState extends State<AuthRegister> {
                   await HiveService.saveData(
                     boxName: AppDBConstants.userBox,
                     key: AppDBConstants.userAuthData,
-                    value: userModel,
+                    value: userModel.toJson(),
                   );
 
                   AppLoggerHelper.logInfo(

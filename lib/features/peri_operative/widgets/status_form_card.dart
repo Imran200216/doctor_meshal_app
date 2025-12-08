@@ -42,15 +42,10 @@ class StatusCard extends StatelessWidget {
       child: GestureDetector(
         onTap: () {
           HapticFeedback.heavyImpact();
-
           onTap();
         },
         child: Container(
-          height: isMobile
-              ? 360
-              : isTablet
-              ? 440
-              : 520,
+          // 🔥 FIX: Removed fixed height - now it adapts to content
           width: double.maxFinite,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
@@ -63,104 +58,103 @@ class StatusCard extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(15),
             child: Column(
-              spacing: 10,
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
-                  flex: 1,
-                  child: SizedBox(
-                    width: double.maxFinite,
-                    child: CachedNetworkImage(
-                      imageUrl:
-                          "https://plus.unsplash.com/premium_photo-1673953510197-0950d951c6d9?q=80&w=2371&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Center(
-                        child: Icon(
-                          Icons.image,
-                          color: AppColorConstants.subTitleColor.withOpacity(
-                            0.3,
-                          ),
-                          size: isMobile
-                              ? 36
-                              : isTablet
-                              ? 40
-                              : 44,
-                        ),
+                // Image
+                SizedBox(
+                  width: double.maxFinite,
+                  height: isMobile
+                      ? 180
+                      : isTablet
+                      ? 220
+                      : 260,
+                  child: CachedNetworkImage(
+                    imageUrl:
+                        "https://plus.unsplash.com/premium_photo-1673953510197-0950d951c6d9?q=80&w=2371&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Center(
+                      child: Icon(
+                        Icons.image,
+                        color: AppColorConstants.subTitleColor.withOpacity(0.3),
+                        size: isMobile
+                            ? 36
+                            : isTablet
+                            ? 40
+                            : 44,
                       ),
-                      errorWidget: (context, url, error) => Center(
-                        child: Icon(
-                          Icons.broken_image,
-                          color: AppColorConstants.subTitleColor.withOpacity(
-                            0.3,
-                          ),
-                          size: isMobile
-                              ? 36
-                              : isTablet
-                              ? 40
-                              : 44,
-                        ),
+                    ),
+                    errorWidget: (context, url, error) => Center(
+                      child: Icon(
+                        Icons.broken_image,
+                        color: AppColorConstants.subTitleColor.withOpacity(0.3),
+                        size: isMobile
+                            ? 36
+                            : isTablet
+                            ? 40
+                            : 44,
                       ),
                     ),
                   ),
                 ),
 
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    color: AppColorConstants.secondaryColor,
-                    child: Column(
-                      spacing: 2,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        // Form
-                        DoctorOperativeTextRich(
-                          title: appLoc.form,
-                          content: formNo,
-                        ),
+                const SizedBox(height: 10),
 
-                        // Form Serial No
-                        DoctorOperativeTextRich(
-                          title: appLoc.formSerialNo,
-                          content: formSerialNo,
-                        ),
+                // 🔥 FIX: Removed Expanded, content takes natural height
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  color: AppColorConstants.secondaryColor,
+                  child: Column(
+                    spacing: 4,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      // Form
+                      DoctorOperativeTextRich(
+                        title: appLoc.form,
+                        content: formNo,
+                      ),
 
-                        // Title
-                        DoctorOperativeTextRich(
-                          title: appLoc.formTitle,
-                          content: formTitle,
-                        ),
+                      // Form Serial No
+                      DoctorOperativeTextRich(
+                        title: appLoc.formSerialNo,
+                        content: formSerialNo,
+                      ),
 
-                        // Patient Status
-                        DoctorOperativeTextRich(
-                          title: appLoc.patientStatus,
-                          content: formPatientStatus,
-                        ),
+                      // Title
+                      DoctorOperativeTextRich(
+                        title: appLoc.formTitle,
+                        content: formTitle,
+                      ),
 
-                        // Doctor Status
-                        DoctorOperativeTextRich(
-                          title: appLoc.doctorStatus,
-                          content: doctorStatus,
-                        ),
+                      // Patient Status
+                      DoctorOperativeTextRich(
+                        title: appLoc.patientStatus,
+                        content: formPatientStatus,
+                      ),
 
-                        // Status
-                        DoctorOperativeTextRich(
-                          title: appLoc.status,
-                          content: status,
-                        ),
+                      // Doctor Status
+                      DoctorOperativeTextRich(
+                        title: appLoc.doctorStatus,
+                        content: doctorStatus,
+                      ),
 
-                        // Form Type
-                        DoctorOperativeTextRich(
-                          title: appLoc.formType,
-                          content: formType == "pre"
-                              ? "Pre-Op"
-                              : formType == "post"
-                              ? "Post-Op"
-                              : "",
-                        ),
-                      ],
-                    ),
+                      // Status
+                      DoctorOperativeTextRich(
+                        title: appLoc.status,
+                        content: status,
+                      ),
+
+                      // Form Type
+                      DoctorOperativeTextRich(
+                        title: appLoc.formType,
+                        content: formType == "pre"
+                            ? "Pre-Op"
+                            : formType == "post"
+                            ? "Post-Op"
+                            : "",
+                      ),
+                    ],
                   ),
                 ),
               ],

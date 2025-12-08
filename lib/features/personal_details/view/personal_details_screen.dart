@@ -303,7 +303,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     ),
 
                     // Age
-                    KDatePickerTextFormField(
+                    KTextFormField(
                       readOnly: true,
                       controller: dobController,
                       labelText: appLoc.dateOfBirth,
@@ -311,7 +311,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     ),
 
                     // Register Date
-                    KDatePickerTextFormField(
+                    KTextFormField(
                       readOnly: true,
                       controller: registerDateController,
                       labelText: appLoc.registerDate,

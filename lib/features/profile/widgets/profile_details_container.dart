@@ -3,7 +3,6 @@ import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
 import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 
-
 class ProfileDetailsContainer extends StatelessWidget {
   final String profileImageUrl;
   final String name;
@@ -50,41 +49,45 @@ class ProfileDetailsContainer extends StatelessWidget {
                   : 110,
             ),
 
+            Expanded(
+              child: Column(
+                spacing: 6,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Person Name
+                  KText(
+                    text: name,
+                    textAlign: TextAlign.start,
+                    overflow: TextOverflow.visible,
+                    softWrap: true,
+                    maxLines: 3,
+                    fontSize: isMobile
+                        ? 20
+                        : isTablet
+                        ? 22
+                        : 24,
+                    fontWeight: FontWeight.w700,
+                    color: AppColorConstants.titleColor,
+                  ),
 
-
-            Column(
-              spacing: 6,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Person Name
-                KText(
-                  text: name,
-                  textAlign: TextAlign.start,
-                  overflow: TextOverflow.visible,
-                  fontSize: isMobile
-                      ? 20
-                      : isTablet
-                      ? 22
-                      : 24,
-                  fontWeight: FontWeight.w700,
-                  color: AppColorConstants.titleColor,
-                ),
-
-                // Person Email
-                KText(
-                  text: email,
-                  textAlign: TextAlign.start,
-                  overflow: TextOverflow.visible,
-                  fontSize: isMobile
-                      ? 16
-                      : isTablet
-                      ? 18
-                      : 20,
-                  fontWeight: FontWeight.w500,
-                  color: AppColorConstants.subTitleColor,
-                ),
-              ],
+                  // Person Email
+                  KText(
+                    text: email,
+                    textAlign: TextAlign.start,
+                    overflow: TextOverflow.visible,
+                    softWrap: true,
+                    maxLines: 3,
+                    fontSize: isMobile
+                        ? 16
+                        : isTablet
+                        ? 18
+                        : 20,
+                    fontWeight: FontWeight.w500,
+                    color: AppColorConstants.subTitleColor,
+                  ),
+                ],
+              ),
             ),
           ],
         ),

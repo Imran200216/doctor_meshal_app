@@ -164,6 +164,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       btnBgColor: AppColorConstants.primaryColor,
                       btnTitleColor: AppColorConstants.secondaryColor,
                       onTap: () async {
+                        // Validation
+                        if (!_formKey.currentState!.validate()) {
+                          return;
+                        }
+
                         // INTERNET CONNECTIVITY CHECK
                         final connectivityState = context
                             .read<ConnectivityBloc>()

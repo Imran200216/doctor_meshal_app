@@ -64,6 +64,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  // Hive Boxes
+  final List<String> allBoxes = [
+    AppDBConstants.userBox,
+    AppDBConstants.surveyForm,
+    AppDBConstants.chatRoom,
+    AppDBConstants.profileUserBox,
+    AppDBConstants.educationBox,
+    AppDBConstants.educationSubTitleBox,
+    AppDBConstants.educationArticlesBox,
+    AppDBConstants.educationFullViewArticleBox,
+    AppDBConstants.doctorDashboardSummaryBox,
+    AppDBConstants.operativeSummaryBox,
+  ];
+
   @override
   Widget build(BuildContext context) {
     // Responsive
@@ -365,21 +379,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     await HiveService.openBox(AppDBConstants.userBox);
                     await HiveService.openBox(AppDBConstants.surveyForm);
                     await HiveService.openBox(AppDBConstants.chatRoom);
+                    await HiveService.openBox(AppDBConstants.profileUserBox);
+                    await HiveService.openBox(AppDBConstants.educationBox);
+                    await HiveService.openBox(
+                      AppDBConstants.educationSubTitleBox,
+                    );
+                    await HiveService.openBox(
+                      AppDBConstants.educationArticlesBox,
+                    );
+                    await HiveService.openBox(
+                      AppDBConstants.educationFullViewArticleBox,
+                    );
+                    await HiveService.openBox(
+                      AppDBConstants.doctorDashboardSummaryBox,
+                    );
+                    await HiveService.openBox(
+                      AppDBConstants.operativeSummaryBox,
+                    );
 
                     AppLoggerHelper.logInfo(
                       "📦 All Hive boxes opened for clearing",
                     );
 
                     // Clear all boxes
-                    await HiveService.clearBox(AppDBConstants.userBox);
-                    await HiveService.clearBox(AppDBConstants.surveyForm);
-                    await HiveService.clearBox(AppDBConstants.chatRoom);
+                    for (final boxName in allBoxes) {
+                      await HiveService.clearBox(boxName);
+                    }
 
                     AppLoggerHelper.logInfo(
-                      "✅ All Hive boxes cleared successfully: "
-                      "${AppDBConstants.userBox}, "
-                      "${AppDBConstants.surveyForm}, "
-                      "${AppDBConstants.chatRoom}",
+                      "✅ All Hive boxes cleared successfully",
                     );
                   } catch (e) {
                     AppLoggerHelper.logError(

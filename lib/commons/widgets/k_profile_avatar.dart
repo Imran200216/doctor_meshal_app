@@ -16,11 +16,24 @@ class KProfileAvatar extends StatelessWidget {
   });
 
   bool _isLocalFile(String path) {
+    if (path.isEmpty || path.trim().isEmpty) return false; // IMPORTANT
     return !path.startsWith('http') && !path.startsWith('https');
   }
 
   @override
   Widget build(BuildContext context) {
+    // If empty → Show placeholder directly
+    if (personImageUrl.isEmpty || personImageUrl.trim().isEmpty) {
+      return ClipOval(
+        child: Image.asset(
+          AppAssetsConstants.personPlaceholder,
+          width: width,
+          height: height,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+
     final isFile = _isLocalFile(personImageUrl);
 
     return ClipOval(

@@ -222,80 +222,140 @@ class _DoctorOperativeSummaryScreenState
                   SubmittedPatientFormDetailsSectionState
                 >(
                   builder: (context, state) {
+                    // Loading State
+                    if (state is GetSubmittedPatientFormDetailsSectionLoading) {
+                      return ListView.separated(
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          return KSkeletonTextFormField();
+                        },
+                        separatorBuilder: (context, index) {
+                          return SizedBox(height: 12);
+                        },
+                        itemCount: 20,
+                      );
+                    }
+
+                    // Success State
                     if (state is GetSubmittedPatientFormDetailsSectionSuccess) {
                       final submittedForm = state.data;
 
                       return SingleChildScrollView(
                         child: Column(
+                          spacing: 12,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             // Form Serial No
-                            DoctorOperativeTextRich(
-                              title: appLoc.formSerialNo,
-                              content: submittedForm.formSerialNo,
+                            KTextFormField(
+                              readOnly: true,
+                              controller: TextEditingController(
+                                text: appLoc.formSerialNo,
+                              ),
+                              hintText: appLoc.formSerialNo,
+                              labelText: appLoc.formSerialNo,
                             ),
-
-                            const SizedBox(height: 5),
 
                             // Title
-                            DoctorOperativeTextRich(
-                              title: appLoc.formTitle,
-                              content: submittedForm.title,
+                            KTextFormField(
+                              readOnly: true,
+                              controller: TextEditingController(
+                                text: submittedForm.title,
+                              ),
+                              hintText: appLoc.formTitle,
+                              labelText: appLoc.formTitle,
                             ),
-
-                            const SizedBox(height: 5),
 
                             // Form Type
-                            DoctorOperativeTextRich(
-                              title: appLoc.formType,
-                              content: submittedForm.formType,
+                            KTextFormField(
+                              readOnly: true,
+                              controller: TextEditingController(
+                                text: submittedForm.formType,
+                              ),
+                              hintText: appLoc.formType,
+                              labelText: appLoc.formType,
                             ),
-
-                            const SizedBox(height: 5),
 
                             // User Name
-                            DoctorOperativeTextRich(
-                              title: appLoc.patientName,
-                              content:
-                                  "${submittedForm.user.firstName} ${submittedForm.user.lastName}",
+                            KTextFormField(
+                              readOnly: true,
+                              controller: TextEditingController(
+                                text:
+                                    "${submittedForm.user.firstName} ${submittedForm.user.lastName}",
+                              ),
+                              hintText: appLoc.patientName,
+                              labelText: appLoc.patientName,
                             ),
-
-                            const SizedBox(height: 5),
 
                             // Form Status
-                            DoctorOperativeTextRich(
-                              title: appLoc.formStatus,
-                              content: submittedForm.formStatus,
+                            KTextFormField(
+                              readOnly: true,
+                              controller: TextEditingController(
+                                text: submittedForm.formStatus,
+                              ),
+                              hintText: appLoc.formStatus,
+                              labelText: appLoc.formStatus,
                             ),
-
-                            const SizedBox(height: 5),
 
                             // Form Created At
-                            DoctorOperativeTextRich(
-                              title: appLoc.formCreatedAt,
-                              content: submittedForm.createdAtTime,
+                            KTextFormField(
+                              readOnly: true,
+                              controller: TextEditingController(
+                                text: submittedForm.createdAtTime,
+                              ),
+                              hintText: appLoc.formCreatedAt,
+                              labelText: appLoc.formCreatedAt,
                             ),
 
-                            const SizedBox(height: 5),
-
                             // Form Total Points
-                            DoctorOperativeTextRich(
-                              title: appLoc.formTotalPoints,
-                              content: "${submittedForm.totalPoints} points",
+                            KTextFormField(
+                              readOnly: true,
+                              controller: TextEditingController(
+                                text: "${submittedForm.totalPoints} points",
+                              ),
+                              hintText: appLoc.formTotalPoints,
+                              labelText: appLoc.formTotalPoints,
                             ),
 
                             const SizedBox(height: 30),
 
+                            KText(
+                              text: appLoc.form,
+                              fontSize: isMobile
+                                  ? 20
+                                  : isTablet
+                                  ? 22
+                                  : 24,
+                              fontWeight: FontWeight.w700,
+                              color: AppColorConstants.primaryColor,
+                            ),
+
                             DoctorOperativeSubmittedFormSummary(
                               submittedForm: submittedForm,
                             ),
+
+                            const SizedBox(height: 30),
                           ],
                         ),
                       );
-                    } else if (state
-                        is GetSubmittedPatientFormDetailsSectionFailure) {
+                    }
+
+                    // Failure
+                    if (state is GetSubmittedPatientFormDetailsSectionFailure) {
                       AppLoggerHelper.logError("Error: ${state.message}");
+
+                      return Align(
+                        alignment: Alignment.center,
+                        heightFactor: 3,
+                        child: SizedBox(
+                          height: screenHeight * 0.3,
+                          child: KNoItemsFound(
+                            noItemsSvg: AppAssetsConstants.failure,
+                            noItemsFoundText: appLoc.somethingWentWrong,
+                          ),
+                        ),
+                      );
                     }
 
                     return const SizedBox.shrink();
@@ -366,9 +426,11 @@ class _DoctorOperativeSummaryScreenState
                       .read<ConnectivityBloc>()
                       .state;
 
-                  if (connectivityState is ConnectivityFailure) {
-                    AppLoggerHelper.logError("No internet connection");
-                    KSnackBar.error(context, appLoc.internetConnection);
+                  // Correct internet check
+                  if (connectivityState is ConnectivityFailure ||
+                      (connectivityState is ConnectivitySuccess &&
+                          connectivityState.isConnected == false)) {
+                    KSnackBar.error(context, appLoc.noInternet);
                     return;
                   }
 
