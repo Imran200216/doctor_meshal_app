@@ -31,26 +31,27 @@ class _StatusSummaryScreenState extends State<StatusSummaryScreen> {
     super.initState();
   }
 
-  // Fetch Patient Operative Summary using userAuthData
+  // Fetch Patient Operative Summary
   Future<void> _fetchPatientOperativeSummary() async {
     try {
-      // Open Hive box
+      // Open the Hive box if not already opened
       await HiveService.openBox(AppDBConstants.userBox);
 
-      // Fetch stored userAuthData
-      final storedUserMap = await HiveService.getData<Map<String, dynamic>>(
+      // Read full userAuthData from Hive (no generic type)
+      final storedUserMapRaw = await HiveService.getData(
         boxName: AppDBConstants.userBox,
         key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserMap != null) {
+      if (storedUserMapRaw != null) {
+        // Safely convert dynamic map → Map<String, dynamic>
+        final storedUserMap = Map<String, dynamic>.from(storedUserMapRaw);
+
         // Convert Map → UserAuthModel
         final storedUser = UserAuthModel.fromJson(storedUserMap);
-
         userId = storedUser.id;
 
         AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
-        AppLoggerHelper.logInfo("Form ID Passed: ${widget.patientFormId}");
 
         // Dispatch event to get view submitted form details
         context.read<ViewSubmittedFormDetailsSectionBloc>().add(
@@ -63,7 +64,7 @@ class _StatusSummaryScreenState extends State<StatusSummaryScreen> {
         AppLoggerHelper.logError("No userAuthData found in Hive!");
       }
     } catch (e) {
-      AppLoggerHelper.logError("Error fetching userAuthData: $e");
+      AppLoggerHelper.logError("Error fetching User ID from userAuthData: $e");
     }
   }
 

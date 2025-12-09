@@ -37,22 +37,20 @@ class _DoctorPostOpScreenState extends State<DoctorPostOpScreen> {
   }
 
   // Fetch Post Operative Form
-  // Fetch Post Operative Form
   Future<void> _fetchDoctorPostOperative() async {
     try {
+      // Open the Hive box if not already opened
       await HiveService.openBox(AppDBConstants.userBox);
 
-      // Read raw Hive map (may be _Map<dynamic, dynamic>)
-      final storedUserMapDynamic = await HiveService.getData(
+      // Read full userAuthData from Hive (no generic type)
+      final storedUserMapRaw = await HiveService.getData(
         boxName: AppDBConstants.userBox,
         key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserMapDynamic != null) {
-        // Convert map to correct type
-        final Map<String, dynamic> storedUserMap = Map<String, dynamic>.from(
-          storedUserMapDynamic,
-        );
+      if (storedUserMapRaw != null) {
+        // Safely convert dynamic map → Map<String, dynamic>
+        final storedUserMap = Map<String, dynamic>.from(storedUserMapRaw);
 
         // Convert Map → UserAuthModel
         final storedUser = UserAuthModel.fromJson(storedUserMap);

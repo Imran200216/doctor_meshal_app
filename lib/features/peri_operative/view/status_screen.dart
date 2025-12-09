@@ -31,28 +31,32 @@ class _StatusScreenState extends State<StatusScreen> {
   // Fetch Status Form using userAuthData
   Future<void> _fetchStatusForm() async {
     try {
+      // Open the Hive box if not already opened
       await HiveService.openBox(AppDBConstants.userBox);
 
-      final raw = await HiveService.getData(
+      // Read full userAuthData from Hive (no generic type)
+      final storedUserMapRaw = await HiveService.getData(
         boxName: AppDBConstants.userBox,
         key: AppDBConstants.userAuthData,
       );
 
-      if (raw != null && raw is Map) {
-        final storedUserMap = Map<String, dynamic>.from(raw);
+      if (storedUserMapRaw != null) {
+        // Safely convert dynamic map → Map<String, dynamic>
+        final storedUserMap = Map<String, dynamic>.from(storedUserMapRaw);
 
+        // Convert Map → UserAuthModel
         final storedUser = UserAuthModel.fromJson(storedUserMap);
-
         userId = storedUser.id;
 
         AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
 
+        // Dispatch Event to Fetch Status Form
         context.read<StatusFormBloc>().add(GetStatusFormEvent(userId: userId!));
       } else {
         AppLoggerHelper.logError("No userAuthData found in Hive!");
       }
     } catch (e) {
-      AppLoggerHelper.logError("Error fetching userAuthData: $e");
+      AppLoggerHelper.logError("Error fetching User ID from userAuthData: $e");
     }
   }
 

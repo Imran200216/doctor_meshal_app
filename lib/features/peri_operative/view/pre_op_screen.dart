@@ -32,19 +32,21 @@ class _PreOpScreenState extends State<PreOpScreen> {
   // Fetch Pre Operative Form using userAuthData
   Future<void> _fetchPreOperative() async {
     try {
-      // Open Hive Box
+      // Open the Hive box if not already opened
       await HiveService.openBox(AppDBConstants.userBox);
 
-      // Fetch stored userAuthData
-      final storedUserMap = await HiveService.getData<Map<String, dynamic>>(
+      // Read full userAuthData from Hive (no generic type)
+      final storedUserMapRaw = await HiveService.getData(
         boxName: AppDBConstants.userBox,
         key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserMap != null) {
+      if (storedUserMapRaw != null) {
+        // Safely convert dynamic map → Map<String, dynamic>
+        final storedUserMap = Map<String, dynamic>.from(storedUserMapRaw);
+
         // Convert Map → UserAuthModel
         final storedUser = UserAuthModel.fromJson(storedUserMap);
-
         userId = storedUser.id;
 
         AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
@@ -57,7 +59,7 @@ class _PreOpScreenState extends State<PreOpScreen> {
         AppLoggerHelper.logError("No userAuthData found in Hive!");
       }
     } catch (e) {
-      AppLoggerHelper.logError("Error fetching userAuthData: $e");
+      AppLoggerHelper.logError("Error fetching User ID from userAuthData: $e");
     }
   }
 

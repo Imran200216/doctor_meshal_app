@@ -303,42 +303,47 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           centerTitle: true,
           actions: [
-            IconButton(
-              onPressed: () {
-                GoRouter.of(context).pushNamed(AppRouterConstants.notification);
-              },
-              icon:
-                  BlocBuilder<
-                    ViewNotificationUnReadCountBloc,
-                    ViewNotificationUnReadCountState
-                  >(
-                    builder: (context, state) {
-                      // 1️⃣ Only Loaded → Show count with badge
-                      if (state is ViewNotificationUnReadCountLoaded) {
-                        return Badge(
-                          backgroundColor:
-                              AppColorConstants.notificationBgColor,
-                          label: Text(
-                            state.unreadNotificationCount.toString(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
+            Padding(
+              padding: const EdgeInsets.only(right: 20),
+              child: IconButton(
+                onPressed: () {
+                  GoRouter.of(
+                    context,
+                  ).pushNamed(AppRouterConstants.notification);
+                },
+                icon:
+                    BlocBuilder<
+                      ViewNotificationUnReadCountBloc,
+                      ViewNotificationUnReadCountState
+                    >(
+                      builder: (context, state) {
+                        // 1️⃣ Only Loaded → Show count with badge
+                        if (state is ViewNotificationUnReadCountLoaded) {
+                          return Badge(
+                            backgroundColor:
+                                AppColorConstants.notificationBgColor,
+                            label: Text(
+                              state.unreadNotificationCount.toString(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                              ),
                             ),
-                          ),
-                          child: Icon(
-                            Icons.notifications,
-                            color: AppColorConstants.secondaryColor,
-                          ),
-                        );
-                      }
+                            child: Icon(
+                              Icons.notifications,
+                              color: AppColorConstants.secondaryColor,
+                            ),
+                          );
+                        }
 
-                      // 2️⃣ Initial or Failure → Show only notification icon
-                      return Icon(
-                        Icons.notifications,
-                        color: AppColorConstants.secondaryColor,
-                      );
-                    },
-                  ),
+                        // 2️⃣ Initial or Failure → Show only notification icon
+                        return Icon(
+                          Icons.notifications,
+                          color: AppColorConstants.secondaryColor,
+                        );
+                      },
+                    ),
+              ),
             ),
           ],
         ),

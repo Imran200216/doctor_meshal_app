@@ -32,42 +32,34 @@ class _PostOpScreenState extends State<PostOpScreen> {
   // Fetch Post Operation Forms
   Future<void> _fetchPostOperative() async {
     try {
+      // Open the Hive box if not already opened
       await HiveService.openBox(AppDBConstants.userBox);
 
-      // Get full stored user data
-      final storedUserMap = await HiveService.getData<Map>(
+      // Read full userAuthData from Hive (no generic type)
+      final storedUserMapRaw = await HiveService.getData(
         boxName: AppDBConstants.userBox,
         key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserMap == null) {
+      if (storedUserMapRaw != null) {
+        // Safely convert dynamic map → Map<String, dynamic>
+        final storedUserMap = Map<String, dynamic>.from(storedUserMapRaw);
+
+        // Convert Map → UserAuthModel
+        final storedUser = UserAuthModel.fromJson(storedUserMap);
+        userId = storedUser.id;
+
+        AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
+
+        // Dispatch Event to Fetch Pre Operative Form
+        context.read<OperativeFormBloc>().add(
+          GetOperativeFormEvents(userId: userId!, formType: "post"),
+        );
+      } else {
         AppLoggerHelper.logError("No userAuthData found in Hive!");
-        return;
       }
-
-      // Convert Map → UserAuthModel
-      final storedUser = UserAuthModel.fromJson(
-        Map<String, dynamic>.from(storedUserMap),
-      );
-
-      // Extract ID
-      final String? storedUserId = storedUser.id;
-
-      if (storedUserId == null) {
-        AppLoggerHelper.logError("User ID is NULL inside userAuthData!");
-        return;
-      }
-
-      userId = storedUserId;
-
-      AppLoggerHelper.logInfo("Post Operative → User ID fetched: $userId");
-
-      // Dispatch event
-      context.read<OperativeFormBloc>().add(
-        GetOperativeFormEvents(userId: userId!, formType: "post"),
-      );
     } catch (e) {
-      AppLoggerHelper.logError("Error fetching User ID for Post Operative: $e");
+      AppLoggerHelper.logError("Error fetching User ID from userAuthData: $e");
     }
   }
 

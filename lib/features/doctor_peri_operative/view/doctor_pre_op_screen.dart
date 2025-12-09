@@ -39,18 +39,20 @@ class _DoctorPreOpScreenState extends State<DoctorPreOpScreen> {
   // Fetch Peri Operative Form
   Future<void> _fetchDoctorPreOperative() async {
     try {
+      // Open the Hive box if not already opened
       await HiveService.openBox(AppDBConstants.userBox);
 
-      final storedUserMapDynamic = await HiveService.getData(
+      // Read full userAuthData from Hive (no generic type)
+      final storedUserMapRaw = await HiveService.getData(
         boxName: AppDBConstants.userBox,
         key: AppDBConstants.userAuthData,
       );
 
-      if (storedUserMapDynamic != null) {
-        final Map<String, dynamic> storedUserMap = Map<String, dynamic>.from(
-          storedUserMapDynamic,
-        );
+      if (storedUserMapRaw != null) {
+        // Safely convert dynamic map → Map<String, dynamic>
+        final storedUserMap = Map<String, dynamic>.from(storedUserMapRaw);
 
+        // Convert Map → UserAuthModel
         final storedUser = UserAuthModel.fromJson(storedUserMap);
         userId = storedUser.id;
 
