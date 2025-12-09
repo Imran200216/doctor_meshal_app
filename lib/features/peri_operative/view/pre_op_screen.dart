@@ -85,8 +85,18 @@ class _PreOpScreenState extends State<PreOpScreen> {
         color: AppColorConstants.secondaryColor,
         backgroundColor: AppColorConstants.primaryColor,
         onRefresh: () async {
+          final connectivityState = context.read<ConnectivityBloc>().state;
+
+          // Correct internet check
+          if (connectivityState is ConnectivityFailure ||
+              (connectivityState is ConnectivitySuccess &&
+                  connectivityState.isConnected == false)) {
+            KSnackBar.error(context, appLoc.noInternet);
+            return;
+          }
+
           // Fetch Peri Operative Form
-          _fetchPreOperative();
+          await _fetchPreOperative();
         },
         child: BlocBuilder<ConnectivityBloc, ConnectivityState>(
           builder: (context, connectivityState) {

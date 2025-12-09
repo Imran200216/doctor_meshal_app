@@ -22,9 +22,10 @@ class ChatGraphQLHttpService {
       websocketEndpoint,
       config: SocketClientConfig(
         autoReconnect: true,
-        inactivityTimeout: const Duration(seconds: 30),
-        initialPayload: {}, // REQUIRED
-        headers: {}, // REQUIRED EVEN IF EMPTY
+        inactivityTimeout: const Duration(minutes: 5),
+        initialPayload: {},
+        pingMessage: {'type': 'ping'},
+        headers: {},
       ),
     );
 

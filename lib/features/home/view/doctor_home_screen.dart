@@ -45,6 +45,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
         _viewUserChatRoom(),
         _fetchDoctorDashboardSummaryCounts(),
         _initializeUserAndChat(),
+        _fetchUserIdAndLoadNotificationsUnReadCount(),
       ]);
 
       AppLoggerHelper.logInfo("All data fetched successfully!");
@@ -196,6 +197,40 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
     }
   }
 
+  // Fetch User Auth Data and Doctor Patient Feedbacks
+  Future<void> _fetchUserIdAndLoadNotificationsUnReadCount() async {
+    try {
+      // Open the Hive box if not already opened
+      await HiveService.openBox(AppDBConstants.userBox);
+
+      // Read full userAuthData from Hive (no generic type)
+      final storedUserMapRaw = await HiveService.getData(
+        boxName: AppDBConstants.userBox,
+        key: AppDBConstants.userAuthData,
+      );
+
+      if (storedUserMapRaw != null) {
+        // Safely convert dynamic map → Map<String, dynamic>
+        final storedUserMap = Map<String, dynamic>.from(storedUserMapRaw);
+
+        // Convert Map → UserAuthModel
+        final storedUser = UserAuthModel.fromJson(storedUserMap);
+        userId = storedUser.id;
+
+        AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
+
+        // Trigger View All Notification
+        context.read<ViewNotificationUnReadCountBloc>().add(
+          GetViewNotificationUnReadCountEvent(userId: userId!),
+        );
+      } else {
+        AppLoggerHelper.logError("No userAuthData found in Hive!");
+      }
+    } catch (e) {
+      AppLoggerHelper.logError("Error fetching User ID from userAuthData: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Responsive
@@ -241,12 +276,12 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
           centerTitle: true,
           actions: [
             Padding(
-              padding: const EdgeInsets.only(
-                right: 20
-              ),
+              padding: const EdgeInsets.only(right: 20),
               child: IconButton(
                 onPressed: () {
-                  GoRouter.of(context).pushNamed(AppRouterConstants.notification);
+                  GoRouter.of(
+                    context,
+                  ).pushNamed(AppRouterConstants.notification);
                 },
                 icon:
                     BlocBuilder<
@@ -254,22 +289,33 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                       ViewNotificationUnReadCountState
                     >(
                       builder: (context, state) {
-                        // 1️⃣ Only Loaded → Show count with badge
+                        // 1️⃣ Only Loaded → Show count with badge only if > 0
                         if (state is ViewNotificationUnReadCountLoaded) {
-                          return Badge(
-                            backgroundColor:
-                                AppColorConstants.notificationBgColor,
-                            label: Text(
-                              state.unreadNotificationCount.toString(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
+                          final count = state.unreadNotificationCount;
+
+                          // Return badge only if count > 0
+                          if (count > 0) {
+                            return Badge(
+                              backgroundColor:
+                                  AppColorConstants.notificationBgColor,
+                              label: Text(
+                                count.toString(),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                ),
                               ),
-                            ),
-                            child: Icon(
-                              Icons.notifications,
-                              color: AppColorConstants.secondaryColor,
-                            ),
+                              child: Icon(
+                                Icons.notifications,
+                                color: AppColorConstants.secondaryColor,
+                              ),
+                            );
+                          }
+
+                          // If count is 0, just return the icon without badge
+                          return Icon(
+                            Icons.notifications,
+                            color: AppColorConstants.secondaryColor,
                           );
                         }
 
@@ -324,6 +370,9 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                   }
                 }
 
+                // Log the count for debugging
+                AppLoggerHelper.logInfo("Notification count: $count");
+
                 return FittedBox(
                   child: Stack(
                     alignment: const Alignment(1.4, -1.5),
@@ -339,7 +388,8 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                       ),
 
                       // Show badge only when count > 0
-                      Badge.count(count: count, isLabelVisible: true),
+                      if (count > 0)
+                        Badge.count(count: count, isLabelVisible: true),
                     ],
                   ),
                 );

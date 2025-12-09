@@ -83,8 +83,18 @@ class _StatusScreenState extends State<StatusScreen> {
         color: AppColorConstants.secondaryColor,
         backgroundColor: AppColorConstants.primaryColor,
         onRefresh: () async {
+          final connectivityState = context.read<ConnectivityBloc>().state;
+
+          // Correct internet check
+          if (connectivityState is ConnectivityFailure ||
+              (connectivityState is ConnectivitySuccess &&
+                  connectivityState.isConnected == false)) {
+            KSnackBar.error(context, appLoc.noInternet);
+            return;
+          }
+
           // Fetch Status Data
-          _fetchStatusForm();
+          await _fetchStatusForm();
         },
         child: BlocBuilder<ConnectivityBloc, ConnectivityState>(
           builder: (context, connectivityState) {
@@ -273,14 +283,22 @@ class _StatusScreenState extends State<StatusScreen> {
                   if (state is StatusFormFailure) {
                     AppLoggerHelper.logError("Status Error: ${state.message}");
 
-                    return Align(
-                      alignment: Alignment.center,
-                      heightFactor: 3,
-                      child: KNoItemsFound(
-                        noItemsSvg: AppAssetsConstants.failure,
-                        noItemsFoundText: appLoc.somethingWentWrong,
-                      ),
-                    );
+                    // Check if the error message contains "No forms found"
+                    if (state.message.toLowerCase().contains(
+                      "no forms found",
+                    )) {
+                      return Center(child: KNoItemsFound());
+                    } else {
+                      // For other errors, show something went wrong
+                      return Align(
+                        alignment: Alignment.center,
+                        heightFactor: 3,
+                        child: KNoItemsFound(
+                          noItemsSvg: AppAssetsConstants.failure,
+                          noItemsFoundText: appLoc.somethingWentWrong,
+                        ),
+                      );
+                    }
                   }
 
                   return SizedBox.shrink();

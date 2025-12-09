@@ -22,6 +22,21 @@ class StartSubscribeChatMessageEvent extends SubscribeChatMessageEvent {
   List<Object?> get props => [senderRoomId, recieverRoomId, userId];
 }
 
+class ReconnectSubscribeChatMessageEvent extends SubscribeChatMessageEvent {
+  final String senderRoomId;
+  final String recieverRoomId;
+  final String userId;
+
+  const ReconnectSubscribeChatMessageEvent({
+    required this.senderRoomId,
+    required this.recieverRoomId,
+    required this.userId,
+  });
+
+  @override
+  List<Object?> get props => [senderRoomId, recieverRoomId, userId];
+}
+
 class StopSubscribeChatMessageEvent extends SubscribeChatMessageEvent {
   const StopSubscribeChatMessageEvent();
 

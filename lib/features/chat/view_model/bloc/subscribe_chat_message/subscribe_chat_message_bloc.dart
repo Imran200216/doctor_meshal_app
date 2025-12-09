@@ -4,7 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:meshal_doctor_booking_app/core/service/service.dart';
 import 'package:meshal_doctor_booking_app/features/chat/model/view_user_chat_message_model.dart';
-import 'package:meshal_doctor_booking_app/core/utils/app_logger_helper.dart';
+import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 
 part 'subscribe_chat_message_event.dart';
 
@@ -19,7 +19,7 @@ class SubscribeChatMessageBloc
 
   SubscribeChatMessageBloc({required this.chatGraphQLHttpService})
     : super(SubscribeChatMessageInitial()) {
-    // Get All Chat Messages
+    //  Start Subscribe Chat Message Event
     on<StartSubscribeChatMessageEvent>((event, emit) async {
       emit(GetSubscribeChatMessageLoading());
 
@@ -118,6 +118,7 @@ class SubscribeChatMessageBloc
       }
     });
 
+    // Stop Subscribe Chat Message Event
     on<StopSubscribeChatMessageEvent>((event, emit) {
       emit(SubscribeChatMessageInitial());
     });
