@@ -23,6 +23,7 @@ class ViewDoctorOperativeFormBloc
         query Get_patient_submited_forms_doctor_ {
           get_patient_submited_forms_doctor_(doctor_id: "${event.doctorId}", form_type: "${event.formType}", search: "") {
             form_serial_no
+            form_no
             form_status
             id
             title

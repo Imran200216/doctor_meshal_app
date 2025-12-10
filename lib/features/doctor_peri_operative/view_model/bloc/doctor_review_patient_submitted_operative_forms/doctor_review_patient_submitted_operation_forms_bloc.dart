@@ -16,6 +16,8 @@ class DoctorReviewPatientSubmittedOperationFormsBloc
 
   DoctorReviewPatientSubmittedOperationFormsBloc({required this.graphQLService})
     : super(DoctorReviewPatientSubmittedOperationFormsInitial()) {
+
+
     on<AddDoctorReviewPatientSubmittedOperationFormsEvent>((event, emit) async {
       emit(DoctorReviewPatientSubmittedOperationFormsLoading());
 

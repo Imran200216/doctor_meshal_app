@@ -100,22 +100,37 @@ class _SurveyFormScreenState extends State<SurveyFormScreen> {
         },
         builder: (context, state) {
           // Get selections from Cubit
-          final selections = context
-              .watch<SurveyFormSelectionCubit>()
-              .state
-              .selections;
-          final hasUserSelectedSomething = selections.values.any(
-            (value) => value != null,
-          );
+          final selectionState =
+              context.watch<SurveyFormSelectionCubit>().state
+                  as SurveyFormSelected;
+
+          // Check if user has selected something
+          final hasUserSelectedSomething =
+              selectionState.singleSelections.isNotEmpty ||
+              selectionState.multiSelections.isNotEmpty ||
+              selectionState.answerTexts.isNotEmpty;
 
           // Determine if all sections are selected
           bool allSelected = false;
           if (state is SurveyOperativeFormSuccess) {
             final form = state.surveyOperativeForm;
-            allSelected =
-                form.formSection.isNotEmpty &&
-                selections.values.length == form.formSection.length &&
-                selections.values.every((value) => value != null);
+
+            // Check if each section has a selection based on its type
+            allSelected = form.formSection.asMap().entries.every((entry) {
+              final index = entry.key;
+              final section = entry.value;
+
+              if (section.chooseType == "single-choice") {
+                return selectionState.singleSelections[index] != null;
+              } else if (section.chooseType == "multiple-choice") {
+                final selections = selectionState.multiSelections[index];
+                return selections != null && selections.isNotEmpty;
+              } else if (section.chooseType == "answer") {
+                final answer = selectionState.answerTexts[index];
+                return answer != null && answer.trim().isNotEmpty;
+              }
+              return false;
+            });
           }
 
           // Single Scaffold for all states
@@ -197,26 +212,87 @@ class _SurveyFormScreenState extends State<SurveyFormScreen> {
                           itemCount: form.formSection.length,
                           itemBuilder: (context, index) {
                             final section = form.formSection[index];
-                            return SurveyFormCard(
-                              question: section.sectionTitle,
-                              options: section.formOption
-                                  .map(
-                                    (e) => "${e.optionName} (${e.points} pts)",
-                                  )
-                                  .toList(),
-                              selectedIndex: selections[index],
-                              onOptionSelected: (selected) {
-                                context
-                                    .read<SurveyFormSelectionCubit>()
-                                    .selectOption(index, selected);
-                              },
-                            );
+
+                            if (section.chooseType == "single-choice") {
+                              return SurveyFormCard(
+                                question: section.sectionTitle,
+                                options: section.formOption
+                                    .map(
+                                      (e) =>
+                                          "${e.optionName} (${e.points} pts)",
+                                    )
+                                    .toList(),
+                                selectedIndex:
+                                    selectionState.singleSelections[index],
+                                onOptionSelected: (selected) {
+                                  context
+                                      .read<SurveyFormSelectionCubit>()
+                                      .selectSingleOption(index, selected);
+                                },
+                              );
+                            } else if (section.chooseType ==
+                                "multiple-choice") {
+                              return SurveyFormMultiCard(
+                                key: ValueKey('multi-card-$index'),
+                                question: section.sectionTitle,
+                                options: section.formOption
+                                    .map(
+                                      (e) =>
+                                          "${e.optionName} (${e.points} pts)",
+                                    )
+                                    .toList(),
+                                selectedIndexes:
+                                    selectionState.multiSelections[index] ?? [],
+                                onMultiSelect: (optionIndex) {
+                                  context
+                                      .read<SurveyFormSelectionCubit>()
+                                      .toggleMultiOption(index, optionIndex);
+                                },
+                              );
+                            } else if (section.chooseType == "answer") {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  KText(
+                                    text: section.sectionTitle,
+                                    fontSize: isMobile
+                                        ? 14
+                                        : isTablet
+                                        ? 16
+                                        : 18,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  KTextFormField(
+                                    hintText: "Type your answer here...",
+                                    onChanged: (value) {
+                                      context
+                                          .read<SurveyFormSelectionCubit>()
+                                          .updateAnswer(index, value);
+                                    },
+                                    maxLines: 3,
+                                    controller: TextEditingController(
+                                      text:
+                                          selectionState.answerTexts[index] ??
+                                          "",
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }
+
+                            return const SizedBox(); // fallback
                           },
                           separatorBuilder: (_, __) =>
                               const SizedBox(height: 20),
                         ),
                         if (allSelected)
-                          _buildSummary(form, selections, isMobile, isTablet),
+                          _buildSummary(
+                            form,
+                            selectionState,
+                            isMobile,
+                            isTablet,
+                          ),
                       ],
                     ),
                   );
@@ -230,7 +306,7 @@ class _SurveyFormScreenState extends State<SurveyFormScreen> {
                 ? _buildBottomSheet(
                     context,
                     state.surveyOperativeForm,
-                    selections,
+                    selectionState,
                     isMobile,
                     isTablet,
                   )
@@ -241,23 +317,55 @@ class _SurveyFormScreenState extends State<SurveyFormScreen> {
     );
   }
 
+  // Add this helper function
+  int _getPointsAsInt(dynamic points) {
+    if (points == null) return 0;
+
+    if (points is num) {
+      return points.toInt();
+    } else if (points is String) {
+      // Try to parse the string to a number
+      try {
+        return int.tryParse(points) ?? 0;
+      } catch (e) {
+        return 0;
+      }
+    } else {
+      return 0;
+    }
+  }
+
   Widget _buildSummary(
-    form,
-    Map<int, int?> selections,
+    dynamic form,
+    SurveyFormSelected selectionState,
     bool isMobile,
     bool isTablet,
   ) {
     int totalPoints = 0;
-    for (int i = 0; i < form.formSection.length; i++) {
-      final selectedIndex = selections[i];
-      if (selectedIndex != null) {
-        totalPoints +=
-            int.tryParse(
-              form.formSection[i].formOption[selectedIndex].points.toString(),
-            ) ??
-            0;
+
+    // Calculate total points
+    form.formSection.asMap().forEach((index, section) {
+      if (section.chooseType == "single-choice") {
+        final selectedIndex = selectionState.singleSelections[index];
+        if (selectedIndex != null &&
+            selectedIndex >= 0 &&
+            selectedIndex < section.formOption.length) {
+          totalPoints += _getPointsAsInt(
+            section.formOption[selectedIndex].points,
+          );
+        }
+      } else if (section.chooseType == "multiple-choice") {
+        final selectedIndexes = selectionState.multiSelections[index] ?? [];
+        for (final optionIndex in selectedIndexes) {
+          if (optionIndex >= 0 && optionIndex < section.formOption.length) {
+            totalPoints += _getPointsAsInt(
+              section.formOption[optionIndex].points,
+            );
+          }
+        }
       }
-    }
+      // Text answers typically don't have points
+    });
 
     return Container(
       width: double.infinity,
@@ -283,18 +391,44 @@ class _SurveyFormScreenState extends State<SurveyFormScreen> {
             color: AppColorConstants.titleColor,
           ),
           const SizedBox(height: 10),
+
           ...List.generate(form.formSection.length, (index) {
             final section = form.formSection[index];
-            final selectedIndex = selections[index];
-            final optionName = selectedIndex != null
-                ? section.formOption[selectedIndex].optionName
-                : "None";
-            final points = selectedIndex != null
-                ? section.formOption[selectedIndex].points
-                : 0;
+            String answerText = "Not answered";
+
+            if (section.chooseType == "answer") {
+              answerText = selectionState.answerTexts[index] ?? "Not answered";
+            } else if (section.chooseType == "single-choice") {
+              final selectedIndex = selectionState.singleSelections[index];
+              if (selectedIndex != null &&
+                  selectedIndex >= 0 &&
+                  selectedIndex < section.formOption.length) {
+                final option = section.formOption[selectedIndex];
+                // Convert num to int for display using _getPointsAsInt
+                final points = _getPointsAsInt(option.points);
+                answerText = "${option.optionName} ($points pts)";
+              } else {
+                answerText = "Not selected";
+              }
+            } else if (section.chooseType == "multiple-choice") {
+              final selectedIndexes =
+                  selectionState.multiSelections[index] ?? [];
+              if (selectedIndexes.isNotEmpty) {
+                answerText = selectedIndexes
+                    .where((idx) => idx >= 0 && idx < section.formOption.length)
+                    .map((idx) {
+                      final option = section.formOption[idx];
+                      final points = _getPointsAsInt(option.points);
+                      return "${option.optionName} ($points pts)";
+                    })
+                    .join(", ");
+              } else {
+                answerText = "Not selected";
+              }
+            }
 
             return Padding(
-              padding: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.only(bottom: 15),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -303,34 +437,62 @@ class _SurveyFormScreenState extends State<SurveyFormScreen> {
                     fontSize: isMobile
                         ? 13
                         : isTablet
-                        ? 16
-                        : 18,
+                        ? 15
+                        : 17,
                     fontWeight: FontWeight.w600,
                     color: AppColorConstants.titleColor,
                   ),
+                  const SizedBox(height: 4),
                   KText(
-                    text: "Ans: $optionName ($points pts)",
+                    text: "Answer: $answerText",
+                    maxLines: 5,
+                    softWrap: true,
                     fontSize: isMobile
-                        ? 13
+                        ? 12
                         : isTablet
-                        ? 16
-                        : 18,
-                    fontWeight: FontWeight.w600,
-                    color: AppColorConstants.titleColor,
+                        ? 14
+                        : 16,
+                    fontWeight: FontWeight.w400,
+                    color: AppColorConstants.subTitleColor,
                   ),
                 ],
               ),
             );
           }),
-          KText(
-            text: "Total Score: $totalPoints points",
-            fontSize: isMobile
-                ? 16
-                : isTablet
-                ? 18
-                : 20,
-            fontWeight: FontWeight.w700,
-            color: AppColorConstants.titleColor,
+
+          // Total Score
+          const SizedBox(height: 20),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColorConstants.primaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                KText(
+                  text: "Total Score:",
+                  fontSize: isMobile
+                      ? 14
+                      : isTablet
+                      ? 16
+                      : 18,
+                  fontWeight: FontWeight.w600,
+                  color: AppColorConstants.titleColor,
+                ),
+                KText(
+                  text: "$totalPoints points",
+                  fontSize: isMobile
+                      ? 14
+                      : isTablet
+                      ? 16
+                      : 18,
+                  fontWeight: FontWeight.w700,
+                  color: AppColorConstants.primaryColor,
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -339,8 +501,8 @@ class _SurveyFormScreenState extends State<SurveyFormScreen> {
 
   Widget _buildBottomSheet(
     BuildContext context,
-    form,
-    Map<int, int?> selections,
+    dynamic form,
+    SurveyFormSelected selectionState,
     bool isMobile,
     bool isTablet,
   ) {
@@ -368,44 +530,76 @@ class _SurveyFormScreenState extends State<SurveyFormScreen> {
           btnBgColor: AppColorConstants.primaryColor,
           btnTitleColor: AppColorConstants.secondaryColor,
           onTap: () {
-            List<String> inputFormItems = [];
+            List<Map<String, dynamic>> inputForm = [];
             int totalPoints = 0;
 
             for (int i = 0; i < form.formSection.length; i++) {
               final section = form.formSection[i];
-              final selectedIndex = selections[i];
+              final id = section.id.toString();
+              List<Map<String, String>> formOptions = [];
 
-              String name;
-              String points;
-              String id = section.id.toString();
-
-              if (selectedIndex != null) {
-                final selectedOption = section.formOption[selectedIndex];
-                name = selectedOption.optionName.toString();
-                points = selectedOption.points.toString();
-                totalPoints += int.tryParse(points) ?? 0;
-              } else {
-                name = "None";
-                points = "0";
+              // ---------------------------------------------------------
+              // SINGLE CHOICE
+              // ---------------------------------------------------------
+              if (section.chooseType == "single-choice") {
+                final selectedIndex = selectionState.singleSelections[i];
+                if (selectedIndex != null &&
+                    selectedIndex >= 0 &&
+                    selectedIndex < section.formOption.length) {
+                  final selected = section.formOption[selectedIndex];
+                  final points = selected.points?.toString() ?? "0";
+                  formOptions.add({
+                    "option_name": selected.optionName.toString(),
+                    "points": points,
+                  });
+                  totalPoints += int.tryParse(points) ?? 0;
+                }
+              }
+              // ---------------------------------------------------------
+              // MULTIPLE CHOICE
+              // ---------------------------------------------------------
+              else if (section.chooseType == "multiple-choice") {
+                final selectedIndexes = selectionState.multiSelections[i] ?? [];
+                for (int idx in selectedIndexes) {
+                  if (idx >= 0 && idx < section.formOption.length) {
+                    final opt = section.formOption[idx];
+                    final points = opt.points?.toString() ?? "0";
+                    formOptions.add({
+                      "option_name": opt.optionName.toString(),
+                      "points": points,
+                    });
+                    totalPoints += int.tryParse(points) ?? 0;
+                  }
+                }
+              }
+              // ---------------------------------------------------------
+              // ANSWER TEXT
+              // ---------------------------------------------------------
+              else if (section.chooseType == "answer") {
+                final answer = selectionState.answerTexts[i] ?? "";
+                formOptions.add({"option_name": answer, "points": ""});
               }
 
-              inputFormItems.add(
-                '{index: $i, name: "$name", points: "$points", id: "$id"}',
-              );
+              // ---------------------------------------------------------
+              // Build final object
+              // ---------------------------------------------------------
+              if (formOptions.isNotEmpty || section.chooseType == "answer") {
+                inputForm.add({"id": id, "form_option": formOptions});
+              }
             }
 
-            final inputFormStr = '[${inputFormItems.join(', ')}]';
             final totalPointsStr = totalPoints.toString();
 
-            AppLoggerHelper.logInfo("GraphQL Input Form: $inputFormStr");
-            AppLoggerHelper.logInfo("Total Points: $totalPointsStr");
+            AppLoggerHelper.logInfo("Input Form → $inputForm");
+            AppLoggerHelper.logInfo("Total Points → $totalPointsStr");
 
+            // Add Survey Operative Form - pass the List<Map<String, dynamic>> directly
             context.read<SurveyOperativeFormBloc>().add(
               AddSurveyOperativeForm(
                 userId: userId!,
                 operativeFormId: widget.operativeId,
                 totalPoints: totalPointsStr,
-                inputForm: inputFormStr,
+                inputForm: inputForm,
               ),
             );
           },

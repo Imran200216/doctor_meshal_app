@@ -16,6 +16,26 @@ class SurveyOperativeFormBloc
 
   SurveyOperativeFormBloc({required this.graphQLService})
     : super(SurveyOperativeFormInitial()) {
+    String buildInputFormGraphQL(List<Map<String, dynamic>> inputForm) {
+      List<String> sections = [];
+
+      for (var section in inputForm) {
+        List<String> options = [];
+
+        for (var option in (section['form_option'] as List)) {
+          options.add(
+            '{option_name: "${option['option_name']}", points: "${option['points']}"}',
+          );
+        }
+
+        sections.add(
+          '{id: "${section['id']}", form_option: [${options.join(',')}]}',
+        );
+      }
+
+      return '[${sections.join(',')}]';
+    }
+
     // Get Survey Operative Form
     on<GetSurveyOperativeForm>((event, emit) async {
       emit(SurveyOperativeFormLoading());
@@ -42,6 +62,8 @@ class SurveyOperativeFormBloc
     ''';
 
         final result = await graphQLService.performQuery(query);
+
+        AppLoggerHelper.logInfo("The Form Id: ${event.id}");
 
         if (result.hasException) {
           emit(SurveyOperativeFormError(message: result.exception.toString()));
@@ -72,6 +94,9 @@ class SurveyOperativeFormBloc
       );
 
       try {
+        // Build the input_form in GraphQL format
+        String inputFormGraphQL = buildInputFormGraphQL(event.inputForm);
+
         String mutation =
             '''
 mutation Patient_form_submits {
@@ -79,7 +104,7 @@ mutation Patient_form_submits {
     user_id: "${event.userId}"
     operative_form_id: "${event.operativeFormId}"
     total_points: "${event.totalPoints}"
-    input_form: ${event.inputForm}
+    input_form: $inputFormGraphQL
   ) {
     message
     status

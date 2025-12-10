@@ -63,12 +63,14 @@ class FormSection {
   final String sectionTitle;
   final List<FormOption> formOption;
   final int formIndexNo;
+  final String chooseType;
 
   FormSection({
     required this.id,
     required this.sectionTitle,
     required this.formOption,
     required this.formIndexNo,
+    required this.chooseType,
   });
 
   factory FormSection.fromJson(Map<String, dynamic> json) {
@@ -79,6 +81,7 @@ class FormSection {
           .map((e) => FormOption.fromJson(e))
           .toList(),
       formIndexNo: json["form_index_no"],
+      chooseType: json['choose_type'] ?? '',
     );
   }
 
@@ -87,6 +90,7 @@ class FormSection {
     "section_title": sectionTitle,
     "form_option": formOption.map((e) => e.toJson()).toList(),
     "form_index_no": formIndexNo,
+    'choose_type': chooseType,
   };
 }
 

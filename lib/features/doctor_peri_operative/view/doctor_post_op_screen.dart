@@ -306,6 +306,7 @@ class _DoctorPostOpScreenState extends State<DoctorPostOpScreen> {
                 effect: ShimmerEffect(),
                 enabled: true,
                 child: DoctorOperativeFormCard(
+                  formNo: "",
                   onTap: () {},
                   formTitle: '',
                   patientName: '',
@@ -335,6 +336,7 @@ class _DoctorPostOpScreenState extends State<DoctorPostOpScreen> {
                 effect: ShimmerEffect(),
                 enabled: true,
                 child: DoctorOperativeFormCard(
+                  formNo: '',
                   onTap: () {},
                   formTitle: '',
                   patientName: '',
@@ -387,6 +389,7 @@ class _DoctorPostOpScreenState extends State<DoctorPostOpScreen> {
             itemBuilder: (context, index) {
               final item = operativeFormEvents[index];
               return DoctorOperativeFormCard(
+                formNo: item.formNo,
                 onTap: () {
                   GoRouter.of(context).pushNamed(
                     AppRouterConstants.doctorOperativeSummary,
@@ -418,6 +421,7 @@ class _DoctorPostOpScreenState extends State<DoctorPostOpScreen> {
             itemBuilder: (context, index) {
               final item = operativeFormEvents[index];
               return DoctorOperativeFormCard(
+                formNo: item.formNo,
                 onTap: () {
                   GoRouter.of(context).pushNamed(
                     AppRouterConstants.doctorOperativeSummary,

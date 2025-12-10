@@ -33,6 +33,7 @@ class SubmittedPatientFormDetailsSectionBloc
             form_section {
               id
               section_title
+              choose_type
               form_option {
                 answer_status
                 option_name

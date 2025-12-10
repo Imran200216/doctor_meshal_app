@@ -15,7 +15,7 @@ import 'package:meshal_doctor_booking_app/features/localization/localization.dar
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-// ========== Background Message Handler ==========
+// Background Message Handler
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // Initialize Firebase in background isolate

@@ -8,6 +8,7 @@ import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 
 class DoctorOperativeFormCard extends StatelessWidget {
   final String formTitle;
+  final String formNo;
   final String patientName;
   final String formStatusSubmitted;
   final String formSubmittedDate;
@@ -20,6 +21,7 @@ class DoctorOperativeFormCard extends StatelessWidget {
     required this.formStatusSubmitted,
     required this.formSubmittedDate,
     required this.onTap,
+    required this.formNo,
   });
 
   @override
@@ -41,9 +43,9 @@ class DoctorOperativeFormCard extends StatelessWidget {
         },
         child: Container(
           height: isMobile
-              ? 400
+              ? 340
               : isTablet
-              ? 300
+              ? 380
               : 400,
           width: double.maxFinite,
           decoration: BoxDecoration(
@@ -60,7 +62,7 @@ class DoctorOperativeFormCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  flex: 2,
+                  flex: 1,
                   child: SizedBox(
                     width: double.maxFinite,
                     child: CachedNetworkImage(
@@ -108,7 +110,7 @@ class DoctorOperativeFormCard extends StatelessWidget {
                       children: [
                         // Title
                         KText(
-                          text: formTitle,
+                          text: formNo,
                           textAlign: TextAlign.start,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
@@ -122,6 +124,21 @@ class DoctorOperativeFormCard extends StatelessWidget {
                         ),
 
                         const SizedBox(height: 8),
+
+                        // Form Title
+                        KText(
+                          text: "${appLoc.formTitle}: $formTitle",
+                          textAlign: TextAlign.start,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                          fontSize: isMobile
+                              ? 16
+                              : isTablet
+                              ? 18
+                              : 20,
+                          fontWeight: FontWeight.w600,
+                          color: AppColorConstants.titleColor,
+                        ),
 
                         // Patient Name
                         KText(

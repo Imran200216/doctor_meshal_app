@@ -392,7 +392,9 @@ class _DoctorOperativeSummaryScreenState
               Navigator.of(dialogContext).pop();
 
               // Use the stable parent context for navigation
-              GoRouter.of(parentContext).go(AppRouterConstants.doctorBottomNav);
+              GoRouter.of(
+                parentContext,
+              ).goNamed(AppRouterConstants.doctorBottomNav);
 
               // Show success snackbar
               KSnackBar.success(

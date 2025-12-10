@@ -81,220 +81,229 @@ class _PreOpScreenState extends State<PreOpScreen> {
           GoRouter.of(context).pop();
         },
       ),
-      body: RefreshIndicator.adaptive(
-        color: AppColorConstants.secondaryColor,
-        backgroundColor: AppColorConstants.primaryColor,
-        onRefresh: () async {
-          final connectivityState = context.read<ConnectivityBloc>().state;
+      body: Builder(
+        builder: (rootContext) {
+          return RefreshIndicator.adaptive(
+            color: AppColorConstants.secondaryColor,
+            backgroundColor: AppColorConstants.primaryColor,
+            onRefresh: () async {
+              final connectivityState = context.read<ConnectivityBloc>().state;
 
-          // Correct internet check
-          if (connectivityState is ConnectivityFailure ||
-              (connectivityState is ConnectivitySuccess &&
-                  connectivityState.isConnected == false)) {
-            KSnackBar.error(context, appLoc.noInternet);
-            return;
-          }
+              // Correct internet check
+              if (connectivityState is ConnectivityFailure ||
+                  (connectivityState is ConnectivitySuccess &&
+                      connectivityState.isConnected == false)) {
+                KSnackBar.error(context, appLoc.noInternet);
+                return;
+              }
 
-          // Fetch Peri Operative Form
-          await _fetchPreOperative();
-        },
-        child: BlocBuilder<ConnectivityBloc, ConnectivityState>(
-          builder: (context, connectivityState) {
-            if (connectivityState is ConnectivityFailure) {
-              return Align(
-                alignment: Alignment.center,
-                heightFactor: 3,
-                child: const KInternetFound(),
-              );
-            } else if (connectivityState is ConnectivitySuccess) {
-              return BlocBuilder<OperativeFormBloc, OperativeFormState>(
-                builder: (context, state) {
-                  // Loading State
-                  if (state is OperativeFormLoading) {
-                    return isTablet
-                        ? GridView.builder(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.vertical,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: isMobile
-                                  ? 20
-                                  : isTablet
-                                  ? 30
-                                  : 40,
-                              vertical: isMobile
-                                  ? 20
-                                  : isTablet
-                                  ? 30
-                                  : 40,
-                            ),
-                            itemCount: 40,
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 18,
-                                  mainAxisSpacing: 18,
-                                  childAspectRatio: 1.8,
+              // Fetch Peri Operative Form
+              await _fetchPreOperative();
+            },
+            child: BlocBuilder<ConnectivityBloc, ConnectivityState>(
+              builder: (context, connectivityState) {
+                if (connectivityState is ConnectivityFailure) {
+                  return Align(
+                    alignment: Alignment.center,
+                    heightFactor: 3,
+                    child: const KInternetFound(),
+                  );
+                } else if (connectivityState is ConnectivitySuccess) {
+                  return BlocBuilder<OperativeFormBloc, OperativeFormState>(
+                    builder: (context, state) {
+                      // Loading State
+                      if (state is OperativeFormLoading) {
+                        return isTablet
+                            ? GridView.builder(
+                                shrinkWrap: true,
+                                scrollDirection: Axis.vertical,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: isMobile
+                                      ? 20
+                                      : isTablet
+                                      ? 30
+                                      : 40,
+                                  vertical: isMobile
+                                      ? 20
+                                      : isTablet
+                                      ? 30
+                                      : 40,
                                 ),
-                            itemBuilder: (context, index) {
-                              return Skeletonizer(
-                                effect: ShimmerEffect(),
-                                enabled: true,
-                                child: OperativeFormSurveyCard(
-                                  title: "",
-                                  onSurveyTap: () {},
-                                ),
-                              );
-                            },
-                          )
-                        : ListView.separated(
-                            scrollDirection: Axis.vertical,
-                            shrinkWrap: true,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: isMobile
-                                  ? 20
-                                  : isTablet
-                                  ? 30
-                                  : 40,
-                              vertical: isMobile
-                                  ? 20
-                                  : isTablet
-                                  ? 30
-                                  : 40,
-                            ),
-                            itemBuilder: (context, index) {
-                              return Skeletonizer(
-                                effect: ShimmerEffect(),
-                                enabled: true,
-                                child: OperativeFormSurveyCard(
-                                  title: "",
-                                  onSurveyTap: () {},
-                                ),
-                              );
-                            },
-                            separatorBuilder: (context, index) {
-                              return const SizedBox(height: 20);
-                            },
-                            itemCount: 40,
-                          );
-                  }
-
-                  // Success State
-                  if (state is OperativeFormSuccess) {
-                    final operativeFormEvents = state.operativeForm;
-
-                    return isTablet
-                        ? operativeFormEvents.isEmpty
-                              ? KNoItemsFound()
-                              : GridView.builder(
-                                  shrinkWrap: true,
-                                  scrollDirection: Axis.vertical,
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: isMobile
-                                        ? 20
-                                        : isTablet
-                                        ? 30
-                                        : 40,
-                                    vertical: isMobile
-                                        ? 20
-                                        : isTablet
-                                        ? 30
-                                        : 40,
-                                  ),
-                                  itemCount: operativeFormEvents.length,
-                                  gridDelegate:
-                                      const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 2,
-                                        crossAxisSpacing: 18,
-                                        mainAxisSpacing: 18,
-                                        childAspectRatio: 1.8,
-                                      ),
-                                  itemBuilder: (context, index) {
-                                    final item = operativeFormEvents[index];
-
-                                    return OperativeFormSurveyCard(
-                                      isFormEnabled: item.formEnableStatus,
-                                      title: item.title,
-                                      onSurveyTap: () {
-                                        if (item.formEnableStatus == false) {
-                                          KSnackBar.error(
-                                            context,
-                                            "Survey Locked!",
-                                          );
-                                        } else if (item.formEnableStatus ==
-                                            true) {
-                                          // Survey Form Screen
-                                          GoRouter.of(context).pushNamed(
-                                            AppRouterConstants.surveyForm,
-                                            extra: item.id,
-                                          );
-                                        }
-                                      },
-                                    );
-                                  },
-                                )
-                        : operativeFormEvents.isEmpty
-                        ? KNoItemsFound()
-                        : ListView.separated(
-                            scrollDirection: Axis.vertical,
-                            shrinkWrap: true,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: isMobile
-                                  ? 20
-                                  : isTablet
-                                  ? 30
-                                  : 40,
-                              vertical: isMobile
-                                  ? 20
-                                  : isTablet
-                                  ? 30
-                                  : 40,
-                            ),
-                            itemBuilder: (context, index) {
-                              final item = operativeFormEvents[index];
-                              return OperativeFormSurveyCard(
-                                isFormEnabled: item.formEnableStatus,
-                                title: item.title,
-                                onSurveyTap: () {
-                                  if (item.formEnableStatus == false) {
-                                    KSnackBar.error(context, "Survey Locked!");
-                                  } else if (item.formEnableStatus == true) {
-                                    // Survey Form Screen
-                                    GoRouter.of(context).pushNamed(
-                                      AppRouterConstants.surveyForm,
-                                      extra: item.id,
-                                    );
-                                  }
+                                itemCount: 40,
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      crossAxisSpacing: 18,
+                                      mainAxisSpacing: 18,
+                                      childAspectRatio: 1.8,
+                                    ),
+                                itemBuilder: (context, index) {
+                                  return Skeletonizer(
+                                    effect: ShimmerEffect(),
+                                    enabled: true,
+                                    child: OperativeFormSurveyCard(
+                                      title: "",
+                                      onSurveyTap: () {},
+                                    ),
+                                  );
                                 },
+                              )
+                            : ListView.separated(
+                                scrollDirection: Axis.vertical,
+                                shrinkWrap: true,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: isMobile
+                                      ? 20
+                                      : isTablet
+                                      ? 30
+                                      : 40,
+                                  vertical: isMobile
+                                      ? 20
+                                      : isTablet
+                                      ? 30
+                                      : 40,
+                                ),
+                                itemBuilder: (context, index) {
+                                  return Skeletonizer(
+                                    effect: ShimmerEffect(),
+                                    enabled: true,
+                                    child: OperativeFormSurveyCard(
+                                      title: "",
+                                      onSurveyTap: () {},
+                                    ),
+                                  );
+                                },
+                                separatorBuilder: (context, index) {
+                                  return const SizedBox(height: 20);
+                                },
+                                itemCount: 40,
                               );
-                            },
-                            separatorBuilder: (context, index) {
-                              return const SizedBox(height: 20);
-                            },
-                            itemCount: operativeFormEvents.length,
-                          );
-                  }
+                      }
 
-                  if (state is OperativeFormFailure) {
-                    AppLoggerHelper.logError("Error: ${state.message}");
+                      // Success State
+                      if (state is OperativeFormSuccess) {
+                        final operativeFormEvents = state.operativeForm;
 
-                    return Align(
-                      alignment: Alignment.center,
-                      heightFactor: 3,
-                      child: KNoItemsFound(
-                        noItemsSvg: AppAssetsConstants.failure,
-                        noItemsFoundText: appLoc.somethingWentWrong,
-                      ),
-                    );
-                  }
+                        return isTablet
+                            ? operativeFormEvents.isEmpty
+                                  ? KNoItemsFound()
+                                  : GridView.builder(
+                                      shrinkWrap: true,
+                                      scrollDirection: Axis.vertical,
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: isMobile
+                                            ? 20
+                                            : isTablet
+                                            ? 30
+                                            : 40,
+                                        vertical: isMobile
+                                            ? 20
+                                            : isTablet
+                                            ? 30
+                                            : 40,
+                                      ),
+                                      itemCount: operativeFormEvents.length,
+                                      gridDelegate:
+                                          const SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount: 2,
+                                            crossAxisSpacing: 18,
+                                            mainAxisSpacing: 18,
+                                            childAspectRatio: 1.8,
+                                          ),
+                                      itemBuilder: (context, index) {
+                                        final item = operativeFormEvents[index];
 
+                                        return OperativeFormSurveyCard(
+                                          isFormEnabled: item.formEnableStatus,
+                                          title: item.title,
+                                          onSurveyTap: () {
+                                            if (item.formEnableStatus ==
+                                                false) {
+                                              KSnackBar.error(
+                                                rootContext,
+                                                "Survey Locked!",
+                                              );
+                                            } else if (item.formEnableStatus ==
+                                                true) {
+                                              // Survey Form Screen
+                                              GoRouter.of(context).pushNamed(
+                                                AppRouterConstants.surveyForm,
+                                                extra: item.id,
+                                              );
+                                            }
+                                          },
+                                        );
+                                      },
+                                    )
+                            : operativeFormEvents.isEmpty
+                            ? KNoItemsFound()
+                            : ListView.separated(
+                                scrollDirection: Axis.vertical,
+                                shrinkWrap: true,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: isMobile
+                                      ? 20
+                                      : isTablet
+                                      ? 30
+                                      : 40,
+                                  vertical: isMobile
+                                      ? 20
+                                      : isTablet
+                                      ? 30
+                                      : 40,
+                                ),
+                                itemBuilder: (context, index) {
+                                  final item = operativeFormEvents[index];
+                                  return OperativeFormSurveyCard(
+                                    isFormEnabled: item.formEnableStatus,
+                                    title: item.title,
+                                    onSurveyTap: () {
+                                      if (item.formEnableStatus == false) {
+                                        return KSnackBar.error(
+                                          rootContext,
+                                          "Survey Locked!",
+                                        );
+                                      } else if (item.formEnableStatus ==
+                                          true) {
+                                        // Survey Form Screen
+                                        GoRouter.of(context).pushNamed(
+                                          AppRouterConstants.surveyForm,
+                                          extra: item.id,
+                                        );
+                                      }
+                                    },
+                                  );
+                                },
+                                separatorBuilder: (context, index) {
+                                  return const SizedBox(height: 20);
+                                },
+                                itemCount: operativeFormEvents.length,
+                              );
+                      }
+
+                      if (state is OperativeFormFailure) {
+                        AppLoggerHelper.logError("Error: ${state.message}");
+
+                        return Align(
+                          alignment: Alignment.center,
+                          heightFactor: 3,
+                          child: KNoItemsFound(
+                            noItemsSvg: AppAssetsConstants.failure,
+                            noItemsFoundText: appLoc.somethingWentWrong,
+                          ),
+                        );
+                      }
+
+                      return const SizedBox.shrink();
+                    },
+                  );
+                } else {
                   return const SizedBox.shrink();
-                },
-              );
-            } else {
-              return const SizedBox.shrink();
-            }
-          },
-        ),
+                }
+              },
+            ),
+          );
+        },
       ),
     );
   }

@@ -129,64 +129,86 @@ class _StatusSummaryScreenState extends State<StatusSummaryScreen> {
 
                       return SingleChildScrollView(
                         child: Column(
+                          spacing: 10,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             // Form Serial No
-                            DoctorOperativeTextRich(
-                              title: appLoc.formSerialNo,
-                              content: submittedForm.formSerialNo,
+                            KTextFormField(
+                              readOnly: true,
+                              controller: TextEditingController(
+                                text: submittedForm.formSerialNo,
+                              ),
+                              hintText: appLoc.formSerialNo,
+                              labelText: appLoc.formSerialNo,
                             ),
-
-                            const SizedBox(height: 5),
 
                             // Title
-                            DoctorOperativeTextRich(
-                              title: appLoc.formTitle,
-                              content: submittedForm.title,
+                            KTextFormField(
+                              readOnly: true,
+                              controller: TextEditingController(
+                                text: submittedForm.title,
+                              ),
+                              hintText: appLoc.formTitle,
+                              labelText: appLoc.formTitle,
                             ),
-
-                            const SizedBox(height: 5),
 
                             // Form Type
-                            DoctorOperativeTextRich(
-                              title: appLoc.formType,
-                              content: submittedForm.formType,
+                            KTextFormField(
+                              readOnly: true,
+                              controller: TextEditingController(
+                                text: submittedForm.formType,
+                              ),
+                              hintText: appLoc.formType,
+                              labelText: appLoc.formType,
                             ),
-
-                            const SizedBox(height: 5),
 
                             // User Name
-                            DoctorOperativeTextRich(
-                              title: appLoc.patientName,
-                              content:
-                                  "${submittedForm.userId.firstName} ${submittedForm.userId.lastName}",
+                            KTextFormField(
+                              readOnly: true,
+                              controller: TextEditingController(
+                                text:
+                                    "${submittedForm.userId.firstName} ${submittedForm.userId.lastName}",
+                              ),
+                              hintText: appLoc.patientName,
+                              labelText: appLoc.patientName,
                             ),
-                            const SizedBox(height: 5),
 
                             // Form Status
-                            DoctorOperativeTextRich(
-                              title: appLoc.formStatus,
-                              content: submittedForm.formStatus,
+                            KTextFormField(
+                              readOnly: true,
+                              controller: TextEditingController(
+                                text: submittedForm.formStatus,
+                              ),
+                              hintText: appLoc.formStatus,
+                              labelText: appLoc.formStatus,
                             ),
 
                             const SizedBox(height: 5),
 
                             // Form Created At
-                            DoctorOperativeTextRich(
-                              title: appLoc.formCreatedAt,
-                              content: submittedForm.createdAtTime,
+                            KTextFormField(
+                              readOnly: true,
+                              controller: TextEditingController(
+                                text: submittedForm.createdAtTime,
+                              ),
+                              hintText: appLoc.formCreatedAt,
+                              labelText: appLoc.formCreatedAt,
                             ),
 
                             const SizedBox(height: 5),
 
                             // Form Total Points
-                            DoctorOperativeTextRich(
-                              title: appLoc.formTotalPoints,
-                              content: "${submittedForm.totalPoints} points",
+                            KTextFormField(
+                              readOnly: true,
+                              controller: TextEditingController(
+                                text: "${submittedForm.totalPoints} points",
+                              ),
+                              hintText: appLoc.formTotalPoints,
+                              labelText: appLoc.formTotalPoints,
                             ),
 
-                            const SizedBox(height: 30),
+                            const SizedBox(height: 20),
 
                             PatientStatusSummaryFormCard(
                               submittedForm: submittedForm,

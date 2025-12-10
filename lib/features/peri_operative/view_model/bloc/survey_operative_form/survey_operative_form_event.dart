@@ -19,7 +19,7 @@ class AddSurveyOperativeForm extends SurveyOperativeFormEvent {
   final String userId;
   final String operativeFormId;
   final String totalPoints;
-  final String inputForm;
+  final List<Map<String, dynamic>> inputForm;
 
   const AddSurveyOperativeForm({
     required this.userId,

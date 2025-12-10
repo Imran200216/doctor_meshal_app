@@ -26,6 +26,7 @@ export 'widgets/operative_form_survey_card.dart';
 export 'widgets/status_form_card.dart';
 export 'widgets/survey_form_card.dart';
 export 'widgets/survey_form_skeleton.dart';
+export 'widgets/survey_form_mutliple_card.dart';
 
 // Injection
 export 'injection/peri_operative_injection.dart';

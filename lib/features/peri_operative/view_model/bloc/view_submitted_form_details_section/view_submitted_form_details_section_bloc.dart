@@ -49,6 +49,7 @@ class ViewSubmittedFormDetailsSectionBloc
     form_type
     id
     form_section {
+      choose_type
       form_index_no
       id
       section_title

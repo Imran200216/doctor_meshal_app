@@ -1576,6 +1576,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'CV Highlights'**
   String get cvHighlightsTitle;
+
+  /// No description provided for @answer.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer'**
+  String get answer;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

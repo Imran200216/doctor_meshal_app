@@ -7,7 +7,7 @@ class KSnackBar {
   // SUCCESS SNACKBAR
   static void success(BuildContext context, String message) {
     DelightToastBar(
-      position: DelightSnackbarPosition.bottom,
+      position: DelightSnackbarPosition.top,
       autoDismiss: true,
       snackbarDuration: const Duration(seconds: 2),
       builder: (context) => Directionality(
@@ -35,7 +35,7 @@ class KSnackBar {
   // ERROR SNACKBAR
   static void error(BuildContext context, String message) {
     DelightToastBar(
-      position: DelightSnackbarPosition.bottom,
+      position: DelightSnackbarPosition.top,
       autoDismiss: true,
       snackbarDuration: const Duration(seconds: 2),
       builder: (context) => Directionality(

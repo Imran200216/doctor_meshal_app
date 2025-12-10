@@ -19,7 +19,7 @@ class DoctorOperativeSubmittedFormSummary extends StatelessWidget {
 
     return ListView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.all(16),
       itemCount: submittedForm.formSection.length,
       itemBuilder: (context, index) {
@@ -41,7 +41,7 @@ class DoctorOperativeSubmittedFormSummary extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Section Title
+                /// Section Title
                 Text(
                   section.sectionTitle,
                   style: const TextStyle(
@@ -52,14 +52,32 @@ class DoctorOperativeSubmittedFormSummary extends StatelessWidget {
 
                 const SizedBox(height: 12),
 
-                // Options (Checkbox List)
+                /// Show options depending on chooseType
                 ...section.formOption.map((option) {
-                  return CheckboxListTile(
 
+                  // -----------------------------------------------
+                  // CASE 1 → chooseType = "answer" → Show TextField
+                  // -----------------------------------------------
+                  if (section.chooseType == "answer") {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: KTextFormField(
+                        readOnly: true,
+                        hintText: "Answer",
+                        controller: TextEditingController(
+                          text: option.optionName,
+                        ),
+                      ),
+                    );
+                  }
+
+                  // -----------------------------------------------
+                  // CASE 2 → Default → Checkbox summary
+                  // -----------------------------------------------
+                  return CheckboxListTile(
                     value: option.answerStatus,
                     onChanged: null,
-                    //  Read-only summary
-                    activeColor: Colors.blue,
+                    activeColor: AppColorConstants.primaryColor,
                     title: Text(
                       option.optionName,
                       style: const TextStyle(fontSize: 16),

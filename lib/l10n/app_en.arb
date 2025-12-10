@@ -235,7 +235,6 @@
   "academicCertificate5": "Orthopedic Trauma Surgery Fellowship, King Abdelaziz Medical City, National Guard Hospital, King Saud bin Abdelaziz University for Health Sciences, Riyadh, Saudi Arabia.",
   "academicCertificate6": "Orthopedic Surgery Residency, Saudi Commission for Health Specialties, King Abdelaziz Medical City, National Guard Hospital, Riyadh, Saudi Arabia.",
   "academicCertificate7": "Bachelor of Medicine and Bachelor of Surgery, Cairo University Faculty of Medicine, Cairo, Egypt.",
-
   "cvHighlight1": "Evidence-Based Medicine Committee Member in American Orthopedic Foot and Ankle Society (AOFAS).",
   "cvHighlight2": "AO Trauma Faculty Member.",
   "cvHighlight3": "AOPEER Clinical Research Faculty Member.",
@@ -246,5 +245,6 @@
   "cvHighlight8": "20 peer-reviewed paper publications.",
   "cvHighlight9": "2 textbook chapters.",
   "academicCertificateTitle": "Academic Certificate & Training",
-  "cvHighlightsTitle": "CV Highlights"
+  "cvHighlightsTitle": "CV Highlights",
+  "answer" : "Answer"
 }

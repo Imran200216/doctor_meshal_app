@@ -1,9 +1,7 @@
 class DoctorPeriOperativeFormModel {
   final List<DoctorPeriOperativeForm> forms;
 
-  DoctorPeriOperativeFormModel({
-    required this.forms,
-  });
+  DoctorPeriOperativeFormModel({required this.forms});
 
   factory DoctorPeriOperativeFormModel.fromJson(Map<String, dynamic> json) {
     return DoctorPeriOperativeFormModel(
@@ -15,13 +13,15 @@ class DoctorPeriOperativeFormModel {
 
   Map<String, dynamic> toJson() {
     return {
-      "get_patient_submited_forms_doctor_":
-      forms.map((e) => e.toJson()).toList(),
+      "get_patient_submited_forms_doctor_": forms
+          .map((e) => e.toJson())
+          .toList(),
     };
   }
 }
 
 class DoctorPeriOperativeForm {
+  final String formNo;
   final String formSerialNo;
   final String formStatus;
   final String id;
@@ -36,6 +36,7 @@ class DoctorPeriOperativeForm {
     required this.title,
     required this.user,
     required this.createdAtTime,
+    required this.formNo,
   });
 
   factory DoctorPeriOperativeForm.fromJson(Map<String, dynamic> json) {
@@ -46,6 +47,7 @@ class DoctorPeriOperativeForm {
       title: json["title"] ?? "",
       user: User.fromJson(json["user_id"]),
       createdAtTime: json["createdAt_time"] ?? "",
+      formNo: json['form_no'] ?? "",
     );
   }
 
@@ -56,6 +58,7 @@ class DoctorPeriOperativeForm {
       "id": id,
       "title": title,
       "user_id": user.toJson(),
+      formNo: formNo,
       "createdAt_time": createdAtTime,
     };
   }
@@ -66,11 +69,7 @@ class User {
   final String lastName;
   final String id;
 
-  User({
-    required this.firstName,
-    required this.lastName,
-    required this.id,
-  });
+  User({required this.firstName, required this.lastName, required this.id});
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
@@ -81,10 +80,6 @@ class User {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      "first_name": firstName,
-      "last_name": lastName,
-      "id": id,
-    };
+    return {"first_name": firstName, "last_name": lastName, "id": id};
   }
 }

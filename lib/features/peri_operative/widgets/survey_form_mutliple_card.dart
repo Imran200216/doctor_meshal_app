@@ -3,18 +3,18 @@ import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
 import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 
-class SurveyFormCard extends StatelessWidget {
+class SurveyFormMultiCard extends StatelessWidget {
   final String question;
   final List<String> options;
-  final int? selectedIndex;
-  final Function(int optionIndex) onOptionSelected;
+  final List<int> selectedIndexes;
+  final Function(int optionIndex) onMultiSelect;
 
-  const SurveyFormCard({
+  const SurveyFormMultiCard({
     super.key,
     required this.question,
     required this.options,
-    required this.selectedIndex,
-    required this.onOptionSelected,
+    required this.selectedIndexes,
+    required this.onMultiSelect,
   });
 
   @override
@@ -35,7 +35,6 @@ class SurveyFormCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Question
           Row(
             spacing: 20,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -56,10 +55,9 @@ class SurveyFormCard extends StatelessWidget {
                   color: AppColorConstants.titleColor,
                 ),
               ),
-
               KText(
                 textAlign: TextAlign.end,
-                text: "(Single Choice)",
+                text: "(Multiple Choice)",
                 maxLines: 2,
                 overflow: TextOverflow.visible,
                 fontSize: isMobile
@@ -72,10 +70,8 @@ class SurveyFormCard extends StatelessWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 12),
-
-          // Dynamic Checkbox List (Single-select but UI only)
+          // Dynamic Checkbox List (Multiple-select)
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -84,16 +80,15 @@ class SurveyFormCard extends StatelessWidget {
               return CheckboxListTile(
                 controlAffinity: ListTileControlAffinity.leading,
                 title: Text(options[index]),
-                value: selectedIndex == index,
-                onChanged: (_) => onOptionSelected(index),
+                value: selectedIndexes.contains(index),
+                onChanged: (_) => onMultiSelect(index),
                 // Add these to ensure proper interaction
                 activeColor: AppColorConstants.primaryColor,
                 checkColor: Colors.white,
                 contentPadding: EdgeInsets.zero,
                 // Visual feedback
-                selectedTileColor: AppColorConstants.primaryColor.withOpacity(
-                  0.1,
-                ),
+                selected: selectedIndexes.contains(index),
+
               );
             },
           ),

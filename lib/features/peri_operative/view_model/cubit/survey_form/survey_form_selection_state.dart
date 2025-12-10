@@ -1,19 +1,25 @@
 part of 'survey_form_selection_cubit.dart';
 
-sealed class SurveyFormSelectionState extends Equatable {
-  final Map<int, int?> selections;   // <-- ADD HERE
-
-  const SurveyFormSelectionState({required this.selections});
+abstract class SurveyFormSelectionState extends Equatable {
+  const SurveyFormSelectionState();
 
   @override
-  List<Object> get props => [selections];
+  List<Object?> get props => [];
 }
 
-final class SurveyFormSelectionInitial extends SurveyFormSelectionState {
-  SurveyFormSelectionInitial() : super(selections: {});  // <-- empty map
-}
+class SurveyFormSelectionInitial extends SurveyFormSelectionState {}
 
 class SurveyFormSelected extends SurveyFormSelectionState {
-  const SurveyFormSelected({required Map<int, int?> selections})
-      : super(selections: selections);
+  final Map<int, int?> singleSelections;         // single choice
+  final Map<int, List<int>> multiSelections;     // multiple choice
+  final Map<int, String> answerTexts;            // text answers
+
+  const SurveyFormSelected({
+    required this.singleSelections,
+    required this.multiSelections,
+    required this.answerTexts,
+  });
+
+  @override
+  List<Object?> get props => [singleSelections, multiSelections, answerTexts];
 }

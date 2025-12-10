@@ -29,7 +29,9 @@ class ViewPatientSubmittedFormDetailsModel {
     required this.doctorId,
   });
 
-  factory ViewPatientSubmittedFormDetailsModel.fromJson(Map<String, dynamic> json) {
+  factory ViewPatientSubmittedFormDetailsModel.fromJson(
+    Map<String, dynamic> json,
+  ) {
     return ViewPatientSubmittedFormDetailsModel(
       createdAtTime: json['createdAt_time'] ?? '',
       formNo: json['form_no'] ?? '',
@@ -73,12 +75,14 @@ class FormSection {
   final List<FormOption> formOption;
   final String id;
   final String sectionTitle;
+  final String chooseType;
 
   FormSection({
     required this.formIndexNo,
     required this.formOption,
     required this.id,
     required this.sectionTitle,
+    required this.chooseType,
   });
 
   factory FormSection.fromJson(Map<String, dynamic> json) {
@@ -89,6 +93,7 @@ class FormSection {
           .toList(),
       id: json['id'] ?? '',
       sectionTitle: json['section_title'] ?? '',
+      chooseType: json['choose_type'] ?? '',
     );
   }
 
@@ -98,6 +103,7 @@ class FormSection {
       'form_option': formOption.map((e) => e.toJson()).toList(),
       'id': id,
       'section_title': sectionTitle,
+      'choose_type': chooseType,
     };
   }
 }

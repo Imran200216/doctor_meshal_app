@@ -748,4 +748,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get cvHighlightsTitle => 'أهم الإنجازات والسيرة الذاتية';
+
+  @override
+  String get answer => 'إجابة';
 }

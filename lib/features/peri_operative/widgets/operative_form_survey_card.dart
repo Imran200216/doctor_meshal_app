@@ -116,7 +116,7 @@ class OperativeFormSurveyCard extends StatelessWidget {
                             const SizedBox(height: 8),
 
                             // Open Survey
-                            GestureDetector(
+                            InkWell(
                               onTap: () {
                                 HapticFeedback.heavyImpact();
                                 onSurveyTap();
