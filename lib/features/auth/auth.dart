@@ -4,6 +4,8 @@ export 'view/auth_change_password_success_screen.dart';
 export 'view/auth_forget_password_screen.dart';
 export 'view/auth_otp_screen.dart';
 export 'view/auth_screen.dart';
+export 'view/auth_register_verify_otp_screen.dart';
+export 'view/auth_register_verify_success_screen.dart';
 
 // Model
 export 'model/user_auth_model.dart';

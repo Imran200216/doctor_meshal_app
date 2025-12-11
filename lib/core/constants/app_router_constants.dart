@@ -8,20 +8,14 @@ class AppRouterConstants {
   // Doctor Intro
   static const String doctorIntro = "doctorIntro";
 
-  // Auth Login
+  // Auth
   static const String auth = "auth";
-
-  // Auth Forget Password
   static const String authForgetPassword = "authForgetPassword";
-
-  // Auth OTP
   static const String authOTP = "authOTP";
-
-  // Auth Change Password
   static const String authChangePassword = "authChangePassword";
-
-  // Auth Change Password Success
   static const String authChangePasswordSuccess = "authChangePasswordSuccess";
+  static const String authRegisterVerifyOTP = "authRegisterVerifyOTP";
+  static const String authRegisterVerifySuccess = "authRegisterVerifySuccess";
 
   // Bottom Nav
   static const String patientBottomNav = "patientBottomNav";

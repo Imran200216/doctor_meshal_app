@@ -131,6 +131,8 @@ class _DoctorListScreenState extends State<DoctorListScreen> {
               key: AppDBConstants.chatRoomSenderRoomId,
             );
 
+            AppLoggerHelper.logInfo("The Hive SenderRoomId: $senderRoomId");
+
             // Chat Screen
             GoRouter.of(context).pushNamed(
               AppRouterConstants.chat,

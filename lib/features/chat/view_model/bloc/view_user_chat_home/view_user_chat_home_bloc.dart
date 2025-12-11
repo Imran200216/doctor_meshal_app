@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:meshal_doctor_booking_app/core/service/chat_graphql_service.dart';
+import 'package:meshal_doctor_booking_app/core/service/service.dart';
 import 'package:meshal_doctor_booking_app/features/chat/model/view_user_chat_home_model.dart';
-import 'package:meshal_doctor_booking_app/core/utils/app_logger_helper.dart';
+import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 
 part 'view_user_chat_home_event.dart';
 

@@ -123,3 +123,54 @@ class EmailAuthOTPResendEvent extends EmailAuthEvent {
   // TODO: implement props
   List<Object?> get props => [email];
 }
+
+///////////////////////////////////////////   Register Email Auth
+
+class RegisterEmailAuthEvent extends EmailAuthEvent {
+  final String email;
+  final String phoneNumber;
+  final String phoneCode;
+
+  const RegisterEmailAuthEvent({
+    required this.email,
+    required this.phoneNumber,
+    required this.phoneCode,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [email, phoneNumber, phoneCode];
+}
+
+class VerifyRegisterEmailOTPEvent extends EmailAuthEvent {
+  final String email;
+  final String otp;
+  final String token;
+
+  const VerifyRegisterEmailOTPEvent({
+    required this.email,
+    required this.otp,
+    required this.token,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [email, otp, token];
+}
+
+// Resend_email_otp_user_register_authentication_
+class ResendEmailOTPUserRegisterEvent extends EmailAuthEvent {
+  final String email;
+  final String phoneCode;
+  final String phoneNumber;
+
+  const ResendEmailOTPUserRegisterEvent({
+    required this.email,
+    required this.phoneCode,
+    required this.phoneNumber,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [email, phoneCode, phoneNumber];
+}

@@ -214,3 +214,104 @@ class EmailAuthLogoutFailure extends EmailAuthState {
   // TODO: implement props
   List<Object?> get props => [message, status];
 }
+
+///////////////////////////////////////////   Register Email Auth
+
+// Register User Email Authentication  Loading
+final class EmailAuthRegisterLoading extends EmailAuthState {
+  @override
+  List<Object> get props => [];
+}
+
+// Register User Email Authentication Success
+class EmailAuthRegisterSuccess extends EmailAuthState {
+  final bool status;
+
+  final String token;
+  final String message;
+
+  const EmailAuthRegisterSuccess({
+    required this.status,
+    required this.token,
+    required this.message,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [status, message, token];
+}
+
+// Register User Email Authentication Failure
+class EmailAuthRegisterFailure extends EmailAuthState {
+  final String message;
+
+  const EmailAuthRegisterFailure({required this.message});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [message];
+}
+
+// Verify Email OTP User Register Authentication
+final class EmailAuthVerifyOTPLoading extends EmailAuthState {
+  @override
+  List<Object> get props => [];
+}
+
+// Verify Email OTP User Register Authentication Success
+class EmailAuthVerifyOTPSuccess extends EmailAuthState {
+  final String message;
+  final bool status;
+
+  const EmailAuthVerifyOTPSuccess({
+    required this.message,
+    required this.status,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [message, status];
+}
+
+// Verify Email OTP User Register Authentication Failure
+class EmailAuthVerifyOTPFailure extends EmailAuthState {
+  final String message;
+
+  const EmailAuthVerifyOTPFailure({required this.message});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [message];
+}
+
+// Resend_email_otp_user_register_authentication Loading
+final class EmailResendOTPUserRegisterLoading extends EmailAuthState {
+  @override
+  List<Object> get props => [];
+}
+
+// Resend_email_otp_user_register_authentication Success
+final class EmailResendOTPUserRegisterSuccess extends EmailAuthState {
+  final String message;
+  final bool status;
+  final String token;
+
+  const EmailResendOTPUserRegisterSuccess({
+    required this.message,
+    required this.status,
+    required this.token,
+  });
+
+  @override
+  List<Object> get props => [message, status, token];
+}
+
+// Resend_email_otp_user_register_authentication Failure
+final class EmailResendOTPUserRegisterFailure extends EmailAuthState {
+  final String message;
+
+  const EmailResendOTPUserRegisterFailure({required this.message});
+
+  @override
+  List<Object> get props => [message];
+}

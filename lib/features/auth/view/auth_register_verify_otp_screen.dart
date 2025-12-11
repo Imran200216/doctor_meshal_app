@@ -3,38 +3,44 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meshal_doctor_booking_app/core/bloc/connectivity/connectivity_bloc.dart';
-import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
-import 'package:pinput/pinput.dart';
-import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
 import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
+import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
+import 'package:pinput/pinput.dart';
 import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
+import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
 
-class AuthOtpScreen extends StatefulWidget {
-  final String message;
+class AuthRegisterVerifyOtpScreen extends StatefulWidget {
   final String email;
   final String token;
+  final String message;
 
-  const AuthOtpScreen({
+  const AuthRegisterVerifyOtpScreen({
     super.key,
-    required this.message,
     required this.email,
+
     required this.token,
+    required this.message,
   });
 
   @override
-  State<AuthOtpScreen> createState() => _AuthOtpScreenState();
+  State<AuthRegisterVerifyOtpScreen> createState() =>
+      _AuthRegisterVerifyOtpScreenState();
 }
 
-class _AuthOtpScreenState extends State<AuthOtpScreen> {
+class _AuthRegisterVerifyOtpScreenState
+    extends State<AuthRegisterVerifyOtpScreen> {
   // 3 Minutes
   late Timer _timer;
   int _secondsRemaining = 180;
+
+  String currentOtpToken = "";
 
   @override
   void initState() {
     super.initState();
     startTimer();
+    currentOtpToken = widget.token;
   }
 
   // Start Timer
@@ -161,6 +167,7 @@ class _AuthOtpScreenState extends State<AuthOtpScreen> {
           );
         },
       ),
+
       body: SafeArea(
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
@@ -218,39 +225,25 @@ class _AuthOtpScreenState extends State<AuthOtpScreen> {
                 // OTP Input
                 BlocConsumer<EmailAuthBloc, EmailAuthState>(
                   listener: (context, state) {
-                    if (state is EmailAuthOTPVerificationSuccess) {
+                    if (state is EmailAuthVerifyOTPSuccess) {
                       if (state.status == true) {
                         KSnackBar.success(context, "OTP Verified Successfully");
+
                         GoRouter.of(context).pushReplacementNamed(
-                          AppRouterConstants.authChangePassword,
-                          extra: widget.email,
+                          AppRouterConstants.authRegisterVerifySuccess,
                         );
                       } else {
                         KSnackBar.error(context, state.message);
                       }
                     }
 
-                    if (state is EmailAuthOTPVerificationFailure) {
-                      KSnackBar.error(context, state.message);
-                    }
-
-                    if (state is EmailAuthResendOTPSuccess) {
-                      if (state.success) {
-                        KSnackBar.success(context, state.message);
-                      } else {
-                        KSnackBar.error(context, state.message);
-                      }
-                    }
-
-                    if (state is EmailAuthResendOTPFailure) {
+                    if (state is EmailAuthVerifyOTPFailure) {
                       KSnackBar.error(context, state.message);
                     }
                   },
                   builder: (context, state) {
-                    String otpToken = widget.token;
-
-                    if (state is EmailAuthResendOTPSuccess) {
-                      otpToken = state.token;
+                    if (state is EmailResendOTPUserRegisterSuccess) {
+                      currentOtpToken = state.token;
                     }
 
                     return Pinput(
@@ -261,11 +254,12 @@ class _AuthOtpScreenState extends State<AuthOtpScreen> {
                       showCursor: true,
                       keyboardType: TextInputType.number,
                       onCompleted: (value) {
+                        // Verify Register Email OTP
                         context.read<EmailAuthBloc>().add(
-                          EmailAuthVerifyOTPEvent(
+                          VerifyRegisterEmailOTPEvent(
                             email: widget.email,
                             otp: value,
-                            token: otpToken,
+                            token: currentOtpToken,
                           ),
                         );
                       },
@@ -362,15 +356,11 @@ class _AuthOtpScreenState extends State<AuthOtpScreen> {
                     // Didn't receive the code
                     BlocConsumer<EmailAuthBloc, EmailAuthState>(
                       listener: (context, state) {
-                        if (state is EmailAuthResendOTPSuccess) {
-                          if (state.success == true) {
-                            // Success
-                            KSnackBar.success(context, state.message);
-                          } else {
-                            // Failure from server
-                            KSnackBar.error(context, state.message);
-                          }
-                        } else if (state is EmailAuthResendOTPFailure) {
+                        if (state is EmailResendOTPUserRegisterSuccess) {
+                          KSnackBar.success(context, state.message);
+                        }
+
+                        if (state is EmailResendOTPUserRegisterFailure) {
                           KSnackBar.error(context, state.message);
                         }
                       },
@@ -379,12 +369,10 @@ class _AuthOtpScreenState extends State<AuthOtpScreen> {
 
                         return InkWell(
                           onTap: () {
-
                             final connectivityState = context
                                 .read<ConnectivityBloc>()
                                 .state;
 
-                            // Correct internet check
                             if (connectivityState is ConnectivityFailure ||
                                 (connectivityState is ConnectivitySuccess &&
                                     connectivityState.isConnected == false)) {
@@ -392,22 +380,21 @@ class _AuthOtpScreenState extends State<AuthOtpScreen> {
                               return;
                             }
 
-
                             if (!canResend) {
-                              // Error Snack bar
                               KSnackBar.error(context, appLoc.timerIsRunning);
                               return;
                             }
 
-                            // Resend OTP
                             context.read<EmailAuthBloc>().add(
-                              EmailAuthOTPResendEvent(email: widget.email),
+                              ResendEmailOTPUserRegisterEvent(
+                                email: widget.email,
+                                phoneCode: '',
+                                phoneNumber: '',
+                              ),
                             );
 
-                            // Restart timer only when timer is finished
                             startTimer();
                           },
-
                           child: KText(
                             text: appLoc.tapToResend,
                             textAlign: TextAlign.center,

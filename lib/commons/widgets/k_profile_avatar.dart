@@ -16,8 +16,10 @@ class KProfileAvatar extends StatelessWidget {
   });
 
   bool _isLocalFile(String path) {
-    if (path.isEmpty || path.trim().isEmpty) return false; // IMPORTANT
-    return !path.startsWith('http') && !path.startsWith('https');
+    if (path.isEmpty || path.trim().isEmpty) return false;
+
+    // Detect only real file system paths
+    return path.startsWith('/') || path.startsWith('file://');
   }
 
   @override

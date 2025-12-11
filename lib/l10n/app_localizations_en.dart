@@ -751,4 +751,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get answer => 'Answer';
+
+  @override
+  String get emailVerified => 'Email Verified';
+
+  @override
+  String get emailVerifiedSubTitle => 'Your email address has been successfully verified';
 }

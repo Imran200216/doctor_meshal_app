@@ -3,6 +3,8 @@ class AppDBConstants {
   static const String userBox = "user_box";
   static const String userAuthData = "user_auth_data";
   static const String userAuthLoggedStatus = "user_auth_logged_status";
+  static const String userAuthRegisterVerifyBox =
+      "user_auth_register_verify_box";
 
   // Survey Form
   static const String surveyForm = "survey_form";

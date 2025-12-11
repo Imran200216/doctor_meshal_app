@@ -246,5 +246,7 @@
   "cvHighlight9": "2 textbook chapters.",
   "academicCertificateTitle": "Academic Certificate & Training",
   "cvHighlightsTitle": "CV Highlights",
-  "answer" : "Answer"
+  "answer": "Answer",
+  "emailVerified": "Email Verified",
+  "emailVerifiedSubTitle": "Your email address has been successfully verified"
 }

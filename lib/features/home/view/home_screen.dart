@@ -43,14 +43,14 @@ class _HomeScreenState extends State<HomeScreen> {
   // Fetch all data
   Future<void> _fetchAllData() async {
     try {
-      // Run all futures in parallel
       await Future.wait([
         _fetchUserIdAndLoadEducation(),
         _fetchOperativeSummaryCounts(),
-        _viewUserChatRoom(),
-        _initializeUserAndChat(),
         _fetchUserIdAndLoadNotificationsUnReadCount(),
+        _viewUserChatRoom(),
       ]);
+
+      await _initializeUserAndChat();
 
       AppLoggerHelper.logInfo("All data fetched successfully!");
     } catch (e) {
@@ -169,6 +169,9 @@ class _HomeScreenState extends State<HomeScreen> {
         userId = storedUser.id;
 
         AppLoggerHelper.logInfo("User ID fetched from userAuthData: $userId");
+
+        // View User Chat Home Bloc
+        AppLoggerHelper.logInfo("View User Chat Home Bloc : $userId");
 
         // Get View User Chat Room
         context.read<ViewUserChatRoomBloc>().add(
@@ -312,48 +315,48 @@ class _HomeScreenState extends State<HomeScreen> {
                   ).pushNamed(AppRouterConstants.notification);
                 },
                 icon:
-                BlocBuilder<
-                    ViewNotificationUnReadCountBloc,
-                    ViewNotificationUnReadCountState
-                >(
-                  builder: (context, state) {
-                    // 1️⃣ Only Loaded → Show count with badge only if > 0
-                    if (state is ViewNotificationUnReadCountLoaded) {
-                      final count = state.unreadNotificationCount;
+                    BlocBuilder<
+                      ViewNotificationUnReadCountBloc,
+                      ViewNotificationUnReadCountState
+                    >(
+                      builder: (context, state) {
+                        // 1️⃣ Only Loaded → Show count with badge only if > 0
+                        if (state is ViewNotificationUnReadCountLoaded) {
+                          final count = state.unreadNotificationCount;
 
-                      // Return badge only if count > 0
-                      if (count > 0) {
-                        return Badge(
-                          backgroundColor:
-                          AppColorConstants.notificationBgColor,
-                          label: Text(
-                            count.toString(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                            ),
-                          ),
-                          child: Icon(
+                          // Return badge only if count > 0
+                          if (count > 0) {
+                            return Badge(
+                              backgroundColor:
+                                  AppColorConstants.notificationBgColor,
+                              label: Text(
+                                count.toString(),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.notifications,
+                                color: AppColorConstants.secondaryColor,
+                              ),
+                            );
+                          }
+
+                          // If count is 0, just return the icon without badge
+                          return Icon(
                             Icons.notifications,
                             color: AppColorConstants.secondaryColor,
-                          ),
+                          );
+                        }
+
+                        // 2️⃣ Initial or Failure → Show only notification icon
+                        return Icon(
+                          Icons.notifications,
+                          color: AppColorConstants.secondaryColor,
                         );
-                      }
-
-                      // If count is 0, just return the icon without badge
-                      return Icon(
-                        Icons.notifications,
-                        color: AppColorConstants.secondaryColor,
-                      );
-                    }
-
-                    // 2️⃣ Initial or Failure → Show only notification icon
-                    return Icon(
-                      Icons.notifications,
-                      color: AppColorConstants.secondaryColor,
-                    );
-                  },
-                ),
+                      },
+                    ),
               ),
             ),
           ],

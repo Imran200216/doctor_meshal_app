@@ -16,37 +16,42 @@ class EmailAuthBloc extends Bloc<EmailAuthEvent, EmailAuthState> {
       emit(EmailAuthLoading());
 
       try {
-        String query =
+        final query =
             '''
-        query Login_user_ {
-          login_user_(
-            email: "${event.email}"
-            phone_code: "${event.phoneCode}"
-            phone_number: "${event.phoneNumber}"
-            password: "${event.password}"
-            fcm_token: "${event.fcmToken}"
-          ) {
-            id
-            message
-            success
-            token
-          }
+      query Login_user_ {
+        login_user_(
+          email: "${event.email}"
+          phone_code: "${event.phoneCode}"
+          phone_number: "${event.phoneNumber}"
+          password: "${event.password}"
+          fcm_token: "${event.fcmToken}"
+        ) {
+          id
+          message
+          success
+          token
         }
-        ''';
+      }
+    ''';
 
-        AppLoggerHelper.logInfo("GraphQL Query: $query");
+        AppLoggerHelper.logInfo("📡 GraphQL Query: $query");
 
         final result = await graphQLService.performQuery(query);
 
-        // Access the data safely
         final loginData = result.data?['login_user_'];
-        AppLoggerHelper.logInfo("GraphQL Response Data: $loginData");
+        AppLoggerHelper.logInfo("📥 GraphQL Response Data: $loginData");
+
+        if (result.hasException && result.exception!.graphqlErrors.isNotEmpty) {
+          final errorMessage = result.exception!.graphqlErrors.first.message;
+
+          emit(EmailAuthError(errorMessage));
+          AppLoggerHelper.logError("⚠️ Login Failed: $errorMessage");
+          return;
+        }
 
         if (loginData == null) {
-          AppLoggerHelper.logError(
-            "No data returned from server for email: ${event.email}",
-          );
-          emit(EmailAuthError("Login Failed!"));
+          emit(EmailAuthError("Login Failed! Please try again."));
+          AppLoggerHelper.logError("❌ Login failed for email: ${event.email}");
           return;
         }
 
@@ -59,13 +64,9 @@ class EmailAuthBloc extends Bloc<EmailAuthEvent, EmailAuthState> {
           ),
         );
 
-        AppLoggerHelper.logInfo(
-          "Email login successful for email: ${event.email}",
-        );
+        AppLoggerHelper.logInfo("🎉 Login Success: ${event.email}");
       } catch (e) {
-        AppLoggerHelper.logError(
-          "Email login error for email: ${event.email}, Error: $e",
-        );
+        AppLoggerHelper.logError("❌ Login Error: $e");
         emit(EmailAuthError(e.toString()));
       }
     });
@@ -97,9 +98,13 @@ class EmailAuthBloc extends Bloc<EmailAuthEvent, EmailAuthState> {
         AppLoggerHelper.logInfo("📡 Running Register_user_ mutation...");
         final result = await graphQLService.performMutation(mutation);
 
+        // Extract data
         final data = result.data?['Register_user_'];
         AppLoggerHelper.logInfo("✅ GraphQL Response: $data");
 
+        // ---------------------------
+        // 1️⃣ CASE: Successful
+        // ---------------------------
         if (data != null && data['success'] == true) {
           emit(
             EmailAuthSuccess(
@@ -109,15 +114,25 @@ class EmailAuthBloc extends Bloc<EmailAuthEvent, EmailAuthState> {
               success: data['success'],
             ),
           );
-          AppLoggerHelper.logInfo(
-            "🎉 Registration Success: ${data['message']}",
-          );
-        } else {
-          emit(EmailAuthError(data?['message'] ?? 'Registration failed'));
-          AppLoggerHelper.logError(
-            "⚠️ Registration Failed: ${data?['message']}",
-          );
+          return;
         }
+
+        // ---------------------------
+        // 2️⃣ CASE: GraphQL Error Block Exists
+        // ---------------------------
+        if (result.hasException && result.exception!.graphqlErrors.isNotEmpty) {
+          final errorMessage = result.exception!.graphqlErrors.first.message;
+
+          emit(EmailAuthError(errorMessage));
+          AppLoggerHelper.logError("⚠️ Registration Failed: $errorMessage");
+          return;
+        }
+
+        // ---------------------------
+        // 3️⃣ CASE: Unknown Error
+        // ---------------------------
+        emit(EmailAuthError("Registration failed"));
+        AppLoggerHelper.logError("⚠️ Registration Failed: Unknown");
       } catch (e) {
         emit(EmailAuthError(e.toString()));
         AppLoggerHelper.logError("❌ Registration Error: $e");
@@ -433,6 +448,169 @@ class EmailAuthBloc extends Bloc<EmailAuthEvent, EmailAuthState> {
         }
       } catch (e) {
         emit(EmailAuthLogoutFailure(message: e.toString(), status: false));
+      }
+    });
+
+    // Register Email Auth
+    on<RegisterEmailAuthEvent>((event, emit) async {
+      emit(EmailAuthRegisterLoading());
+
+      AppLoggerHelper.logInfo("📨 RegisterEmailAuthEvent triggered");
+      AppLoggerHelper.logInfo(
+        "▶️ Parameters -> email: ${event.email}, phone: ${event.phoneCode}${event.phoneNumber}",
+      );
+
+      try {
+        String query =
+            '''
+      query Query {
+        Regist_user_email_authentication_(
+          email: "${event.email}"
+          phone_code: "${event.phoneCode}"
+          phone_number: "${event.phoneNumber}"
+        )
+      }
+    ''';
+
+        AppLoggerHelper.logInfo("🔎 GraphQL Query: $query");
+
+        final result = await graphQLService.performQuery(query);
+
+        AppLoggerHelper.logInfo("📥 Raw GraphQL Response: ${result.data}");
+
+        // Directly read the response without checking for GraphQL errors
+        final data = result.data?["Regist_user_email_authentication_"];
+
+        if (data == null) {
+          emit(EmailAuthRegisterFailure(message: "Register failed"));
+          return;
+        }
+
+        final bool status = data["status"] ?? false;
+        final String message = data["message"] ?? "";
+        final String token = data["token"] ?? "";
+
+        if (!status) {
+          emit(
+            EmailAuthRegisterFailure(
+              message: message.isNotEmpty ? message : "Register failed",
+            ),
+          );
+          return;
+        }
+
+        emit(
+          EmailAuthRegisterSuccess(
+            status: status,
+            token: token,
+            message: message,
+          ),
+        );
+      } catch (e) {
+        emit(EmailAuthRegisterFailure(message: "Register failed"));
+      }
+    });
+
+    // Verify Register Email OTP
+    on<VerifyRegisterEmailOTPEvent>((event, emit) async {
+      emit(EmailAuthVerifyOTPLoading());
+
+      try {
+        String query =
+            '''
+      query Query {
+        verify_email_otp_user_register_authentication_(
+          email: "${event.email}"
+          otp: "${event.otp}"
+          token: "${event.token}"
+        ) 
+      }
+    ''';
+
+        AppLoggerHelper.logInfo("🔎 GraphQL Query: $query");
+
+        final result = await graphQLService.performQuery(query);
+
+        AppLoggerHelper.logInfo("📥 Raw GraphQL Response: ${result.data}");
+
+        // Check for GraphQL errors
+        if (result.hasException) {
+          final errorMessage = result.exception!.graphqlErrors.isNotEmpty
+              ? result.exception!.graphqlErrors.first.message
+              : "Unknown error occurred";
+          emit(EmailAuthVerifyOTPFailure(message: errorMessage));
+          return;
+        }
+
+        final data =
+            result.data?["verify_email_otp_user_register_authentication_"];
+
+        if (data != null && data["success"] == true) {
+          emit(
+            EmailAuthVerifyOTPSuccess(
+              message: data["message"] ?? "OTP verified successfully",
+              status: true,
+            ),
+          );
+        } else {
+          emit(
+            EmailAuthVerifyOTPFailure(
+              message: data?["message"] ?? "OTP verification failed",
+            ),
+          );
+        }
+      } catch (e) {
+        emit(EmailAuthVerifyOTPFailure(message: e.toString()));
+      }
+    });
+
+    // Resend Register Email OTP
+    on<ResendEmailOTPUserRegisterEvent>((event, emit) async {
+      emit(EmailResendOTPUserRegisterLoading());
+
+      try {
+        String query =
+            '''
+      query Query {
+        Resend_email_otp_user_register_authentication_(
+          email: "${event.email}"
+          phone_code: "${event.phoneCode}"
+          phone_number: "${event.phoneNumber}"
+        )
+      }
+    ''';
+
+        AppLoggerHelper.logInfo("🔎 GraphQL Query: $query");
+
+        final result = await graphQLService.performQuery(query);
+
+        AppLoggerHelper.logInfo("📥 Raw GraphQL Response: ${result.data}");
+
+        // Safely read the response
+        final data =
+            result.data?["Resend_email_otp_user_register_authentication_"];
+
+        if (data != null) {
+          final bool status = data["status"] ?? false;
+          final String message = data["message"] ?? "Something went wrong";
+          final String token = data["token"] ?? "";
+
+          emit(
+            EmailResendOTPUserRegisterSuccess(
+              message: message,
+              status: status,
+              token: token,
+            ),
+          );
+        } else {
+          emit(
+            EmailResendOTPUserRegisterFailure(
+              message: "No response from server.",
+            ),
+          );
+        }
+      } catch (e) {
+        emit(EmailResendOTPUserRegisterFailure(message: e.toString()));
       }
     });
   }

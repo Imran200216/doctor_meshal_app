@@ -103,6 +103,7 @@ flutter:
 
   assets:
     - assets/fonts/
+    - assets/images/
     - assets/images/png/
     - assets/images/jpeg/
     - assets/icons/svg/

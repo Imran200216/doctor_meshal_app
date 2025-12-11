@@ -65,6 +65,10 @@ class _HomeChatScreenState extends State<HomeChatScreen>
 
     AppLoggerHelper.logInfo('📤 Sending message: $message');
 
+    AppLoggerHelper.logInfo(
+      "The Logs of Chats: ${widget.senderRoomId} and ${widget.receiverRoomId}",
+    );
+
     // Send Chat Message
     context.read<SendChatMessageBloc>().add(
       SendChatMessageFuncEvent(

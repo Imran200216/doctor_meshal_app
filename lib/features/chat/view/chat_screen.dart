@@ -10,8 +10,7 @@ import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
 import 'package:meshal_doctor_booking_app/core/constants/constants.dart';
 import 'package:meshal_doctor_booking_app/core/utils/utils.dart';
 import 'package:meshal_doctor_booking_app/features/chat/chat.dart';
-
-import '../../auth/auth.dart';
+import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
 
 class ChatScreen extends StatefulWidget {
   final String senderRoomId;
@@ -30,9 +29,12 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
+  // Controller
   final TextEditingController _messageController = TextEditingController();
-  final FocusNode _messageFocusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
+
+  // Message Focus Node
+  final FocusNode _messageFocusNode = FocusNode();
 
   bool _isSubscribed = false;
 
@@ -472,6 +474,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
             children: [
               BubbleSpecialOne(
                 tail: true,
+                delivered: true,
                 text: message.message,
                 isSender: isMe,
                 color: isMe

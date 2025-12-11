@@ -1582,6 +1582,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Answer'**
   String get answer;
+
+  /// No description provided for @emailVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Email Verified'**
+  String get emailVerified;
+
+  /// No description provided for @emailVerifiedSubTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your email address has been successfully verified'**
+  String get emailVerifiedSubTitle;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

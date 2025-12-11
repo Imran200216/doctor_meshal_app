@@ -33,6 +33,8 @@ class _AuthRegisterState extends State<AuthRegister> {
       TextEditingController();
   final TextEditingController _authPasswordRegisterController =
       TextEditingController();
+  final TextEditingController _authPhoneNumberController =
+      TextEditingController();
 
   @override
   void dispose() {
@@ -40,6 +42,7 @@ class _AuthRegisterState extends State<AuthRegister> {
     _authLastNameRegisterController.dispose();
     _authEmailRegisterController.dispose();
     _authPasswordRegisterController.dispose();
+    _authPhoneNumberController.dispose();
 
     super.dispose();
   }
@@ -50,6 +53,7 @@ class _AuthRegisterState extends State<AuthRegister> {
     _authLastNameRegisterController.clear();
     _authEmailRegisterController.clear();
     _authPasswordRegisterController.clear();
+    _authEmailRegisterController.clear();
     phoneNumber = '';
     selectedPhoneCode = '+91';
   }
@@ -108,6 +112,7 @@ class _AuthRegisterState extends State<AuthRegister> {
 
           // Phone Number Text Form Field
           KPhoneNumberTextFormField(
+            controller: _authPhoneNumberController,
             hintText: appLoc.enterPhoneNumber,
             labelText: appLoc.phoneNumber,
             validator: (value) => AppValidators.phoneNumber(context, value),
@@ -131,81 +136,203 @@ class _AuthRegisterState extends State<AuthRegister> {
           const SizedBox(height: 30),
 
           // Register Btn
+          // BlocConsumer<EmailAuthBloc, EmailAuthState>(
+          //   listener: (context, state) async {
+          //     if (state is EmailAuthSuccess) {
+          //       try {
+          //         // Open Hive box
+          //         await HiveService.openBox(AppDBConstants.userBox);
+          //
+          //         // Create full UserAuthModel
+          //         final userModel = UserAuthModel(
+          //           id: state.id,
+          //           profileImage: "",
+          //           firstName: _authFirstNameRegisterController.text.trim(),
+          //           lastName: _authLastNameRegisterController.text.trim(),
+          //           email: _authEmailRegisterController.text.trim(),
+          //           phoneCode: selectedPhoneCode,
+          //           phoneNumber: phoneNumber.trim(),
+          //           registerDate: DateTime.now().toString(),
+          //           age: "",
+          //           gender: "",
+          //           height: "",
+          //           weight: "",
+          //           bloodGroup: "",
+          //           cid: "",
+          //           createdAt: DateTime.now().toString(),
+          //           updatedAt: DateTime.now().toString(),
+          //           userType: "patient",
+          //         );
+          //
+          //         // Save full model in Hive
+          //         await HiveService.saveData(
+          //           boxName: AppDBConstants.userBox,
+          //           key: AppDBConstants.userAuthData,
+          //           value: userModel.toJson(),
+          //         );
+          //
+          //         AppLoggerHelper.logInfo(
+          //           "UserAuthModel successfully saved in Hive => $userModel",
+          //         );
+          //
+          //         await HiveService.saveData(
+          //           boxName: AppDBConstants.userBox,
+          //           key: AppDBConstants.userAuthLoggedStatus,
+          //           value: true,
+          //         );
+          //         AppLoggerHelper.logInfo(
+          //           "User Logged Status saved successfully in Hive",
+          //         );
+          //       } catch (e) {
+          //         AppLoggerHelper.logError(
+          //           "Error saving UserAuthModel in Hive: $e",
+          //         );
+          //       }
+          //
+          //       // Show success
+          //       KSnackBar.success(context, "Registration Success");
+          //
+          //       // Navigate
+          //       Future.delayed(const Duration(milliseconds: 400), () {
+          //         // GoRouter.of(
+          //         //   context,
+          //         // ).pushReplacementNamed(AppRouterConstants.patientBottomNav);
+          //
+          //         // Auth Register Verify OTP Screen
+          //         GoRouter.of(context).pushReplacementNamed(
+          //           AppRouterConstants.authRegisterVerifyOTP,
+          //         );
+          //       });
+          //
+          //       clearAllController();
+          //     }
+          //
+          //     if (state is EmailAuthError) {
+          //       Future.microtask(() {
+          //         KSnackBar.error(context, state.message);
+          //       });
+          //     }
+          //   },
+          //   builder: (context, state) {
+          //     return KFilledBtn(
+          //       isLoading: state is EmailAuthLoading,
+          //       btnTitle: appLoc.register,
+          //       btnBgColor: AppColorConstants.primaryColor,
+          //       btnTitleColor: AppColorConstants.secondaryColor,
+          //       onTap: () {
+          //         if (_formKey.currentState!.validate()) {
+          //           final connectivityState = context
+          //               .read<ConnectivityBloc>()
+          //               .state;
+          //
+          //           // Correct internet check
+          //           if (connectivityState is ConnectivityFailure ||
+          //               (connectivityState is ConnectivitySuccess &&
+          //                   connectivityState.isConnected == false)) {
+          //             Future.microtask(() {
+          //               KSnackBar.error(context, appLoc.internetConnection);
+          //             });
+          //             return;
+          //           }
+          //
+          //           // Fire Register Event
+          //           // context.read<EmailAuthBloc>().add(
+          //           //   EmailAuthRegisterEvent(
+          //           //     firstName: _authFirstNameRegisterController.text.trim(),
+          //           //     lastName: _authLastNameRegisterController.text.trim(),
+          //           //     email: _authEmailRegisterController.text.trim(),
+          //           //     password: _authPasswordRegisterController.text.trim(),
+          //           //     phoneCode: selectedPhoneCode,
+          //           //     phoneNumber: phoneNumber.trim(),
+          //           //   ),
+          //           // );
+          //         }
+          //       },
+          //       borderRadius: 12,
+          //       fontSize: isMobile
+          //           ? 16
+          //           : isTablet
+          //           ? 18
+          //           : 20,
+          //       btnHeight: isMobile
+          //           ? 50
+          //           : isTablet
+          //           ? 52
+          //           : 54,
+          //       btnWidth: double.maxFinite,
+          //     );
+          //   },
+          // ),
+
+          // Register Btn
           BlocConsumer<EmailAuthBloc, EmailAuthState>(
             listener: (context, state) async {
-              if (state is EmailAuthSuccess) {
-                try {
-                  // Open Hive box
-                  await HiveService.openBox(AppDBConstants.userBox);
+              if (state is EmailAuthRegisterSuccess) {
+                final email = _authEmailRegisterController.text.trim();
+                final token = state.token;
+                final message = state.message;
 
-                  // Create full UserAuthModel
-                  final userModel = UserAuthModel(
-                    id: state.id,
-                    profileImage: "",
-                    firstName: _authFirstNameRegisterController.text.trim(),
-                    lastName: _authLastNameRegisterController.text.trim(),
-                    email: _authEmailRegisterController.text.trim(),
-                    phoneCode: selectedPhoneCode,
-                    phoneNumber: phoneNumber.trim(),
-                    registerDate: DateTime.now().toString(),
-                    age: "",
-                    gender: "",
-                    height: "",
-                    weight: "",
-                    bloodGroup: "",
-                    cid: "",
-                    createdAt: DateTime.now().toString(),
-                    updatedAt: DateTime.now().toString(),
-                    userType: "patient",
-                  );
+                AppLoggerHelper.logInfo(
+                  "📩 EmailAuthRegisterSuccess Data:\n"
+                  "   • Email  : $email\n"
+                  "   • Token  : $token\n"
+                  "   • Message: $message",
+                );
 
-                  // Save full model in Hive
-                  await HiveService.saveData(
-                    boxName: AppDBConstants.userBox,
-                    key: AppDBConstants.userAuthData,
-                    value: userModel.toJson(),
-                  );
+                // Open Hive box
+                await HiveService.openBox(AppDBConstants.userBox);
 
-                  AppLoggerHelper.logInfo(
-                    "UserAuthModel successfully saved in Hive => $userModel",
-                  );
+                // Create full UserAuthModel
+                final userModel = UserAuthModel(
+                  id: "",
+                  profileImage: "",
+                  firstName: _authFirstNameRegisterController.text.trim(),
+                  lastName: _authLastNameRegisterController.text.trim(),
+                  email: _authEmailRegisterController.text.trim(),
+                  phoneCode: selectedPhoneCode,
+                  phoneNumber: phoneNumber.trim(),
+                  registerDate: DateTime.now().toString(),
+                  age: "",
+                  gender: "",
+                  height: "",
+                  weight: "",
+                  bloodGroup: "",
+                  cid: "",
+                  createdAt: DateTime.now().toString(),
+                  updatedAt: DateTime.now().toString(),
+                  userType: "patient",
+                );
 
-                  await HiveService.saveData(
-                    boxName: AppDBConstants.userBox,
-                    key: AppDBConstants.userAuthLoggedStatus,
-                    value: true,
-                  );
-                  AppLoggerHelper.logInfo(
-                    "User Logged Status saved successfully in Hive",
-                  );
-                } catch (e) {
-                  AppLoggerHelper.logError(
-                    "Error saving UserAuthModel in Hive: $e",
-                  );
-                }
+                // Save full model in Hive
+                await HiveService.saveData(
+                  boxName: AppDBConstants.userBox,
+                  key: AppDBConstants.userAuthData,
+                  value: userModel.toJson(),
+                );
 
-                // Show success
-                KSnackBar.success(context, "Registration Success");
+                AppLoggerHelper.logInfo(
+                  "UserAuthModel successfully saved in Hive => $userModel",
+                );
 
-                // Navigate
-                Future.delayed(const Duration(milliseconds: 400), () {
-                  GoRouter.of(
-                    context,
-                  ).pushReplacementNamed(AppRouterConstants.patientBottomNav);
-                });
-
-                clearAllController();
+                GoRouter.of(context).pushNamed(
+                  AppRouterConstants.authRegisterVerifyOTP,
+                  extra: {'email': email, 'token': token, 'message': message},
+                );
+                return;
               }
 
-              if (state is EmailAuthError) {
+              if (state is EmailAuthRegisterFailure) {
                 Future.microtask(() {
                   KSnackBar.error(context, state.message);
                 });
+
+                // Clear Controllers
+                clearAllController();
               }
             },
             builder: (context, state) {
               return KFilledBtn(
-                isLoading: state is EmailAuthLoading,
+                isLoading: state is EmailAuthRegisterLoading,
                 btnTitle: appLoc.register,
                 btnBgColor: AppColorConstants.primaryColor,
                 btnTitleColor: AppColorConstants.secondaryColor,
@@ -227,13 +354,10 @@ class _AuthRegisterState extends State<AuthRegister> {
 
                     // Fire Register Event
                     context.read<EmailAuthBloc>().add(
-                      EmailAuthRegisterEvent(
-                        firstName: _authFirstNameRegisterController.text.trim(),
-                        lastName: _authLastNameRegisterController.text.trim(),
+                      RegisterEmailAuthEvent(
                         email: _authEmailRegisterController.text.trim(),
-                        password: _authPasswordRegisterController.text.trim(),
+                        phoneNumber: _authPhoneNumberController.text.trim(),
                         phoneCode: selectedPhoneCode,
-                        phoneNumber: phoneNumber.trim(),
                       ),
                     );
                   }

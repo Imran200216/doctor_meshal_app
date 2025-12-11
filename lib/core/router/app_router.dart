@@ -384,5 +384,29 @@ GoRouter appRouter = GoRouter(
         return NotificationScreen();
       },
     ),
+
+    // Auth Register Verify OTP Screen
+    GoRoute(
+      path: '/authRegisterVerifyOTP',
+      name: AppRouterConstants.authRegisterVerifyOTP,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>;
+
+        return AuthRegisterVerifyOtpScreen(
+          email: extra['email'],
+          token: extra['token'],
+          message: extra['message'],
+        );
+      },
+    ),
+
+    // Auth Register Verify Success Screen
+    GoRoute(
+      path: '/authRegisterVerifySuccess',
+      name: AppRouterConstants.authRegisterVerifySuccess,
+      builder: (context, state) {
+        return AuthRegisterVerifySuccessScreen();
+      },
+    ),
   ],
 );
