@@ -477,8 +477,27 @@ class EmailAuthBloc extends Bloc<EmailAuthEvent, EmailAuthState> {
         final result = await graphQLService.performQuery(query);
 
         AppLoggerHelper.logInfo("📥 Raw GraphQL Response: ${result.data}");
+        AppLoggerHelper.logInfo(
+          "📥 Raw GraphQL Exception: ${result.exception}",
+        );
 
-        // Directly read the response without checking for GraphQL errors
+        // 👉 Handle GraphQL errors (this is where your backend error comes)
+        if (result.hasException) {
+          final graphqlErrors = result.exception?.graphqlErrors;
+
+          if (graphqlErrors != null && graphqlErrors.isNotEmpty) {
+            final errorMessage = graphqlErrors.first.message;
+
+            emit(EmailAuthRegisterFailure(message: errorMessage));
+            return;
+          }
+
+          // In case there is an exception with no GraphQL message
+          emit(EmailAuthRegisterFailure(message: "Something went wrong"));
+          return;
+        }
+
+        // 👉 Handle actual data success
         final data = result.data?["Regist_user_email_authentication_"];
 
         if (data == null) {
