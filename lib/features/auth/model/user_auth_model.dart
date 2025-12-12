@@ -16,6 +16,7 @@ class UserAuthModel {
   final String createdAt;
   final String updatedAt;
   final String userType;
+  final String password; // ✅ NEW
 
   UserAuthModel({
     required this.id,
@@ -35,6 +36,7 @@ class UserAuthModel {
     required this.createdAt,
     required this.updatedAt,
     required this.userType,
+    required this.password, // ✅ NEW
   });
 
   factory UserAuthModel.fromJson(Map<String, dynamic> json) {
@@ -56,9 +58,9 @@ class UserAuthModel {
       createdAt: json['createdAt'] ?? '',
       updatedAt: json['updatedAt'] ?? '',
       userType: json['user_type'] ?? '',
+      password: json['password'] ?? '', // ✅ NEW
     );
   }
-
 
   Map<String, dynamic> toJson() {
     return {
@@ -79,7 +81,7 @@ class UserAuthModel {
       "createdAt": createdAt,
       "updatedAt": updatedAt,
       "user_type": userType,
+      "password": password, // ✅ NEW
     };
   }
-
 }

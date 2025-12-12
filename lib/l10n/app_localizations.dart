@@ -1594,6 +1594,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your email address has been successfully verified'**
   String get emailVerifiedSubTitle;
+
+  /// No description provided for @continueWithLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue With Login'**
+  String get continueWithLogin;
+
+  /// No description provided for @registerSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Register Successfully'**
+  String get registerSuccessfully;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

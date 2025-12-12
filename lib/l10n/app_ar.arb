@@ -248,5 +248,7 @@
   "cvHighlightsTitle": "أهم الإنجازات والسيرة الذاتية",
   "answer": "إجابة",
   "emailVerified": "تم التحقق من البريد الإلكتروني",
-  "emailVerifiedSubTitle": "تم التحقق من عنوان بريدك الإلكتروني بنجاح"
+  "emailVerifiedSubTitle": "تم التحقق من عنوان بريدك الإلكتروني بنجاح",
+  "continueWithLogin" : "متابعة تسجيل الدخول",
+  "registerSuccessfully" : "تم التسجيل بنجاح"
 }

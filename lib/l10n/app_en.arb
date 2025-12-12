@@ -248,5 +248,8 @@
   "cvHighlightsTitle": "CV Highlights",
   "answer": "Answer",
   "emailVerified": "Email Verified",
-  "emailVerifiedSubTitle": "Your email address has been successfully verified"
+  "emailVerifiedSubTitle": "Your email address has been successfully verified",
+  "continueWithLogin": "Continue With Login",
+  "registerSuccessfully" : "Register Successfully"
+
 }

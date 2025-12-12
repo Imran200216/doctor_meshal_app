@@ -757,4 +757,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get emailVerifiedSubTitle => 'تم التحقق من عنوان بريدك الإلكتروني بنجاح';
+
+  @override
+  String get continueWithLogin => 'متابعة تسجيل الدخول';
+
+  @override
+  String get registerSuccessfully => 'تم التسجيل بنجاح';
 }

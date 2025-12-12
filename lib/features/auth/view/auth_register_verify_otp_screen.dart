@@ -9,6 +9,7 @@ import 'package:meshal_doctor_booking_app/l10n/app_localizations.dart';
 import 'package:pinput/pinput.dart';
 import 'package:meshal_doctor_booking_app/features/auth/auth.dart';
 import 'package:meshal_doctor_booking_app/commons/widgets/widgets.dart';
+import 'package:meshal_doctor_booking_app/core/service/service.dart';
 
 class AuthRegisterVerifyOtpScreen extends StatefulWidget {
   final String email;
@@ -152,9 +153,22 @@ class _AuthRegisterVerifyOtpScreenState
                   // Back
                   GoRouter.of(context).pop();
                 },
-                onConfirmTap: () {
+                onConfirmTap: () async {
                   // stop Timer
                   _timer.cancel();
+
+                  // Log before clearing box
+                  AppLoggerHelper.logInfo(
+                    "🗑 Attempting to clear Hive box: ${AppDBConstants.userBox}",
+                  );
+
+                  // Clear User Box
+                  await HiveService.clearBox(AppDBConstants.userBox);
+
+                  // Log after clearing box
+                  AppLoggerHelper.logInfo(
+                    "✅ Hive box cleared successfully: ${AppDBConstants.userBox}",
+                  );
 
                   // Dialog Close
                   GoRouter.of(context).pop();

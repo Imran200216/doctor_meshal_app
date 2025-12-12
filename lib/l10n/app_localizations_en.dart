@@ -757,4 +757,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get emailVerifiedSubTitle => 'Your email address has been successfully verified';
+
+  @override
+  String get continueWithLogin => 'Continue With Login';
+
+  @override
+  String get registerSuccessfully => 'Register Successfully';
 }

@@ -58,7 +58,7 @@ class KPhoneNumberTextFormField extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.w600),
           searchText: appLoc.searchCountry,
           languageCode: locale?.languageCode ?? 'en',
-          initialCountryCode: 'IN',
+          initialCountryCode: 'KW',
           decoration: InputDecoration(
             filled: true,
             fillColor: AppColorConstants.secondaryColor.withOpacity(0.1),
