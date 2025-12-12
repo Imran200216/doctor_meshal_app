@@ -7,5 +7,5 @@ class AppUrlConstants {
   static const String termsAndConditions = "";
 
   // Support mail
-  static const String supportMail = "";
+  static const String supportMail = "info@drmeshal.app";
 }

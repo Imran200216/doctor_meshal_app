@@ -318,6 +318,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
               ),
 
+              // Support mail
+              ProfileListTile(
+                prefixIcon: Icons.support_agent_outlined,
+                title: appLoc.support,
+                onTap: () async {
+                  // Support mail
+                  await UrlLauncherHelper.launchUrlLink(
+                    'mailto:${AppUrlConstants.supportMail}?subject=${Uri.encodeFull("Customer Support Inquiry")}&body=${Uri.encodeFull("")}',
+                  );
+                },
+              ),
+
               // Feedback
               BlocBuilder<UserAuthBloc, UserAuthState>(
                 builder: (context, state) {
