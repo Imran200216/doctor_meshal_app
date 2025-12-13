@@ -763,4 +763,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get registerSuccessfully => 'تم التسجيل بنجاح';
+
+  @override
+  String get saveChanges => 'حفظ التغييرات';
 }

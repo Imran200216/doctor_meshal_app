@@ -763,4 +763,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get registerSuccessfully => 'Register Successfully';
+
+  @override
+  String get saveChanges => 'Save Changes';
 }

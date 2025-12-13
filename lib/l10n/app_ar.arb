@@ -250,5 +250,7 @@
   "emailVerified": "تم التحقق من البريد الإلكتروني",
   "emailVerifiedSubTitle": "تم التحقق من عنوان بريدك الإلكتروني بنجاح",
   "continueWithLogin" : "متابعة تسجيل الدخول",
-  "registerSuccessfully" : "تم التسجيل بنجاح"
+  "registerSuccessfully" : "تم التسجيل بنجاح",
+  "saveChanges": "حفظ التغييرات"
+
 }

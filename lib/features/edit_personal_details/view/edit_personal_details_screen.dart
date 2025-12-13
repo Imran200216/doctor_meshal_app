@@ -422,7 +422,7 @@ class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
                         );
 
                         // 🔥 FIX: Optional - Navigate back after success
-                        // GoRouter.of(context).pop();
+                        GoRouter.of(context).pop();
                       }
 
                       if (state is UpdateUserProfileDetailsFailure) {
@@ -435,7 +435,7 @@ class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
                     builder: (context, state) {
                       return KFilledBtn(
                         isLoading: state is UpdateUserProfileDetailsLoading,
-                        btnTitle: appLoc.editProfile,
+                        btnTitle: appLoc.saveChanges,
                         btnBgColor: AppColorConstants.primaryColor,
                         btnTitleColor: AppColorConstants.secondaryColor,
                         onTap: () {

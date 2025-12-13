@@ -250,6 +250,7 @@
   "emailVerified": "Email Verified",
   "emailVerifiedSubTitle": "Your email address has been successfully verified",
   "continueWithLogin": "Continue With Login",
-  "registerSuccessfully" : "Register Successfully"
+  "registerSuccessfully" : "Register Successfully",
+  "saveChanges" : "Save Changes"
 
 }
